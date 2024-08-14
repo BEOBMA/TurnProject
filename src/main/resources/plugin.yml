@@ -1,0 +1,9 @@
+name: ProjectTurnGame
+version: '${version}'
+main: org.beobma.projectturngame.ProjectTurnGame
+api-version: '1.21'
+
+commands:
+  pt:
+    description: ProjectTurn 메인 명령어
+    aliases: [ projectturn ]
