@@ -7,6 +7,7 @@ import org.beobma.projectturngame.card.CardRarity
 import org.beobma.projectturngame.config.CardConfig.Companion.cardList
 import org.beobma.projectturngame.config.CardConfig.Companion.cardPackList
 import org.beobma.projectturngame.entity.enemy.Enemy
+import org.beobma.projectturngame.localization.Dictionary
 import org.beobma.projectturngame.manager.*
 import org.beobma.projectturngame.text.KeywordType
 import org.beobma.projectturngame.text.TextColorType
@@ -19,6 +20,7 @@ class HarmonyOfNatureCardPack {
     private val textManager = TextManager(DefaultTextManager())
     private val soundManager = SoundManager(DefaultSoundManager())
     private val cardManager = CardManager(DefaultCardManager())
+    private val dictionary = Dictionary()
 
     init {
         cardConfig()
@@ -85,8 +87,12 @@ class HarmonyOfNatureCardPack {
         val sky = Card(
             "하늘", listOf(
                 Component.text("카드를 2장 뽑는다.", TextColorType.Gray.textColor),
-                Component.text("이번 턴에 사용하는 '구름' 카드의 위력이 2 증가한다.", TextColorType.Gray.textColor),
-                Component.text("위 효과는 중첩되지 않는다.", TextColorType.DarkGray.textColor)
+                Component.text("이번 턴에 카드의 효과로 '비구름'을 뽑을 때, '낙뢰' 카드를 추가로 1장 생성하고 뽑는다.", TextColorType.Gray.textColor),
+                Component.text("위 효과는 중첩되지 않는다.", TextColorType.DarkGray.textColor),
+                Component.text("[ 낙뢰 | (1) ]: 모든 적에게 ", TextColorType.DarkGray.textColor).append(KeywordType.Electroshock.component).append(
+                    Component.text("를 적용한다.", TextColorType.Gray.textColor)
+                ),
+                dictionary.dictionaryList["전격"]!!
             ), CardRarity.Uncommon, 1
         ) { usePlayerData ->
             cardManager.run {
@@ -99,32 +105,82 @@ class HarmonyOfNatureCardPack {
             return@Card true
         }
 
-        val cloud = Card(
-            "구름", listOf(
-                Component.text("", TextColorType.Gray.textColor)
+        val rainCloud = Card(
+            "비구름", listOf(
+                Component.text("모든 적에게 ", TextColorType.Gray.textColor).append(KeywordType.Cloudy.component).append(Component.text("을 적용한다.", TextColorType.Gray.textColor)),
+                dictionary.dictionaryList["흐림"]!!
+            ), CardRarity.Common, 0
+        ) { usePlayerData ->
+            selectionFactordManager.run {
+                val abnormalStatusManager = AbnormalStatusManager()
+                val specialAbnormalStatusManager = abnormalStatusManager.createSpecialAbnormalStatusManager()
+                val target = usePlayerData.allEnemyMembers()
+
+                specialAbnormalStatusManager.run {
+                    target.forEach {
+                        it.addCloudy()
+                    }
+                }
+            }
+            return@Card true
+        }
+
+        val lightningStrike = Card(
+            "낙뢰", listOf(
+                Component.text("모든 적에게 ", TextColorType.Gray.textColor).append(KeywordType.Electroshock.component).append(Component.text("를 적용한다.", TextColorType.Gray.textColor)),
+                dictionary.dictionaryList["전격"]!!
             ), CardRarity.Common, 1
         ) { usePlayerData ->
             selectionFactordManager.run {
-                val player = usePlayerData.player
-                val target = usePlayerData.focusOn()
+                val abnormalStatusManager = AbnormalStatusManager()
+                val specialAbnormalStatusManager = abnormalStatusManager.createSpecialAbnormalStatusManager()
+                val target = usePlayerData.allEnemyMembers()
 
-                if (target !is Enemy) {
-                    val targetingFailText = textManager.targetingFailText()
-                    player.sendMessage(targetingFailText)
-                    soundManager.run { player.playTargetingFailSound() }
-                    return@Card false
-                }
-
-                if (player.scoreboardTags.contains("seaTag")) {
-                    enemyManager.run {
-                        target.damage(9, usePlayerData)
+                specialAbnormalStatusManager.run {
+                    target.forEach {
+                        it.addElectroshock()
                     }
                 }
-                else {
-                    enemyManager.run {
-                        target.damage(6, usePlayerData)
-                    }
+            }
+            return@Card true
+        }
+
+        val cloud = Card(
+            "구름", listOf(
+                Component.text("'비구름' 카드 1장을 생성하고, 패에 넣는다.", TextColorType.Gray.textColor),
+                Component.text("[ 비구름 | (0) ]: 모든 적에게 ", TextColorType.DarkGray.textColor).append(KeywordType.Cloudy.component).append(
+                    Component.text("을 적용한다.", TextColorType.Gray.textColor)
+                ),
+                dictionary.dictionaryList["흐림"]!!
+            ), CardRarity.Common, 1
+        ) { usePlayerData ->
+            cardManager.run {
+                usePlayerData.getCard(rainCloud)
+                if (usePlayerData.player.scoreboardTags.contains("skyTag")) {
+                    usePlayerData.getCard(lightningStrike)
                 }
+            }
+            return@Card true
+        }
+
+
+        val ground = Card(
+            "땅", listOf(
+                Component.text("카드를 2장 뽑는다.", TextColorType.Gray.textColor),
+                Component.text("이번 턴에 카드의 효과로 '비구름'을 뽑을 때, '낙뢰' 카드를 추가로 1장 생성하고 뽑는다.", TextColorType.Gray.textColor),
+                Component.text("위 효과는 중첩되지 않는다.", TextColorType.DarkGray.textColor),
+                Component.text("[ 낙뢰 | (1) ]: 모든 적에게 ", TextColorType.DarkGray.textColor).append(KeywordType.Electroshock.component).append(
+                    Component.text("를 적용한다.", TextColorType.Gray.textColor)
+                ),
+                dictionary.dictionaryList["전격"]!!
+            ), CardRarity.Uncommon, 1
+        ) { usePlayerData ->
+            cardManager.run {
+                usePlayerData.drow(2)
+            }
+
+            playerManager.run {
+                usePlayerData.addTag("skyTag", ResetType.TurnEnd)
             }
             return@Card true
         }
