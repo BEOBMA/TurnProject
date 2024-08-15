@@ -16,7 +16,7 @@ interface PlayerHandler {
     fun Player.setMana(int: Int)
     fun Player.addMana(int: Int)
 
-    fun Player.damage(damage: Int, attacker: Enemy)
+    fun Player.damage(damage: Int, attacker: Enemy?, isTrueDamage: Boolean = false)
     fun Player.heal(damage: Int, healer: Player)
     fun Player.death()
     fun Player.resurrection()
@@ -87,10 +87,14 @@ class DefaultPlayerManager : PlayerHandler {
         this.applyScoreboard()
     }
 
-    override fun Player.damage(damage: Int, attacker: Enemy) {
+    override fun Player.damage(damage: Int, attacker: Enemy?, isTrueDamage: Boolean) {
         if (this.isDead) return
 
         var finalDamage = damage
+
+        if (isTrueDamage) {
+            // 피해 계산 추가
+        }
 
         if (finalDamage <= 0) return
         if (this.health - finalDamage <= 0) {
@@ -99,7 +103,7 @@ class DefaultPlayerManager : PlayerHandler {
         }
 
         this.health -= finalDamage
-        this.player.damage(finalDamage.toDouble(), attacker.entity)
+        this.player.damage(finalDamage.toDouble(), attacker?.entity)
     }
 
     override fun Player.heal(damage: Int, healer: Player) {
@@ -175,6 +179,7 @@ class PlayerManager(private val converter: PlayerHandler) {
     fun Player.deckShuffle() {
         converter.run { this@deckShuffle.deckShuffle() }
     }
+
     fun Player.graveyardReset() {
         converter.run { this@graveyardReset.graveyardReset() }
     }
@@ -182,6 +187,7 @@ class PlayerManager(private val converter: PlayerHandler) {
     fun Player.setMaxMana(int: Int) {
         converter.run { this@setMaxMana.setMaxMana(int) }
     }
+
     fun Player.addMaxMana(int: Int) {
         converter.run { this@addMaxMana.addMaxMana(int) }
     }
@@ -189,9 +195,11 @@ class PlayerManager(private val converter: PlayerHandler) {
     fun Player.setMana(int: Int) {
         converter.run { this@setMana.setMana(int) }
     }
+
     fun Player.addMana(int: Int) {
         converter.run { this@addMana.addMana(int) }
     }
+
     fun Player.isTurn(): Boolean {
         return converter.run { this@isTurn.isTurn() }
     }
@@ -206,5 +214,13 @@ class PlayerManager(private val converter: PlayerHandler) {
 
     fun Player.removeTag(tag: String) {
         converter.run { this@removeTag.removeTag(tag) }
+    }
+
+    fun Player.death() {
+        converter.run { this@death.death() }
+    }
+
+    fun Player.damage(damage: Int, attacker: Enemy?, isTrueDamage: Boolean = false) {
+        converter.run { damage(damage, attacker, isTrueDamage) }
     }
 }

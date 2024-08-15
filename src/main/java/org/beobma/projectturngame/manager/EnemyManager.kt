@@ -2,7 +2,6 @@ package org.beobma.projectturngame.manager
 
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
-import org.beobma.projectturngame.ProjectTurnGame
 import org.beobma.projectturngame.entity.enemy.Enemy
 import org.beobma.projectturngame.entity.player.Player
 import org.beobma.projectturngame.info.Info
@@ -16,7 +15,7 @@ interface EnemyHandler {
     fun Enemy.setHealth(int: Int)
     fun Enemy.death()
 
-    fun Enemy.damage(damage: Int, attacker: Player)
+    fun Enemy.damage(damage: Int, attacker: Player?, isTrueDamage: Boolean = false)
 }
 
 class DefaultEnemyManager : EnemyHandler{
@@ -69,10 +68,14 @@ class DefaultEnemyManager : EnemyHandler{
         }
     }
 
-    override fun Enemy.damage(damage: Int, attacker: Player) {
+    override fun Enemy.damage(damage: Int, attacker: Player?, isTrueDamage: Boolean) {
         if (this.isDead) return
 
         var finalDamage = damage
+
+        if (isTrueDamage) {
+            // 피해 계산 추가
+        }
 
         if (finalDamage <= 0) return
         if (this.health - finalDamage <= 0) {
@@ -81,7 +84,7 @@ class DefaultEnemyManager : EnemyHandler{
         }
 
         this.health -= finalDamage
-        this.entity.damage(finalDamage.toDouble(), attacker.player)
+        this.entity.damage(finalDamage.toDouble(), attacker?.player)
         entity.apply {
             this.customName(Component.text("${this.health}",TextColorType.DarkRed.textColor).decorate(TextDecoration.BOLD))
             this.isCustomNameVisible = true
@@ -102,7 +105,7 @@ class EnemyManager(private val converter: EnemyHandler) {
         converter.run { this@setHealth.setHealth(int) }
     }
 
-    fun Enemy.damage(damage: Int, attacker: Player) {
-        converter.run { this@damage.damage(damage, attacker) }
+    fun Enemy.damage(damage: Int, attacker: Player?, isTrueDamage: Boolean = false) {
+        converter.run { this@damage.damage(damage, attacker, isTrueDamage) }
     }
 }
