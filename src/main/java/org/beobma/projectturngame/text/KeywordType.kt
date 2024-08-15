@@ -11,5 +11,6 @@ enum class KeywordType(val component: Component) {
     Extinction(Component.text("소멸", TextColorType.DarkGray.textColor).decorate(TextDecoration.BOLD)),
     SameCardDisappears(Component.text("동일 카드 소멸", TextColorType.Gold.textColor).decorate(TextDecoration.BOLD)),
     Cloudy(Component.text("흐림", TextColorType.Aqua.textColor).decorate(TextDecoration.BOLD)),
-    Electroshock(Component.text("전격", TextColorType.Yellow.textColor).decorate(TextDecoration.BOLD))
+    Electroshock(Component.text("전격", TextColorType.Yellow.textColor).decorate(TextDecoration.BOLD)),
+    Nutrients(Component.text("양분", TextColorType.Green.textColor).decorate(TextDecoration.BOLD))
 }
