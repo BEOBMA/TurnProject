@@ -1,6 +1,7 @@
 package org.beobma.projectturngame.manager
 
 import org.beobma.projectturngame.entity.Entity
+import org.beobma.projectturngame.entity.enemy.Enemy
 import org.beobma.projectturngame.entity.player.Player
 import org.beobma.projectturngame.info.Info
 
@@ -8,6 +9,7 @@ import org.beobma.projectturngame.info.Info
 interface SelectionFactordHandler {
     fun Player.focusOn(): Entity?
     fun Player.allTeamMembers(excludeSelf: Boolean, includeDeceased: Boolean): List<Player>
+    fun Player.allEnemyMembers(): List<Enemy>
 }
 
 class DefaultSelectionFactordManager : SelectionFactordHandler {
@@ -48,6 +50,13 @@ class DefaultSelectionFactordManager : SelectionFactordHandler {
 
         return teamList.toList()
     }
+
+    override fun Player.allEnemyMembers(): List<Enemy> {
+        val game = Info.game ?: return listOf()
+        val enemyList = game.gameEnemys.toMutableList()
+
+        return enemyList.toList()
+    }
 }
 
 
@@ -58,5 +67,9 @@ class SelectionFactordManager(private val converter: SelectionFactordHandler) {
 
     fun Player.allTeamMembers(excludeSelf: Boolean, includeDeceased: Boolean): List<Player> {
         return converter.run { this@allTeamMembers.allTeamMembers(excludeSelf, includeDeceased) }
+    }
+
+    fun Player.allEnemyMembers(): List<Enemy> {
+        return converter.run { this@allEnemyMembers.allEnemyMembers() }
     }
 }
