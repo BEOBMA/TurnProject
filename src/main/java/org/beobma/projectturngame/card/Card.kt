@@ -9,5 +9,6 @@ class Card(
     val rarity: CardRarity,
     val cost: Int,
     val cardUseEffect: ((Player) -> Boolean)? = null
-    val postCardUseEffect: ((Player) -> Boolean)? = null
+    val postCardUseEffect: ((Player) -> Unit)? = null
+    val nextTurnEffect: ((Player) -> Unit)? = null
 )
