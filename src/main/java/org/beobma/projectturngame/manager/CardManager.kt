@@ -2,7 +2,6 @@ package org.beobma.projectturngame.manager
 
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
-import org.beobma.projectturngame.ProjectTurnGame
 import org.beobma.projectturngame.card.Card
 import org.beobma.projectturngame.card.CardRarity
 import org.beobma.projectturngame.config.CardConfig.Companion.cardList
@@ -17,6 +16,7 @@ import org.bukkit.inventory.ItemStack
 interface CardHandler {
     fun Player.use(card: Card)
     fun Player.drow(int: Int)
+    fun Player.getCard(card: Card, amount: Int)
 
     fun Card.toItem(): ItemStack
     fun ItemStack.toCard(): Card
@@ -48,6 +48,19 @@ class DefaultCardManager : CardHandler {
             } ?: return
 
             this.hand.add(drawCard)
+            game.drowCardInt++
+
+            this.applyHotbar()
+        }
+    }
+
+    override fun Player.getCard(card: Card, amount: Int) {
+        val game = Info.game ?: return
+
+        repeat(amount) {
+            if (this.hand.size >= 9) return
+
+            this.hand.add(card)
             game.drowCardInt++
 
             this.applyHotbar()
@@ -114,6 +127,10 @@ class CardManager(private val converter: CardHandler) {
 
     fun Player.drow(int: Int) {
         converter.run { this@drow.drow(int) }
+    }
+
+    fun Player.getCard(card: Card, amount: Int = 1) {
+        converter.run { getCard(card, amount) }
     }
 
     fun Card.toItem(): ItemStack {
