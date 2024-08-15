@@ -138,11 +138,13 @@ class DefaultInventoryManager : InventoryHandler {
         }
 
 
+        if (cardList.size > 3) {
         cardManager.run {
             inventory.setItem(11, cardList[0].toItem())
             inventory.setItem(13, cardList[1].toItem())
             inventory.setItem(15, cardList[2].toItem())
         }
+
         return inventory
     }
 }
