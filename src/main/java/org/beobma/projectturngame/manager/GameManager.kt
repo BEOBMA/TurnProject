@@ -356,6 +356,7 @@ class DefaultGameManager : GameHandler {
             this@battleEndReset.setMana(this@battleEndReset.maxMana)
         }
 
+        this.abnormalityStatus.clear()
         this.deck.addAll(this.hand)
         this.deck.addAll(this.graveyard)
         this.deck.addAll(this.banish)
