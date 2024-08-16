@@ -1,5 +1,5 @@
 package org.beobma.projectturngame.util
 
 enum class ResetType {
-    None, TurnEnd, BattleEnd
+    None, CardUseEnd, TurnEnd, BattleEnd, SectorEnd, 
 }
