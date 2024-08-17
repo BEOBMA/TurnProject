@@ -32,7 +32,7 @@ class DefaultCardManager : CardHandler {
         if (!isUsing) return
         this.hand.remove(card)
         playerManager.run { this@use.addMana(-(card.cost)) }
-        card.postCardUseEffect.invoke(this@use)
+        card.postCardUseEffect?.invoke(this@use)
         applyHotbar()
     }
 
