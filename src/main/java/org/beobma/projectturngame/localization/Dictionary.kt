@@ -17,7 +17,9 @@ class Dictionary {
         ), Pair(
             "소멸", KeywordType.Extinction.component.append(Component.text(": 사용 시 묘지로 보내지지 않고, 제외된다.", TextColorType.Gray.textColor))
         ), Pair(
-            "동일 카드 소멸", KeywordType.SameCardDisappears.component.append(Component.text(": 사용 시 덱, 묘지에 있는 동일한 카드를 모두 제외한다.", TextColorType.Gray.textColor))
+            "휘발", KeywordType.Volatilization.component.append(Component.text(": 사용 시 묘지로 보내지지 않고, 게임에서 완전히 소멸한다.", TextColorType.Gray.textColor))
+        ), Pair(
+            "동일 카드 소멸", KeywordType.SameCardDisappears.component.append(Component.text(": 사용 시 덱, 묘지에 있는 사용된 카드와 동일한 카드를 모두 제외한다.", TextColorType.Gray.textColor))
         ), Pair(
             "흐림", KeywordType.Cloudy.component.append(Component.text(": 특정 상태이상과 시너지를 발동하고 소멸한다.", TextColorType.Gray.textColor))
         ), Pair(
