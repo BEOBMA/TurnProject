@@ -9,6 +9,7 @@ enum class KeywordType(val component: Component) {
     Banish(Component.text("제외", TextColorType.DarkGray.textColor).decorate(TextDecoration.BOLD)),
     Graveyard(Component.text("묘지", TextColorType.Gray.textColor).decorate(TextDecoration.BOLD)),
     Extinction(Component.text("소멸", TextColorType.DarkGray.textColor).decorate(TextDecoration.BOLD)),
+    Volatilization(Component.text("휘발", TextColorType.DarkGray.textColor).decorate(TextDecoration.BOLD)),
     SameCardDisappears(Component.text("동일 카드 소멸", TextColorType.Gold.textColor).decorate(TextDecoration.BOLD)),
     Cloudy(Component.text("흐림", TextColorType.Aqua.textColor).decorate(TextDecoration.BOLD)),
     Electroshock(Component.text("전격", TextColorType.Yellow.textColor).decorate(TextDecoration.BOLD)),
