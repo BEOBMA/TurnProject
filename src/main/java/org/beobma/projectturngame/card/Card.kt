@@ -8,7 +8,7 @@ class Card(
     val description: List<Component>,
     val rarity: CardRarity,
     val cost: Int,
-    val cardUseEffect: ((Player) -> Boolean)? = null,
-    val postCardUseEffect: ((Player) -> Unit)? = null,
-    val nextTurnEffect: ((Player) -> Unit)? = null
+    val cardUseEffect: ((Player, Card) -> Boolean)? = null,
+    val postCardUseEffect: ((Player, Card) -> Unit)? = null,
+    val nextTurnEffect: ((Player, Card) -> Unit)? = null
 )
