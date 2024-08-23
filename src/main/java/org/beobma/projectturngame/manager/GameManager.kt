@@ -207,6 +207,10 @@ class DefaultGameManager : GameHandler {
                 playSound(location, Sound.BLOCK_NOTE_BLOCK_GUITAR, 1.0F, 1.0F)
                 cardManager.run { drow(5) }
                 scoreboardTags.add("this_Turn")
+                turnStartUnit.forEach {
+                    it.invoke()
+                }
+                turnStartUnit.clear()
             }
         }
 
@@ -228,6 +232,10 @@ class DefaultGameManager : GameHandler {
                 sendMessage(Component.text("턴을 종료했습니다.").decorate(TextDecoration.BOLD))
                 isGlowing = false
                 scoreboardTags.remove("this_Turn")
+                turnEndUnit.forEach {
+                    it.invoke()
+                }
+                turnEndUnit.clear()
             }
         }
 

@@ -30,7 +30,7 @@ class StartCardPack {
             "공격", listOf(
                 Component.text("바라보는 적에게 5의 피해를 입힌다.", TextColorType.Gray.textColor)
             ), CardRarity.Common, 1,
-            { usePlayerData ->
+            { usePlayerData, _ ->
                 selectionFactordManager.run {
                     val player = usePlayerData.player
                     val target = usePlayerData.focusOn()
@@ -56,7 +56,7 @@ class StartCardPack {
             "가벼운 치유", listOf(
                 Component.text("체력을 5 회복한다.", TextColorType.Gray.textColor)
             ), CardRarity.Common, 1,
-            { usePlayerData ->
+            { usePlayerData, _ ->
                 playerManager.run {
                     usePlayerData.heal(5, usePlayerData)
                 }
@@ -70,7 +70,7 @@ class StartCardPack {
             "강공", listOf(
                 Component.text("바라보는 적에게 12의 피해를 입힌다", TextColorType.Gray.textColor)
             ), CardRarity.Common, 2,
-            { usePlayerData ->
+            { usePlayerData, _ ->
                 selectionFactordManager.run {
                     val player = usePlayerData.player
                     val target = usePlayerData.focusOn()
@@ -96,7 +96,7 @@ class StartCardPack {
             "휴식", listOf(
                 KeywordType.Mana.component.append(Component.text("를 1 회복한다.", TextColorType.Gray.textColor))
             ), CardRarity.Common, 0,
-            { usePlayerData ->
+            { usePlayerData, _ ->
                 playerManager.run {
                     usePlayerData.addMana(1)
                 }
@@ -110,7 +110,7 @@ class StartCardPack {
             "연공", listOf(
                 Component.text("바라보는 적에게 20의 피해를 입힌다.", TextColorType.Gray.textColor)
             ), CardRarity.Common, 3,
-            { usePlayerData ->
+            { usePlayerData, _ ->
                 selectionFactordManager.run {
                     val player = usePlayerData.player
                     val target = usePlayerData.focusOn()

@@ -1,7 +1,10 @@
 package org.beobma.projectturngame.manager
 
 import net.kyori.adventure.text.Component
+import org.beobma.projectturngame.card.Card
 import org.beobma.projectturngame.card.CardPack
+import org.beobma.projectturngame.card.CardRarity
+import org.beobma.projectturngame.card.CardRarity.*
 import org.beobma.projectturngame.game.GameField
 import org.beobma.projectturngame.info.Info
 import org.beobma.projectturngame.localization.Localization
@@ -13,7 +16,7 @@ import kotlin.random.Random
 interface InventoryHandler {
     fun Player.openMapInventory(inventoryOpenType: InventoryOpenType)
     fun Player.openSectorInventory()
-    fun Player.openCompensationInventory(cardPackList: List<CardPack>)
+    fun Player.openCompensationInventory(cardPackList: List<CardPack>, rarity: CardRarity)
 }
 
 class DefaultInventoryManager : InventoryHandler {
@@ -34,8 +37,14 @@ class DefaultInventoryManager : InventoryHandler {
         this.scoreboardTags.add("inventory_SectorChoice")
     }
 
-    override fun Player.openCompensationInventory(cardPackList: List<CardPack>) {
-        val inventory = createCompensationInventory(cardPackList)
+    override fun Player.openCompensationInventory(cardPackList: List<CardPack>, rarity: CardRarity) {
+        val inventory = when (rarity) {
+            Common -> createNormalCompensationInventory(cardPackList)
+            Uncommon -> createNormalCompensationInventory(cardPackList)
+            Rare -> createNormalCompensationInventory(cardPackList)
+            Legend -> createEliteCompensationInventory(cardPackList)
+        }
+
         this.scoreboardTags.add("inventory_CardChoice")
         this.loadDeckToInventory()
         this.openInventory(inventory)
@@ -127,7 +136,7 @@ class DefaultInventoryManager : InventoryHandler {
         game.gameMapInventory = inventory
     }
 
-    private fun createCompensationInventory(cardPackList: List<CardPack>): Inventory {
+    private fun createNormalCompensationInventory(cardPackList: List<CardPack>): Inventory {
         val localization = Localization()
         val cardManager = CardManager(DefaultCardManager())
         val emptySlot = localization.emptySlot
@@ -139,17 +148,47 @@ class DefaultInventoryManager : InventoryHandler {
 
 
         if (cardPackList.size > 3) {
-        cardManager.run {
-            inventory.setItem(11, cardPackList[0].filterCard().toItem())
-            inventory.setItem(13, cardPackList[1].filterCard().toItem())
-            inventory.setItem(15, cardPackList[2].filterCard().toItem())
+            cardManager.run {
+                inventory.setItem(11, cardPackList[0].filterNormalCard().toItem())
+                inventory.setItem(13, cardPackList[1].filterNormalCard().toItem())
+                inventory.setItem(15, cardPackList[2].filterNormalCard().toItem())
+            }
         }
 
         return inventory
     }
 
-    private fun CardPack.filterCard(): Card {
+    private fun createEliteCompensationInventory(cardPackList: List<CardPack>): Inventory {
+        val localization = Localization()
+        val cardManager = CardManager(DefaultCardManager())
+        val emptySlot = localization.emptySlot
+        val inventory: Inventory = Bukkit.createInventory(null, 27, Component.text("고급 보상"))
 
+        for (i in 0 until inventory.size) {
+            inventory.setItem(i, emptySlot)
+        }
+
+
+        if (cardPackList.size > 3) {
+            cardManager.run {
+                inventory.setItem(11, cardPackList[0].filterEliteCard().toItem())
+                inventory.setItem(13, cardPackList[1].filterEliteCard().toItem())
+                inventory.setItem(15, cardPackList[2].filterEliteCard().toItem())
+            }
+        }
+
+        return inventory
+    }
+
+    private fun CardPack.filterNormalCard(): Card {
+        val rarity = listOf(Common, Uncommon, Rare)
+        val cardList = this.cardList.filter { it.rarity in rarity }.shuffled()
+        return cardList.random()
+    }
+
+    private fun CardPack.filterEliteCard(): Card {
+        val cardList = this.cardList.filter { it.rarity == Legend }.shuffled()
+        return cardList.random()
     }
 }
 
@@ -162,8 +201,8 @@ class InventoryManager(private val converter: InventoryHandler) {
         converter.run { this@openSectorInventory.openSectorInventory() }
     }
 
-    fun Player.openCompensationInventory(cardPackList: List<CardPack>) {
-        converter.run { this@openCompensationInventory.openCompensationInventory(cardPackList) }
+    fun Player.openCompensationInventory(cardPackList: List<CardPack>, rarity: CardRarity) {
+        converter.run { this@openCompensationInventory.openCompensationInventory(cardPackList, rarity) }
     }
 }
 
