@@ -1,7 +1,7 @@
 package org.beobma.projectturngame.manager
 
 import net.kyori.adventure.text.Component
-import org.beobma.projectturngame.card.Card
+import org.beobma.projectturngame.card.CardPack
 import org.beobma.projectturngame.game.GameField
 import org.beobma.projectturngame.info.Info
 import org.beobma.projectturngame.localization.Localization
@@ -13,7 +13,7 @@ import kotlin.random.Random
 interface InventoryHandler {
     fun Player.openMapInventory(inventoryOpenType: InventoryOpenType)
     fun Player.openSectorInventory()
-    fun Player.openCompensationInventory(cardList: List<Card>)
+    fun Player.openCompensationInventory(cardPackList: List<CardPack>)
 }
 
 class DefaultInventoryManager : InventoryHandler {
@@ -34,8 +34,8 @@ class DefaultInventoryManager : InventoryHandler {
         this.scoreboardTags.add("inventory_SectorChoice")
     }
 
-    override fun Player.openCompensationInventory(cardList: List<Card>) {
-        val inventory = createCompensationInventory(cardList)
+    override fun Player.openCompensationInventory(cardPackList: List<CardPack>) {
+        val inventory = createCompensationInventory(cardPackList)
         this.scoreboardTags.add("inventory_CardChoice")
         this.loadDeckToInventory()
         this.openInventory(inventory)
@@ -127,7 +127,7 @@ class DefaultInventoryManager : InventoryHandler {
         game.gameMapInventory = inventory
     }
 
-    private fun createCompensationInventory(cardList: List<Card>): Inventory {
+    private fun createCompensationInventory(cardPackList: List<CardPack>): Inventory {
         val localization = Localization()
         val cardManager = CardManager(DefaultCardManager())
         val emptySlot = localization.emptySlot
@@ -138,14 +138,18 @@ class DefaultInventoryManager : InventoryHandler {
         }
 
 
-        if (cardList.size > 3) {
+        if (cardPackList.size > 3) {
         cardManager.run {
-            inventory.setItem(11, cardList[0].toItem())
-            inventory.setItem(13, cardList[1].toItem())
-            inventory.setItem(15, cardList[2].toItem())
+            inventory.setItem(11, cardPackList[0].filterCard().toItem())
+            inventory.setItem(13, cardPackList[1].filterCard().toItem())
+            inventory.setItem(15, cardPackList[2].filterCard().toItem())
         }
 
         return inventory
+    }
+
+    private fun CardPack.filterCard(): Card {
+
     }
 }
 
@@ -158,8 +162,8 @@ class InventoryManager(private val converter: InventoryHandler) {
         converter.run { this@openSectorInventory.openSectorInventory() }
     }
 
-    fun Player.openCompensationInventory(cardList: List<Card>) {
-        converter.run { this@openCompensationInventory.openCompensationInventory(cardList) }
+    fun Player.openCompensationInventory(cardPackList: List<CardPack>) {
+        converter.run { this@openCompensationInventory.openCompensationInventory(cardPackList) }
     }
 }
 
