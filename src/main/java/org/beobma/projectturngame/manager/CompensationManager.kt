@@ -16,10 +16,9 @@ class DefaultCompensationManager : CompensationHandler {
     override fun Player.normalReward() {
         val game = Info.game ?: return
         val inventoryManager = InventoryManager(DefaultInventoryManager())
-        val cardPack = game.gameCardPack.random()
-        val cardList = handleCardOperations(cardPack)
+        val cardPacks = game.gameCardPack
         inventoryManager.run {
-            this@normalReward.player.openCompensationInventory(cardList)
+            this@normalReward.player.openCompensationInventory(cardPacks)
         }
     }
 
