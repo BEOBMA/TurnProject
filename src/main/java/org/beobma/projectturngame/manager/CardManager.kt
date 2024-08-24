@@ -7,6 +7,7 @@ import org.beobma.projectturngame.card.CardRarity
 import org.beobma.projectturngame.config.CardConfig.Companion.cardList
 import org.beobma.projectturngame.entity.player.Player
 import org.beobma.projectturngame.info.Info
+import org.beobma.projectturngame.text.KeywordType
 import org.beobma.projectturngame.text.TextColorType
 import org.bukkit.Material
 import org.bukkit.inventory.ItemFlag
@@ -16,8 +17,16 @@ import org.bukkit.inventory.ItemStack
 interface CardHandler {
     fun Player.use(card: Card)
     fun Player.drow(int: Int)
-    fun Player.getCard(card: Card, amount: Int)
+    fun Player.cardThrow(vararg card: Card)
+    fun Player.getCard(vararg card: Card)
+    fun Player.addDeckCard(vararg card: Card)
+    fun Player.clearHand()
+    fun Player.clearGraveyard()
+    fun Player.clearBanish()
 
+    fun Player.extinction(card: Card)
+
+    fun findCard(name: String): Card?
     fun Card.toItem(): ItemStack
     fun ItemStack.toCard(): Card
     fun Player.applyHotbar()
@@ -55,17 +64,58 @@ class DefaultCardManager : CardHandler {
         }
     }
 
-    override fun Player.getCard(card: Card, amount: Int) {
+    override fun Player.cardThrow(vararg card: Card) {
+        card.forEach {
+            if (it.description.contains(KeywordType.Fix.component)) {
+                return
+            }
+            this.hand.remove(it)
+        }
+    }
+
+    override fun Player.getCard(vararg card: Card) {
         val game = Info.game ?: return
 
-        repeat(amount) {
+        card.forEach {
             if (this.hand.size >= 9) return
 
-            this.hand.add(card)
+            this.hand.add(it)
             game.drowCardInt++
 
             this.applyHotbar()
         }
+    }
+
+    override fun Player.addDeckCard(vararg card: Card) {
+        card.forEach {
+            if (it.description.contains(KeywordType.Fix.component)) {
+                return
+            }
+        }
+        this.deck.addAll(card)
+    }
+
+    override fun Player.clearHand() {
+        val cardList = this.hand.filter { !it.description.contains(KeywordType.Fix.component) }
+        this.hand.removeAll(cardList)
+    }
+
+    override fun Player.clearGraveyard() {
+        val cardList = this.graveyard.filter { !it.description.contains(KeywordType.Fix.component) }
+        this.graveyard.removeAll(cardList)
+    }
+
+    override fun Player.clearBanish() {
+        val cardList = this.banish.filter { !it.description.contains(KeywordType.Fix.component) }
+        this.banish.removeAll(cardList)
+    }
+
+    override fun Player.extinction(card: Card) {
+        this.graveyard.remove(card)
+    }
+
+    override fun findCard(name: String): Card? {
+        return cardList.find { it.name == name }
     }
 
     override fun Card.toItem(): ItemStack {
@@ -123,26 +173,54 @@ class DefaultCardManager : CardHandler {
 
 class CardManager(private val converter: CardHandler) {
     fun Player.use(card: Card) {
-        converter.run { this@use.use(card) }
+        converter.run { use(card) }
     }
 
     fun Player.drow(int: Int) {
-        converter.run { this@drow.drow(int) }
+        converter.run { drow(int) }
     }
 
-    fun Player.getCard(card: Card, amount: Int = 1) {
-        converter.run { getCard(card, amount) }
+    fun Player.getCard(vararg card: Card) {
+        converter.run { getCard(*card) }
     }
 
     fun Card.toItem(): ItemStack {
-        return converter.run { this@toItem.toItem() }
+        return converter.run { toItem() }
     }
 
     fun ItemStack.toCard(): Card {
-        return converter.run { this@toCard.toCard() }
+        return converter.run { toCard() }
+    }
+
+    fun Player.cardThrow(vararg card: Card) {
+        converter.run { cardThrow(*card) }
     }
 
     fun Player.applyHotbar() {
-        return converter.run { this@applyHotbar.applyHotbar() }
+        return converter.run { applyHotbar() }
+    }
+
+    fun Player.addDeckCard(vararg card: Card) {
+        converter.run { addDeckCard(*card) }
+    }
+
+    fun Player.clearHand() {
+        converter.run { clearHand() }
+    }
+
+    fun Player.clearGraveyard() {
+        converter.run { clearGraveyard() }
+    }
+
+    fun Player.clearBanish() {
+        converter.run { clearBanish() }
+    }
+
+    fun Player.extinction(card: Card) {
+        converter.run { extinction(card) }
+    }
+
+    fun findCard(name: String): Card? {
+        return converter.run { findCard(name) }
     }
 }
