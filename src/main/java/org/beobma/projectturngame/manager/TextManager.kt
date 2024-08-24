@@ -8,6 +8,7 @@ import org.beobma.projectturngame.text.TextColorType
 interface TextHandler {
     fun targetingFailText(): Component
     fun manaFailText(): Component
+    fun cardUseFailText(): Component
 }
 
 class DefaultTextManager : TextHandler {
@@ -20,6 +21,10 @@ class DefaultTextManager : TextHandler {
             Component.text("가 부족하여 카드를 사용할 수 없습니다.", TextColorType.Red.textColor)
         ))
     }
+
+    override fun cardUseFailText(): Component {
+        return Component.text("[!] 카드 사용의 조건을 만족하지 않아 카드를 사용할 수 없습니다.", TextColorType.Red.textColor).decorate(TextDecoration.BOLD)
+    }
 }
 
 class TextManager(private val converter: TextHandler) {
@@ -29,5 +34,9 @@ class TextManager(private val converter: TextHandler) {
 
     fun manaFailText(): Component {
         return converter.run { manaFailText() }
+    }
+
+    fun cardUseFailText(): Component {
+        return converter.run { cardUseFailText() }
     }
 }

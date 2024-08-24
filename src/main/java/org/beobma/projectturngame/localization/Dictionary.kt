@@ -24,6 +24,8 @@ class Dictionary {
             "흐림", KeywordType.Cloudy.component.append(Component.text(": 특정 상태이상과 시너지를 발동하고 소멸한다.", TextColorType.Gray.textColor))
         ), Pair(
             "전격", KeywordType.Electroshock.component.append(Component.text(": ", TextColorType.Gray.textColor).append(KeywordType.Cloudy.component.append(Component.text(" 상태이상과 동시에 존재한다면, 두 상태이상을 제거하고 18의 고정 피해를 입는다.", TextColorType.Gray.textColor))) )
+        ), Pair(
+            "고정", KeywordType.Fix.component.append(Component.text(": 카드의 효과로 카드가 이동되지 않는다. (만약, 해당 효과가 카드 사용의 조건인 경우 조건을 만족한 것으로 간주한다.)", TextColorType.Gray.textColor))
         )
     )
 }

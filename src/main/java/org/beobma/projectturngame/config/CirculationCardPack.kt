@@ -6,20 +6,19 @@ import org.beobma.projectturngame.card.CardPack
 import org.beobma.projectturngame.card.CardRarity
 import org.beobma.projectturngame.config.CardConfig.Companion.cardList
 import org.beobma.projectturngame.config.CardConfig.Companion.cardPackList
-import org.beobma.projectturngame.entity.enemy.Enemy
 import org.beobma.projectturngame.localization.Dictionary
 import org.beobma.projectturngame.manager.*
 import org.beobma.projectturngame.text.KeywordType
 import org.beobma.projectturngame.text.TextColorType
-import org.beobma.projectturngame.util.ResetType
 
-class HarmonyOfNatureCardPack {
+class CirculationCardPack {
     private val selectionFactordManager = SelectionFactordManager(DefaultSelectionFactordManager())
     private val playerManager = PlayerManager(DefaultPlayerManager())
     private val enemyManager = EnemyManager(DefaultEnemyManager())
     private val textManager = TextManager(DefaultTextManager())
     private val soundManager = SoundManager(DefaultSoundManager())
     private val cardManager = CardManager(DefaultCardManager())
+    private val utilManager = UtilManager(DefaultUtilManager())
     private val dictionary = Dictionary()
 
     init {
@@ -27,88 +26,93 @@ class HarmonyOfNatureCardPack {
     }
 
     private fun cardConfig() {
-        val cardPack = CardPack("자연의 조화",
+        val cardPack = CardPack("만물의 순환",
             listOf(
-                Component.text("서로 조화를 이루는 카드 팩."),
-                Component.text("여러가지 키워드를 지원한다.")
+                Component.text("패를 순환시키는 카드 팩."),
+                Component.text("기본적으로 카드를 버리고 효과를 얻는 카드들이 모여있다.")
             ), mutableListOf()
         )
 
-        //region sea Initialization
-        val sea = Card(
-            "바다", listOf(
-                Component.text("모든 아군의 체력을 5 회복시킨다.", TextColorType.Gray.textColor),
-                Component.text("이번 턴에 사용하는 '식물' 카드의 위력이 3 증가한다.", TextColorType.Gray.textColor),
-                Component.text("위 효과는 중첩되지 않는다.", TextColorType.DarkGray.textColor)
-            ), CardRarity.Uncommon, 1,
+        //region handCirculation Initialization
+        val handCirculation = Card(
+            "패 순환", listOf(
+                Component.text("패에서 '패 순환'을 제외한 무작위 카드 1장을 버리고, 덱에서 카드 2장을 뽑는다.", TextColorType.Gray.textColor)
+            ), CardRarity.Common, 0,
             { usePlayerData ->
-                selectionFactordManager.run {
-                    val target = usePlayerData.allTeamMembers(excludeSelf = true, includeDeceased = false)
+                val cardList = usePlayerData.hand.filter { it.name != "패 순환" }
 
-                    playerManager.run {
-                        target.forEach {
-                            it.heal(5, usePlayerData)
-                        }
-                        usePlayerData.addTag("seaTag", ResetType.TurnEnd)
-                    }
+                if (cardList.isEmpty()) {
+                    usePlayerData.player.sendMessage(textManager.cardUseFailText())
+                    return@Card false
                 }
-                return@Card true
-            }
-        )
-        //endregion
-
-        //region plants Initialization
-        val plants = Card(
-            "식물", listOf(
-                Component.text("바라보는 적에게 6의 피해를 입힌다.", TextColorType.Gray.textColor)
-            ), CardRarity.Common, 1,
-            { usePlayerData ->
-                selectionFactordManager.run {
-                    val player = usePlayerData.player
-                    val target = usePlayerData.focusOn()
-
-                    if (target !is Enemy) {
-                        val targetingFailText = textManager.targetingFailText()
-                        player.sendMessage(targetingFailText)
-                        soundManager.run { player.playTargetingFailSound() }
-                        return@Card false
-                    }
-
-                    if (player.scoreboardTags.contains("seaTag")) {
-                        enemyManager.run {
-                            target.damage(9, usePlayerData)
-                        }
-                    }
-                    else {
-                        enemyManager.run {
-                            target.damage(6, usePlayerData)
-                        }
-                    }
-                }
-                return@Card true
-            }
-        )
-        //endregion
-
-        //region sky Initialization
-        val sky = Card(
-            "하늘", listOf(
-                Component.text("카드를 2장 뽑는다.", TextColorType.Gray.textColor),
-                Component.text("이번 턴에 카드의 효과로 '비구름'을 뽑을 때, '낙뢰' 카드를 추가로 1장 생성하고 뽑는다.", TextColorType.Gray.textColor),
-                Component.text("위 효과는 중첩되지 않는다.", TextColorType.DarkGray.textColor),
-                Component.text("[ 낙뢰 | (1) | 휘발 ]: 모든 적에게 전격을 적용한다.", TextColorType.DarkGray.textColor),
-                dictionary.dictionaryList["휘발"]!!,
-                dictionary.dictionaryList["전격"]!!
-            ), CardRarity.Uncommon, 1,
-            { usePlayerData ->
                 cardManager.run {
+                    usePlayerData.cardThrow(cardList.random())
                     usePlayerData.drow(2)
                 }
 
-                playerManager.run {
-                    usePlayerData.addTag("skyTag", ResetType.TurnEnd)
+                return@Card true
+            }
+        )
+        //endregion
+
+        //region deckCirculation Initialization
+        val deckCirculation = Card(
+            "덱 순환", listOf(
+                Component.text("덱에서 '덱 순환'을 제외한 무작위 카드 1장을 제외하고, 묘지에서 무작위 카드 2장을 덱에 넣는다.", TextColorType.Gray.textColor)
+            ), CardRarity.Uncommon, 0,
+            { usePlayerData ->
+                val cardList = usePlayerData.deck.filter { it.name != "덱 순환" }
+
+                if (cardList.isEmpty()) {
+                    usePlayerData.player.sendMessage(textManager.cardUseFailText())
+                    return@Card false
+                }
+
+                cardManager.run {
+                    val card = cardList.random()
+                    usePlayerData.deck.remove(card)
+                    usePlayerData.banish.add(card)
+                    repeat(2) {
+                        usePlayerData.deck.add(usePlayerData.graveyard.random())
+                    }
+                }
+
+                return@Card true
+            }
+        )
+        //endregion
+
+        //region bigCirculation Initialization
+        val bigCirculation = Card(
+            "대순환", listOf(
+                KeywordType.SameCardDisappears.component,
+                KeywordType.Fix.component,
+                Component.text("패, 묘지, 제외된 카드들을 모두 덱으로 되돌리고 덱에서 카드 5장을 뽑는다.", TextColorType.Gray.textColor),
+                dictionary.dictionaryList["동일 카드 소멸"]!!,
+                dictionary.dictionaryList["고정"]!!
+            ), CardRarity.Legend, 1,
+            { usePlayerData ->
+                val cardList: MutableList<Card> = mutableListOf()
+
+                cardList.addAll(usePlayerData.banish)
+                cardList.addAll(usePlayerData.graveyard)
+                cardList.addAll(usePlayerData.hand)
+                cardManager.run {
+                    usePlayerData.addDeckCard(*cardList.toTypedArray())
+                    usePlayerData.clearHand()
+                    usePlayerData.clearGraveyard()
+                    usePlayerData.clearBanish()
+                }
+                cardManager.run {
+                    usePlayerData.drow(5)
                 }
                 return@Card true
+            },
+            { usePlayerData ->
+                cardManager.run {
+                    val card = findCard("대순환") ?: return@Card
+                    usePlayerData.extinction(card)
+                }
             }
         )
         //endregion

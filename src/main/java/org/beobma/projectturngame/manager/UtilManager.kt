@@ -21,6 +21,6 @@ class DefaultUtilManager : UtilHandler {
 
 class UtilManager(private val converter: UtilHandler) {
     fun Player.getScore(objective: String): Score {
-        return converter.run { this@getScore.getScore(objective) }
+        return converter.run { getScore(objective) }
     }
 }
