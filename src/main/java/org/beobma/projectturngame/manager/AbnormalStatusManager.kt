@@ -16,7 +16,7 @@ class DefaultHealthHandler : HealthHandler {
 
     override fun Player.addHealth(int: Int) {
         if (this.maxMana + int <= 0) {
-            playerManager.run { this@addHealth.death() }
+            playerManager.run { death() }
         }
         this.player.health += int
         this.health += int
@@ -24,7 +24,7 @@ class DefaultHealthHandler : HealthHandler {
 
     override fun Player.setHealth(int: Int) {
         if (int <= 0) {
-            playerManager.run { this@setHealth.death() }
+            playerManager.run { death() }
         }
         this.player.health = int.toDouble()
         this.health = int
@@ -33,10 +33,10 @@ class DefaultHealthHandler : HealthHandler {
 
 class HealthManager(private val converter: HealthHandler) {
     fun Player.addHealth(int: Int) {
-        converter.run { this@addHealth.addHealth(int) }
+        converter.run { addHealth(int) }
     }
     fun Player.setHealth(int: Int) {
-        converter.run { this@setHealth.setHealth(int) }
+        converter.run { setHealth(int) }
     }
 }
 

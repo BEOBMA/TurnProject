@@ -14,7 +14,6 @@ interface InventoryHandler {
     fun Player.openMapInventory(inventoryOpenType: InventoryOpenType)
     fun Player.openSectorInventory()
     fun Player.openCompensationInventory(cardList: List<Card>)
-    fun Player.openThrowInventory(i: Int)
 }
 
 class DefaultInventoryManager : InventoryHandler {
@@ -40,17 +39,6 @@ class DefaultInventoryManager : InventoryHandler {
         this.scoreboardTags.add("inventory_CardChoice")
         this.loadDeckToInventory()
         this.openInventory(inventory)
-    }
-
-    override fun Player.openThrowInventory(i: Int) {
-        val inventory = this.createPlayerHandThrowInventory()
-        val utilManager = UtilManager(DefaultUtilManager())
-
-        this.openInventory(inventory)
-        utilManager.run {
-            getScore("handThrowChoice").score = i
-        }
-        this.scoreboardTags.add("inventory_HandThrowChoice")
     }
 
 
@@ -111,22 +99,6 @@ class DefaultInventoryManager : InventoryHandler {
         game.gameMapInventory = inventory
     }
 
-    private fun Player.createPlayerHandThrowInventory(): Inventory {
-        val inventory: Inventory = Bukkit.createInventory(null, 27, Component.text("패"))
-        val game = Info.game?: return inventory
-        val playerData = game.playerDatas.find { it.player == this } ?: return inventory
-        val cardManager = CardManager(DefaultCardManager())
-
-        for (i in 0 until inventory.size) {
-            cardManager.run {
-                val item = playerData.hand[i].toItem()
-                inventory.setItem(i, item)
-            }
-        }
-
-        return inventory
-    }
-
     private fun createSectorInventory() {
         val game = Info.game ?: return
 
@@ -167,11 +139,10 @@ class DefaultInventoryManager : InventoryHandler {
 
 
         if (cardList.size > 3) {
-            cardManager.run {
-                inventory.setItem(11, cardList[0].toItem())
-                inventory.setItem(13, cardList[1].toItem())
-                inventory.setItem(15, cardList[2].toItem())
-            }
+        cardManager.run {
+            inventory.setItem(11, cardList[0].toItem())
+            inventory.setItem(13, cardList[1].toItem())
+            inventory.setItem(15, cardList[2].toItem())
         }
 
         return inventory
@@ -189,10 +160,6 @@ class InventoryManager(private val converter: InventoryHandler) {
 
     fun Player.openCompensationInventory(cardList: List<Card>) {
         converter.run { this@openCompensationInventory.openCompensationInventory(cardList) }
-    }
-
-    fun Player.openThrowInventory(i: Int) {
-        converter.run { this@openThrowInventory.openThrowInventory(i) }
     }
 }
 

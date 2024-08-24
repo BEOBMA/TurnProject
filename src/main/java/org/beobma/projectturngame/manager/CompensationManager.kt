@@ -16,25 +16,24 @@ class DefaultCompensationManager : CompensationHandler {
     override fun Player.normalReward() {
         val game = Info.game ?: return
         val inventoryManager = InventoryManager(DefaultInventoryManager())
-        val cardPack = game.gameCardPack.random()
-        val cardList = handleCardOperations(cardPack)
+        val cardPacks = game.gameCardPack
         inventoryManager.run {
-            this@normalReward.player.openCompensationInventory(cardList)
+            player.openCompensationInventory(cardPacks, CardRarity.Common)
         }
     }
 
     override fun Player.eliteReward() {
-        TODO("Not yet implemented")
+        val game = Info.game ?: return
+        val inventoryManager = InventoryManager(DefaultInventoryManager())
+        val cardPacks = game.gameCardPack
+        inventoryManager.run {
+            player.openCompensationInventory(cardPacks, CardRarity.Legend)
+        }
     }
 
     override fun Player.relicsReward() {
         TODO("Not yet implemented")
     }
-
-    private fun handleCardOperations(cardPack: CardPack, vararg rarities: CardRarity): List<Card> {
-        return cardPack.cardList.filter { it.rarity in rarities }.shuffled()
-    }
-
 }
 
 class CompensationManager(private val converter: CompensationHandler) {
