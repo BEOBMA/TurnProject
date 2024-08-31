@@ -28,17 +28,17 @@ class CirculationCardPack {
     private fun cardConfig() {
         val cardPack = CardPack("만물의 순환",
             listOf(
-                Component.text("패를 순환시키는 카드 팩."),
-                Component.text("기본적으로 카드를 버리고 효과를 얻는 카드들이 모여있다.")
+                Component.text("여러가지 자원을 순환시켜 게임을 유리하게 이끄는 효과가 가득하다.")
             ), mutableListOf()
         )
 
-        //region handCirculation Initialization
+        //region handCirculation Common Initialization
         val handCirculation = Card(
             "패 순환", listOf(
-                Component.text("패에서 '패 순환'을 제외한 무작위 카드 1장을 버리고, 덱에서 카드 2장을 뽑는다.", TextColorType.Gray.textColor)
+                Component.text("패에서 '패 순환'을 제외한 무작위 카드 1장을 버리고 발동할 수 있다.", TextColorType.Gray.textColor),
+                Component.text("덱에서 카드 2장을 뽑는다.", TextColorType.Gray.textColor)
             ), CardRarity.Common, 0,
-            { usePlayerData ->
+            { usePlayerData, _ ->
                 val cardList = usePlayerData.hand.filter { it.name != "패 순환" }
 
                 if (cardList.isEmpty()) {
@@ -55,12 +55,13 @@ class CirculationCardPack {
         )
         //endregion
 
-        //region deckCirculation Initialization
+        //region deckCirculation Uncommon Initialization
         val deckCirculation = Card(
             "덱 순환", listOf(
-                Component.text("덱에서 '덱 순환'을 제외한 무작위 카드 1장을 제외하고, 묘지에서 무작위 카드 2장을 덱에 넣는다.", TextColorType.Gray.textColor)
+                Component.text("덱에서 '덱 순환'을 제외한 무작위 카드 1장을 제외하고 발동할 수 있다.", TextColorType.Gray.textColor),
+                Component.text("묘지에서 무작위 카드 2장을 덱에 넣는다.", TextColorType.Gray.textColor)
             ), CardRarity.Uncommon, 0,
-            { usePlayerData ->
+            { usePlayerData, _ ->
                 val cardList = usePlayerData.deck.filter { it.name != "덱 순환" }
 
                 if (cardList.isEmpty()) {
@@ -74,6 +75,7 @@ class CirculationCardPack {
                     usePlayerData.banish.add(card)
                     repeat(2) {
                         usePlayerData.deck.add(usePlayerData.graveyard.random())
+                        usePlayerData.deck.shuffle()
                     }
                 }
 
@@ -82,7 +84,7 @@ class CirculationCardPack {
         )
         //endregion
 
-        //region bigCirculation Initialization
+        //region bigCirculation Legend Initialization
         val bigCirculation = Card(
             "대순환", listOf(
                 KeywordType.SameCardDisappears.component,
@@ -91,12 +93,15 @@ class CirculationCardPack {
                 dictionary.dictionaryList["동일 카드 소멸"]!!,
                 dictionary.dictionaryList["고정"]!!
             ), CardRarity.Legend, 1,
-            { usePlayerData ->
+            { usePlayerData, _ ->
                 val cardList: MutableList<Card> = mutableListOf()
 
                 cardList.addAll(usePlayerData.banish)
                 cardList.addAll(usePlayerData.graveyard)
                 cardList.addAll(usePlayerData.hand)
+
+                val removeCardList = cardList.filter { it.description.contains(KeywordType.Fix.component) }
+                cardList.removeAll(removeCardList)
                 cardManager.run {
                     usePlayerData.addDeckCard(*cardList.toTypedArray())
                     usePlayerData.clearHand()
@@ -108,90 +113,41 @@ class CirculationCardPack {
                 }
                 return@Card true
             },
-            { usePlayerData ->
+            { usePlayerData, card ->
                 cardManager.run {
-                    val card = findCard("대순환") ?: return@Card
                     usePlayerData.extinction(card)
                 }
             }
         )
         //endregion
 
-        //region rainCloud Initialization
-        val rainCloud = Card(
-            "비구름", listOf(
-                KeywordType.Volatilization.component,
-                Component.text("모든 적에게 ", TextColorType.Gray.textColor).append(KeywordType.Cloudy.component).append(Component.text("을 적용한다.", TextColorType.Gray.textColor)),
-                dictionary.dictionaryList["휘발"]!!,
-                dictionary.dictionaryList["흐림"]!!
+        //region manaCirculation Common Initialization
+        val manaCirculation = Card(
+            "마나 순환", listOf(
+                KeywordType.Mana.component.append(Component.text("를 1 회복한다.", TextColorType.Gray.textColor))
             ), CardRarity.Common, 0,
-            { usePlayerData ->
-                selectionFactordManager.run {
-                    val abnormalStatusManager = AbnormalStatusManager()
-                    val specialAbnormalStatusManager = abnormalStatusManager.createSpecialAbnormalStatusManager()
-                    val target = usePlayerData.allEnemyMembers()
-
-                    specialAbnormalStatusManager.run {
-                        target.forEach {
-                            it.addCloudy()
-                        }
-                    }
+            { usePlayerData, _ ->
+                playerManager.run {
+                    usePlayerData.addMana(1)
                 }
                 return@Card true
-            },
-            { usePlayerData ->
-                cardManager.run {
-                    val card = usePlayerData.graveyard.find { it.name == "비구름" }
-                    usePlayerData.graveyard.remove(card)
-                }
             }
         )
         //endregion
 
-        //region lightningStrike Initialization
-        val lightningStrike = Card(
-            "낙뢰", listOf(
-                KeywordType.Volatilization.component,
-                Component.text("모든 적에게 ", TextColorType.Gray.textColor).append(KeywordType.Electroshock.component).append(Component.text("를 적용한다.", TextColorType.Gray.textColor)),
-                dictionary.dictionaryList["휘발"]!!,
-                dictionary.dictionaryList["전격"]!!
-            ), CardRarity.Common, 1,
-            { usePlayerData ->
-                selectionFactordManager.run {
-                    val abnormalStatusManager = AbnormalStatusManager()
-                    val specialAbnormalStatusManager = abnormalStatusManager.createSpecialAbnormalStatusManager()
-                    val target = usePlayerData.allEnemyMembers()
-
-                    specialAbnormalStatusManager.run {
-                        target.forEach {
-                            it.addElectroshock()
-                        }
-                    }
-                }
-                return@Card true
-            },
-            { usePlayerData ->
-                cardManager.run {
-                    val card = usePlayerData.graveyard.find { it.name == "낙뢰" }
-                    usePlayerData.graveyard.remove(card)
-                }
-            }
-        )
-        //endregion
-
-        //region cloud Initialization
-        val cloud = Card(
-            "구름", listOf(
-                Component.text("'비구름' 카드 1장을 생성하고, 패에 넣는다.", TextColorType.Gray.textColor),
-                Component.text("[ 비구름 | (0) | 휘발 ]: 모든 적에게 흐림을 적용한다.", TextColorType.DarkGray.textColor),
-                dictionary.dictionaryList["휘발"]!!,
-                dictionary.dictionaryList["흐림"]!!
-            ), CardRarity.Common, 1,
-            { usePlayerData ->
-                cardManager.run {
-                    usePlayerData.getCard(rainCloud)
-                    if (usePlayerData.player.scoreboardTags.contains("skyTag")) {
-                        usePlayerData.getCard(lightningStrike)
+        //region borrowedTime Common Initialization
+        val borrowedTime = Card(
+            "빌려온 시간", listOf(
+                KeywordType.Mana.component.append(Component.text("를 2 회복한다.", TextColorType.Gray.textColor)),
+                Component.text("다음 턴 시작 시 ", TextColorType.Gray.textColor).append(KeywordType.Mana.component.append(
+                    Component.text("를 0으로 만든다.", TextColorType.Gray.textColor)
+                ))
+            ), CardRarity.Common, 0,
+            { usePlayerData, _ ->
+                playerManager.run {
+                    usePlayerData.addMana(2)
+                    usePlayerData.turnStartUnit.add {
+                        usePlayerData.setMana(0)
                     }
                 }
                 return@Card true
@@ -199,28 +155,150 @@ class CirculationCardPack {
         )
         //endregion
 
-        //region cloud Initialization
-        val ground = Card(
-            "대지", listOf(
-                Component.text("모든 적에게 ", TextColorType.Gray.textColor),
-                Component.text("[ 비구름 | (0) | 휘발 ]: 모든 적에게 흐림을 적용한다.", TextColorType.DarkGray.textColor),
-                dictionary.dictionaryList["휘발"]!!,
-                dictionary.dictionaryList["흐림"]!!
-            ), CardRarity.Common, 1,
-            { usePlayerData ->
+        //region reverseCycle Uncommon Initialization
+        val reverseCycle = Card(
+            "역순환", listOf(
+                Component.text("덱에서 카드 3장을 뽑는다.", TextColorType.Gray.textColor),
+                Component.text("패에서 무작위 카드 1장을 버린다.", TextColorType.Gray.textColor),
+            ), CardRarity.Uncommon, 1,
+            { usePlayerData, _ ->
                 cardManager.run {
-                    usePlayerData.getCard(rainCloud)
-                    if (usePlayerData.player.scoreboardTags.contains("skyTag")) {
-                        usePlayerData.getCard(lightningStrike)
-                    }
+                    usePlayerData.drow(3)
+                    usePlayerData.cardThrow(usePlayerData.hand.random())
                 }
                 return@Card true
             }
         )
         //endregion
+
+        //region balance Uncommon Initialization
+        val balance = Card(
+            "균형", listOf(
+                Component.text("자신의 패가 비어있을 경우에 발동할 수 있다.", TextColorType.Gray.textColor),
+                Component.text("덱에서 카드 3장을 뽑는다.", TextColorType.Gray.textColor)
+            ), CardRarity.Uncommon, 1,
+            { usePlayerData, _ ->
+                if (usePlayerData.hand.isNotEmpty()) {
+                    usePlayerData.player.sendMessage(textManager.cardUseFailText())
+                    return@Card false
+                }
+
+                cardManager.run {
+                    usePlayerData.drow(3)
+                }
+                return@Card true
+            }
+        )
+        //endregion
+
+        //region imbalance Uncommon Initialization
+        val imbalance = Card(
+            "불균형", listOf(
+                Component.text("패의 카드를 모두 버린다.", TextColorType.Gray.textColor)
+            ), CardRarity.Uncommon, 1,
+            { usePlayerData, _ ->
+                cardManager.run {
+                    usePlayerData.cardThrow(*usePlayerData.hand.toTypedArray())
+                }
+                return@Card true
+            }
+        )
+        //endregion
+
+        //region brokenBalance Rare Initialization
+        val brokenBalance = Card(
+            "깨진 균형", listOf(
+                Component.text("뽑을 수 있는 만큼 덱에서 카드를 뽑는다.", TextColorType.Gray.textColor),
+                Component.text("뽑은 후 덱에 남은 카드를 모두 제외한다.", TextColorType.Gray.textColor)
+            ), CardRarity.Rare, 1,
+            { usePlayerData, _ ->
+                cardManager.run {
+                    val handSize = (usePlayerData.hand.size - 8) * -1
+
+                    cardManager.run {
+                        usePlayerData.drow(handSize)
+                        usePlayerData.banish.addAll(filterIsMoveCard(*usePlayerData.deck.toTypedArray()))
+                        usePlayerData.clearDeck()
+                    }
+
+
+                }
+                return@Card true
+            }
+        )
+        //endregion
+
+        //region rotation Rare Initialization
+        val rotation = Card(
+            "회전", listOf(
+                Component.text("패의 카드를 모두 덱으로 되돌리고 덱을 섞는다.", TextColorType.Gray.textColor),
+                Component.text("되돌린 카드의 수 만큼 덱에서 카드를 뽑는다.", TextColorType.Gray.textColor)
+            ), CardRarity.Rare, 1,
+            { usePlayerData, _ ->
+                cardManager.run {
+                    val handSize = (usePlayerData.hand.size - 8) * -1
+
+                    cardManager.run {
+                        usePlayerData.deck.addAll(filterIsMoveCard(*usePlayerData.hand.toTypedArray()))
+                        usePlayerData.deck.shuffle()
+                        usePlayerData.clearHand()
+                        usePlayerData.drow(handSize)
+                    }
+
+
+                }
+                return@Card true
+            }
+        )
+        //endregion
+
+        //region lifeCycle Rare Initialization
+        val lifeCycle = Card(
+            "생명의 순환", listOf(
+                Component.text("체력을 12 회복한다.", TextColorType.Gray.textColor)
+            ), CardRarity.Rare, 2,
+            { usePlayerData, _ ->
+                playerManager.run {
+                    usePlayerData.heal(12, usePlayerData)
+                }
+                return@Card true
+            }
+        )
+        //endregion
+
+
+
 
         cardPack.cardList.addAll(
             listOf(
+                handCirculation,
+                handCirculation,
+                handCirculation,
+                deckCirculation,
+                deckCirculation,
+                deckCirculation,
+                bigCirculation,
+                manaCirculation,
+                manaCirculation,
+                manaCirculation,
+                borrowedTime,
+                borrowedTime,
+                borrowedTime,
+                reverseCycle,
+                reverseCycle,
+                reverseCycle,
+                balance,
+                balance,
+                balance,
+                imbalance,
+                imbalance,
+                imbalance,
+                brokenBalance,
+                brokenBalance,
+                rotation,
+                rotation,
+                lifeCycle,
+                lifeCycle
             )
         )
 
