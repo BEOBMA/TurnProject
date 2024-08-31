@@ -23,9 +23,12 @@ interface CardHandler {
     fun Player.clearHand()
     fun Player.clearGraveyard()
     fun Player.clearBanish()
+    fun Player.clearDeck()
+    fun Player.cardBanish(vararg card: Card)
 
     fun Player.extinction(card: Card)
 
+    fun filterIsMoveCard(vararg card: Card): List<Card>
     fun findCard(name: String): Card?
     fun Card.toItem(): ItemStack
     fun ItemStack.toCard(): Card
@@ -66,11 +69,11 @@ class DefaultCardManager : CardHandler {
 
     override fun Player.cardThrow(vararg card: Card) {
         card.forEach {
-            if (it.description.contains(KeywordType.Fix.component)) {
-                return
+            if (!it.description.contains(KeywordType.Fix.component)) {
+                this.hand.remove(it)
             }
-            this.hand.remove(it)
         }
+        applyHotbar()
     }
 
     override fun Player.getCard(vararg card: Card) {
@@ -96,22 +99,43 @@ class DefaultCardManager : CardHandler {
     }
 
     override fun Player.clearHand() {
-        val cardList = this.hand.filter { !it.description.contains(KeywordType.Fix.component) }
+        val cardList = filterIsMoveCard(*this.hand.toTypedArray())
         this.hand.removeAll(cardList)
+        applyHotbar()
     }
 
     override fun Player.clearGraveyard() {
-        val cardList = this.graveyard.filter { !it.description.contains(KeywordType.Fix.component) }
+        val cardList = filterIsMoveCard(*this.graveyard.toTypedArray())
         this.graveyard.removeAll(cardList)
     }
 
     override fun Player.clearBanish() {
-        val cardList = this.banish.filter { !it.description.contains(KeywordType.Fix.component) }
+        val cardList = filterIsMoveCard(*this.banish.toTypedArray())
         this.banish.removeAll(cardList)
+    }
+
+    override fun Player.clearDeck() {
+        val cardList = filterIsMoveCard(*this.deck.toTypedArray())
+        this.deck.removeAll(cardList)
+    }
+
+    override fun Player.cardBanish(vararg card: Card) {
+        card.forEach {
+            if (!it.description.contains(KeywordType.Fix.component)) {
+                this.hand
+                this.hand.remove(it)
+            }
+        }
+        applyHotbar()
     }
 
     override fun Player.extinction(card: Card) {
         this.graveyard.remove(card)
+    }
+
+    override fun filterIsMoveCard(vararg card: Card): List<Card> {
+        val cardList = card.filter { !it.description.contains(KeywordType.Fix.component) }
+        return cardList
     }
 
     override fun findCard(name: String): Card? {
@@ -216,11 +240,23 @@ class CardManager(private val converter: CardHandler) {
         converter.run { clearBanish() }
     }
 
+    fun Player.clearDeck() {
+        converter.run { clearDeck() }
+    }
+
     fun Player.extinction(card: Card) {
         converter.run { extinction(card) }
     }
 
     fun findCard(name: String): Card? {
         return converter.run { findCard(name) }
+    }
+
+    fun Player.cardBanish(vararg card: Card) {
+        converter.run { cardBanish(*card) }
+    }
+
+    fun filterIsMoveCard(vararg card: Card): List<Card> {
+        return converter.run { filterIsMoveCard(*card) }
     }
 }
