@@ -53,7 +53,6 @@ class DefaultGameManager : GameHandler {
         broadcastDelayedMessages(
             listOf(
                 Component.text("[!] 해당 플러그인과 맵은 BEOBMA에 의해 개발되었습니다.").decorate(TextDecoration.BOLD),
-                Component.text("[!] 해당 플러그인에 대한 무단 수정, 배포 등을 금지합니다.").decorate(TextDecoration.BOLD),
                 Component.text("[!] 잠시 후 게임에 등장할 카드 팩을 뽑습니다.").decorate(TextDecoration.BOLD),
                 Component.text("[!] 등장할 카드 팩:").decorate(TextDecoration.BOLD)
             )
