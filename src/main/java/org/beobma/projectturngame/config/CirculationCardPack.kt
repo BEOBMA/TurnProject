@@ -89,7 +89,9 @@ class CirculationCardPack {
             "대순환", listOf(
                 KeywordType.SameCardDisappears.component,
                 KeywordType.Fix.component,
+                Component.text(""),
                 Component.text("패, 묘지, 제외된 카드들을 모두 덱으로 되돌리고 덱에서 카드 5장을 뽑는다.", TextColorType.Gray.textColor),
+                Component.text(""),
                 dictionary.dictionaryList["동일 카드 소멸"]!!,
                 dictionary.dictionaryList["고정"]!!
             ), CardRarity.Legend, 1,

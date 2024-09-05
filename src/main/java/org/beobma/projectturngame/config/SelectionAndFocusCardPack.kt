@@ -36,7 +36,9 @@ class SelectionAndFocusCardPack {
         val sacrifice = Card(
             "희생", listOf(
                 KeywordType.NotAvailable.component,
+                Component.text(""),
                 Component.text("이 카드가 버려지면 카드를 1장 뽑는다.", TextColorType.Gray.textColor),
+                Component.text(""),
                 dictionary.dictionaryList["사용 불가"]!!
             ), CardRarity.Common, 0, null, null,
             { usePlayerData, _ ->
@@ -51,7 +53,9 @@ class SelectionAndFocusCardPack {
         val equivalentExchange = Card(
             "등가교환", listOf(
                 KeywordType.NotAvailable.component,
+                Component.text(""),
                 Component.text("이 카드가 버려지면 ", TextColorType.Gray.textColor).append(KeywordType.Mana.component.append(Component.text("를 1 회복한다.", TextColorType.Gray.textColor))),
+                Component.text(""),
                 dictionary.dictionaryList["사용 불가"]!!
             ), CardRarity.Common, 0, null, null,
             { usePlayerData, _ ->
@@ -66,7 +70,9 @@ class SelectionAndFocusCardPack {
         val protectiveSelling = Card(
             "보호적 매도", listOf(
                 KeywordType.NotAvailable.component,
+                Component.text(""),
                 Component.text("이 카드가 버려지면 5의 피해를 막는 ", TextColorType.Gray.textColor).append(KeywordType.Shield.component.append(Component.text("을 얻는다.", TextColorType.Gray.textColor))),
+                Component.text(""),
                 dictionary.dictionaryList["사용 불가"]!!,
                 dictionary.dictionaryList["보호막"]!!
             ), CardRarity.Common, 0, null, null,
