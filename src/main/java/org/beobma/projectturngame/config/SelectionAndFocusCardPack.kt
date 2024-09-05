@@ -82,6 +82,15 @@ class SelectionAndFocusCardPack {
 
         cardPack.cardList.addAll(
             listOf(
+                sacrifice,
+                sacrifice,
+                sacrifice,
+                equivalentExchange,
+                equivalentExchange,
+                equivalentExchange,
+                protectiveSelling,
+                protectiveSelling,
+                protectiveSelling,
             )
         )
 
