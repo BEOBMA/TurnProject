@@ -26,6 +26,12 @@ class Dictionary {
             "전격", KeywordType.Electroshock.component.append(Component.text(": ", TextColorType.Gray.textColor).append(KeywordType.Cloudy.component.append(Component.text(" 상태이상과 동시에 존재한다면, 두 상태이상을 제거하고 18의 고정 피해를 입는다.", TextColorType.Gray.textColor))) )
         ), Pair(
             "고정", KeywordType.Fix.component.append(Component.text(": 카드의 효과로 카드가 이동되지 않는다. (만약, 해당 효과가 카드 사용의 조건인 경우 조건을 만족한 것으로 간주한다.)", TextColorType.Gray.textColor))
+        ), Pair(
+            "사용 불가", KeywordType.NotAvailable.component.append(Component.text(": 사용할 수 없다.", TextColorType.Gray.textColor))
+        ), Pair(
+            "보호막", KeywordType.Shield.component.append(Component.text(": 피해를 받을 때, 수치만큼 피해를 경감하고 경감한 수치 만큼 보호막을 제거한다.", TextColorType.Gray.textColor))
+        ), Pair(
+            "고정 피해", KeywordType.TrueDamage.component.append(Component.text(": 모든 피해 계산을 무시하고 수치 그대로의 피해를 입힌다.", TextColorType.Gray.textColor))
         )
     )
 }

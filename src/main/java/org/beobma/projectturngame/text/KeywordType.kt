@@ -14,5 +14,8 @@ enum class KeywordType(val component: Component) {
     Cloudy(Component.text("흐림", TextColorType.Aqua.textColor).decorate(TextDecoration.BOLD)),
     Electroshock(Component.text("전격", TextColorType.Yellow.textColor).decorate(TextDecoration.BOLD)),
     Nutrients(Component.text("양분", TextColorType.Green.textColor).decorate(TextDecoration.BOLD)),
-    Fix(Component.text("고정", TextColorType.DarkGray.textColor).decorate(TextDecoration.BOLD))
+    Fix(Component.text("고정", TextColorType.DarkGray.textColor).decorate(TextDecoration.BOLD)),
+    NotAvailable(Component.text("사용 불가", TextColorType.Red.textColor).decorate(TextDecoration.BOLD)),
+    Shield(Component.text("보호막", TextColorType.Aqua.textColor).decorate(TextDecoration.BOLD)),
+    TrueDamage(Component.text("고정 피해", TextColorType.White.textColor).decorate(TextDecoration.BOLD))
 }
