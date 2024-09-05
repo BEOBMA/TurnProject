@@ -16,6 +16,8 @@ interface PlayerHandler {
     fun Player.setMana(int: Int)
     fun Player.addMana(int: Int)
 
+    fun Player.addShield(int: Int)
+
     fun Player.damage(damage: Int, attacker: Enemy?, isTrueDamage: Boolean = false)
     fun Player.heal(damage: Int, healer: Player)
     fun Player.death()
@@ -87,37 +89,73 @@ class DefaultPlayerManager : PlayerHandler {
         this.applyScoreboard()
     }
 
+    override fun Player.addShield(int: Int) {
+        this.shield += int
+
+        // 보호막 수치가 0 미만인 경우
+        if (this.shield < 0) {
+            this.shield = 0
+        }
+    }
+
     override fun Player.damage(damage: Int, attacker: Enemy?, isTrueDamage: Boolean) {
+        // 대상이 이미 사망한 경우
         if (this.isDead) return
 
         var finalDamage = damage
 
-        if (isTrueDamage) {
+        // 고정 피해가 아닌 경우
+        if (!isTrueDamage) {
             // 피해 계산 추가
         }
 
+        // 대상의 보호막 수치가 1 이상인 경우
+        if (this.shield > 0) {
+            // 최종 피해가 보호막 수치보다 이상일 경우
+            if (finalDamage >= this.shield) {
+                finalDamage -= this.shield
+                this.shield = 0
+            }
+            // 최종 피해가 보호막 수치보다 미만일 경우
+            else {
+                this.shield -= finalDamage
+                finalDamage = 0
+            }
+        }
+
+        // 최종 피해가 0 이하인 경우
         if (finalDamage <= 0) return
+
+        // 초과 피해
         if (this.health - finalDamage <= 0) {
             this.death()
             return
         }
 
+        // 일반 피해
         this.health -= finalDamage
         this.player.damage(finalDamage.toDouble(), attacker?.entity)
     }
 
     override fun Player.heal(damage: Int, healer: Player) {
+        // 대상이 이미 사망한 경우
         if (this.isDead) return
 
         var finalHealDamage = damage
 
+        // 회복량 계산
+
+        // 최종 회복량이 0 이하인 경우
         if (finalHealDamage <= 0) return
+
+        // 초과 회복
         if (this.health + finalHealDamage > this.maxHealth) {
             this.health = this.maxHealth
             this.player.health = this.maxHealth.toDouble()
             return
         }
 
+        // 일반 회복
         this.health += finalHealDamage
         this.player.health += finalHealDamage
     }
@@ -157,6 +195,8 @@ class DefaultPlayerManager : PlayerHandler {
             None -> return
             TurnEnd -> game.turnEndUnit.add { this.player.scoreboardTags.remove(tag) }
             BattleEnd -> game.battleEndUnit.add { this.player.scoreboardTags.remove(tag) }
+            CardUseEnd -> TODO()
+            SectorEnd -> TODO()
         }
     }
 
@@ -222,5 +262,9 @@ class PlayerManager(private val converter: PlayerHandler) {
 
     fun Player.damage(damage: Int, attacker: Enemy?, isTrueDamage: Boolean = false) {
         converter.run { damage(damage, attacker, isTrueDamage) }
+    }
+
+    fun Player.addShield(int: Int) {
+        converter.run { addShield(int) }
     }
 }

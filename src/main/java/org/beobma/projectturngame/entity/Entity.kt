@@ -6,5 +6,6 @@ open class Entity(
     var health: Int,
     val speed: Int,
     var isDead: Boolean = false,
-    val abnormalityStatus: MutableMap<String, Int> = mutableMapOf()
+    val abnormalityStatus: MutableMap<String, Int> = mutableMapOf(),
+    var shield: Int = 0
 )

@@ -69,20 +69,40 @@ class DefaultEnemyManager : EnemyHandler{
     }
 
     override fun Enemy.damage(damage: Int, attacker: Player?, isTrueDamage: Boolean) {
+        // 대상이 이미 사망한 경우
         if (this.isDead) return
 
         var finalDamage = damage
 
-        if (isTrueDamage) {
+        // 고정 피해가 아닌 경우
+        if (!isTrueDamage) {
             // 피해 계산 추가
         }
 
+        // 대상의 보호막 수치가 1 이상인 경우
+        if (this.shield > 0) {
+            // 최종 피해가 보호막 수치보다 이상일 경우
+            if (finalDamage >= this.shield) {
+                finalDamage -= this.shield
+                this.shield = 0
+            }
+            // 최종 피해가 보호막 수치보다 미만일 경우
+            else {
+                this.shield -= finalDamage
+                finalDamage = 0
+            }
+        }
+
+        // 최종 피해가 0 이하인 경우
         if (finalDamage <= 0) return
+
+        // 초과 피해
         if (this.health - finalDamage <= 0) {
             this.death()
             return
         }
 
+        // 일반 피해
         this.health -= finalDamage
         this.entity.damage(finalDamage.toDouble(), attacker?.player)
         entity.apply {
