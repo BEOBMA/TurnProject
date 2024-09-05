@@ -28,7 +28,7 @@ class CirculationCardPack {
     private fun cardConfig() {
         val cardPack = CardPack("만물의 순환",
             listOf(
-                Component.text("여러가지 자원을 순환시켜 게임을 유리하게 이끄는 효과가 가득하다.")
+                Component.text("만물의 모든 것은 순환하기 마련이다.")
             ), mutableListOf()
         )
 
