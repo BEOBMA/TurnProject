@@ -40,12 +40,6 @@ class OnInventoryClickEvent : Listener {
             return
         }
 
-        if (player.scoreboardTags.contains("inventory_HandThrowChoice")) {
-            handThrowChoiceHandler(game, clickItem, player)
-            event.isCancelled = true
-            return
-        }
-
         event.isCancelled = true
     }
 
@@ -179,27 +173,6 @@ class OnInventoryClickEvent : Listener {
         if (game.players.none { it.scoreboardTags.contains("inventory_MapChoice") }) {
             gameManager.run {
                 game.nextSector()
-            }
-        }
-    }
-
-    private fun handThrowChoiceHandler(game: Game, clickItem: ItemStack, player: Player) {
-        val inventoryManager = InventoryManager(DefaultInventoryManager())
-        val utilManager = UtilManager(DefaultUtilManager())
-        val cardManager = CardManager(DefaultCardManager())
-        val card = cardManager.run { cardList.find { it.toItem() == clickItem } } ?: return
-        val playerData = game.playerDatas.find { it.player == player } ?: return
-
-        playerData.deck.add(card)
-        player.scoreboardTags.remove("inventory_GandChoice")
-        player.inventory.clear()
-        player.closeInventory()
-        utilManager.run {
-            player.getScore("handThrowChoice").score--
-            if (player.getScore("handThrowChoice").score > 0) {
-                inventoryManager.run {
-                    player.openThrowInventory(player.getScore("handThrowChoice").score)
-                }
             }
         }
     }
