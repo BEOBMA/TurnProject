@@ -2,12 +2,15 @@ package org.beobma.projectturngame.command
 
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
-import org.beobma.projectturngame.localization.Dictionary
+import org.beobma.projectturngame.config.CardConfig.Companion.cardList
 import org.beobma.projectturngame.game.Game
 import org.beobma.projectturngame.game.GameDifficulty
 import org.beobma.projectturngame.game.GameField
 import org.beobma.projectturngame.game.GameType
 import org.beobma.projectturngame.info.Info
+import org.beobma.projectturngame.localization.Dictionary
+import org.beobma.projectturngame.manager.CardManager
+import org.beobma.projectturngame.manager.DefaultCardManager
 import org.beobma.projectturngame.manager.DefaultGameManager
 import org.beobma.projectturngame.manager.GameManager
 import org.beobma.projectturngame.text.TextColorType
@@ -132,6 +135,31 @@ class Command : Listener, CommandExecutor, TabCompleter {
                     }
 
                     sender.sendMessage(definition)
+                    return true
+                }
+
+                "get" -> {
+                    if (args.size < 2) {
+                        sender.sendMessage(
+                            Component.text("[!] 가져올 카드의 이름을 제공해주세요.", TextColorType.Red.textColor)
+                                .decorate(TextDecoration.BOLD)
+                        )
+                        return false
+                    }
+
+                    val key = args.drop(1).joinToString(" ").trim()
+
+                    val definition = cardList.find { it.name.trim() == key }
+                    if (definition == null) {
+                        sender.sendMessage(
+                            Component.text("[!] '$key' 이름을 가진 카드가 존재하지 않습니다.", TextColorType.Red.textColor)
+                                .decorate(TextDecoration.BOLD)
+                        )
+                        return false
+                    }
+
+                    val cardManager = CardManager(DefaultCardManager())
+                    sender.inventory.addItem(cardManager.run { definition.toItem() })
                     return true
                 }
 
