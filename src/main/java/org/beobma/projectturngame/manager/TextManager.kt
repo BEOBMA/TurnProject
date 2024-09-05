@@ -9,6 +9,7 @@ interface TextHandler {
     fun targetingFailText(): Component
     fun manaFailText(): Component
     fun cardUseFailText(): Component
+    fun cardNotAvailableText(): Component
 }
 
 class DefaultTextManager : TextHandler {
@@ -25,6 +26,10 @@ class DefaultTextManager : TextHandler {
     override fun cardUseFailText(): Component {
         return Component.text("[!] 카드 사용의 조건을 만족하지 않아 카드를 사용할 수 없습니다.", TextColorType.Red.textColor).decorate(TextDecoration.BOLD)
     }
+
+    override fun cardNotAvailableText(): Component {
+        return Component.text("[!] 사용 불가 효과가 적용된 카드는 사용할 수 없습니다.", TextColorType.Red.textColor).decorate(TextDecoration.BOLD)
+    }
 }
 
 class TextManager(private val converter: TextHandler) {
@@ -38,5 +43,9 @@ class TextManager(private val converter: TextHandler) {
 
     fun cardUseFailText(): Component {
         return converter.run { cardUseFailText() }
+    }
+
+    fun cardNotAvailableText(): Component {
+        return converter.run { cardNotAvailableText() }
     }
 }
