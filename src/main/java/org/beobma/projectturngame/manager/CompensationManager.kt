@@ -1,8 +1,5 @@
 package org.beobma.projectturngame.manager
 
-import org.beobma.projectturngame.card.Card
-import org.beobma.projectturngame.card.CardPack
-import org.beobma.projectturngame.card.CardRarity
 import org.beobma.projectturngame.entity.player.Player
 import org.beobma.projectturngame.info.Info
 
@@ -18,7 +15,7 @@ class DefaultCompensationManager : CompensationHandler {
         val inventoryManager = InventoryManager(DefaultInventoryManager())
         val cardPacks = game.gameCardPack
         inventoryManager.run {
-            player.openCompensationInventory(cardPacks, CardRarity.Common)
+            player.openCompensationInventory(cardPacks.random().cardList)
         }
     }
 
@@ -27,7 +24,7 @@ class DefaultCompensationManager : CompensationHandler {
         val inventoryManager = InventoryManager(DefaultInventoryManager())
         val cardPacks = game.gameCardPack
         inventoryManager.run {
-            player.openCompensationInventory(cardPacks, CardRarity.Legend)
+            player.openCompensationInventory(cardPacks.random().cardList)
         }
     }
 
