@@ -25,7 +25,6 @@ interface CardHandler {
     fun Player.clearBanish()
     fun Player.clearDeck()
     fun Player.cardBanish(vararg card: Card)
-
     fun Player.extinction(card: Card)
 
     fun filterIsMoveCard(vararg card: Card): List<Card>
@@ -37,11 +36,23 @@ interface CardHandler {
 
 class DefaultCardManager : CardHandler {
     override fun Player.use(card: Card) {
-        if (card.cardUseEffect == null) return
+        val textManager = TextManager(DefaultTextManager())
         val playerManager = PlayerManager(DefaultPlayerManager())
 
+        // 사용 불가
+        if (card.description.contains(KeywordType.NotAvailable.component)) {
+            this.player.sendMessage(textManager.cardNotAvailableText())
+            return
+        }
+
+        // 사용 시 효과가 없는 경우
+        if (card.cardUseEffect == null) return
         val isUsing = card.cardUseEffect.invoke(this@use, card)
+
+        // 카드 사용에 실패한 경우
         if (!isUsing) return
+
+        // 카드 사용에 성공한 경우
         this.hand.remove(card)
         playerManager.run { this@use.addMana(-(card.cost)) }
         card.postCardUseEffect?.invoke(this@use, card)
@@ -69,9 +80,13 @@ class DefaultCardManager : CardHandler {
 
     override fun Player.cardThrow(vararg card: Card) {
         card.forEach {
-            if (!it.description.contains(KeywordType.Fix.component)) {
-                this.hand.remove(it)
+            // 고정 효과가 적용된 경우
+            if (it.description.contains(KeywordType.Fix.component)) {
+                return@forEach
             }
+
+            it.cardThrowEffect?.invoke(this, it)
+            this.hand.remove(it)
         }
         applyHotbar()
     }
@@ -122,7 +137,6 @@ class DefaultCardManager : CardHandler {
     override fun Player.cardBanish(vararg card: Card) {
         card.forEach {
             if (!it.description.contains(KeywordType.Fix.component)) {
-                this.hand
                 this.hand.remove(it)
             }
         }
