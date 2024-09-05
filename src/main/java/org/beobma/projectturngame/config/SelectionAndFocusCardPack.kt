@@ -6,6 +6,7 @@ import org.beobma.projectturngame.card.CardPack
 import org.beobma.projectturngame.card.CardRarity
 import org.beobma.projectturngame.config.CardConfig.Companion.cardList
 import org.beobma.projectturngame.config.CardConfig.Companion.cardPackList
+import org.beobma.projectturngame.entity.enemy.Enemy
 import org.beobma.projectturngame.localization.Dictionary
 import org.beobma.projectturngame.manager.*
 import org.beobma.projectturngame.text.KeywordType
@@ -84,6 +85,210 @@ class SelectionAndFocusCardPack {
         )
         //endregion
 
+        //region sacrificialChoice Uncommon Initialization
+        val sacrificialChoice = Card(
+            "희생적 선택", listOf(
+                Component.text("패에서 '희생적 선택'을 제외한 무작위 카드 1장을 버리고 발동할 수 있다.", TextColorType.Gray.textColor),
+                Component.text("바라보는 적에게 20의 피해를 입힌다.", TextColorType.Gray.textColor),
+                Component.text(""),
+                Component.text("단, 버려졌을 때 효과가 있는 카드를 우선하여 버린다.", TextColorType.DarkGray.textColor),
+            ), CardRarity.Uncommon, 1, { usePlayerData, _ ->
+                selectionFactordManager.run {
+                    val player = usePlayerData.player
+                    val target = usePlayerData.focusOn()
+
+                    if (target !is Enemy) {
+                        player.sendMessage(textManager.targetingFailText())
+                        soundManager.run { player.playTargetingFailSound() }
+                        return@Card false
+                    }
+
+                    val cardList = usePlayerData.hand.filter { it.name != "희생적 선택" }
+
+                    if (cardList.isEmpty()) {
+                        player.sendMessage(textManager.cardUseFailText())
+                        return@Card false
+                    }
+
+                    val cardToDiscard = cardList.firstOrNull { it.cardThrowEffect != null } ?: cardList.random()
+
+                    cardManager.run {
+                        usePlayerData.cardThrow(cardToDiscard)
+                    }
+
+                    enemyManager.run {
+                        target.damage(20, usePlayerData)
+                    }
+                    return@Card true
+                }
+            }
+        )
+        //endregion
+
+        //region totalLoss Uncommon Initialization
+        val totalLoss = Card(
+            "총체적 손실", listOf(
+                Component.text("패에서 '총체적 손실'을 제외한 무작위 카드 3장을 버리고 발동할 수 있다.", TextColorType.Gray.textColor),
+                Component.text("모든 적에게 10의 피해를 입힌다.", TextColorType.Gray.textColor)
+            ), CardRarity.Uncommon, 1, { usePlayerData, _ ->
+                selectionFactordManager.run {
+                    val player = usePlayerData.player
+                    val target = usePlayerData.allEnemyMembers()
+
+                    val cardList = usePlayerData.hand.filter { it.name != "총체적 손실" }
+
+                    if (cardList.size < 3) {
+                        player.sendMessage(textManager.cardUseFailText())
+                        return@Card false
+                    }
+
+                    val finalCardList = cardList.shuffled()
+                    cardManager.run {
+                        usePlayerData.cardThrow(finalCardList[0])
+                        usePlayerData.cardThrow(finalCardList[1])
+                        usePlayerData.cardThrow(finalCardList[2])
+                    }
+
+                    enemyManager.run {
+                        target.forEach {
+                            it.damage(10, usePlayerData)
+                        }
+                    }
+                    return@Card true
+                }
+            }
+        )
+        //endregion
+
+        //region liquidationOfTotalAssets Uncommon Initialization
+        val liquidationOfTotalAssets = Card(
+            "총자산 청산", listOf(
+                Component.text("패의 모든 카드를 버리고 발동할 수 있다.", TextColorType.Gray.textColor),
+                Component.text("바라보는 적에게 40의 피해를 입힌다.", TextColorType.Gray.textColor)
+            ), CardRarity.Uncommon, 2, { usePlayerData, card ->
+                selectionFactordManager.run {
+                    val player = usePlayerData.player
+                    val target = usePlayerData.focusOn()
+
+                    if (target !is Enemy) {
+                        player.sendMessage(textManager.targetingFailText())
+                        soundManager.run { player.playTargetingFailSound() }
+                        return@Card false
+                    }
+
+                    val cardList = usePlayerData.hand.filter { it !== card }
+
+                    cardManager.run {
+                        usePlayerData.cardThrow(*cardList.toTypedArray())
+                    }
+
+                    enemyManager.run {
+                        target.damage(40, usePlayerData)
+                    }
+                    return@Card true
+                }
+            }
+        )
+        //endregion
+
+        //region coerciveBurden Rare Initialization
+        val coerciveBurden = Card(
+            "강제적 부담", listOf(
+                KeywordType.NotAvailable.component,
+                Component.text(""),
+                Component.text("이 카드가 버려지면 모든 적은 3의 ", TextColorType.Gray.textColor).append(KeywordType.NotAvailable.component.append(Component.text("를 입는다.", TextColorType.Gray.textColor))),
+                Component.text(""),
+                dictionary.dictionaryList["사용 불가"]!!,
+                dictionary.dictionaryList["고정 피해"]!!,
+            ), CardRarity.Rare, 0, null, null,
+            { usePlayerData, _ ->
+                selectionFactordManager.run {
+                    val enemys = usePlayerData.allEnemyMembers()
+
+                    enemyManager.run {
+                        enemys.forEach {
+                            it.damage(3, usePlayerData, true)
+                        }
+                    }
+                }
+            }
+        )
+        //endregion
+
+        //region welfareBenefits Rare Initialization
+        val welfareBenefits = Card(
+            "복지 혜택", listOf(
+                KeywordType.NotAvailable.component,
+                Component.text(""),
+                Component.text("이 카드가 버려지면 모든 아군은 체력을 3 회복한다.", TextColorType.Gray.textColor),
+                Component.text(""),
+                dictionary.dictionaryList["사용 불가"]!!
+            ), CardRarity.Rare, 0, null, null,
+            { usePlayerData, _ ->
+                selectionFactordManager.run {
+                    val targets = usePlayerData.allTeamMembers(excludeSelf = true, includeDeceased = false)
+
+                    playerManager.run {
+                        targets.forEach {
+                            it.heal(3, usePlayerData)
+                        }
+                    }
+                }
+            }
+        )
+        //endregion
+
+        //region safetyGuaranteed Rare Initialization
+        val safetyGuaranteed = Card(
+            "안전 보장", listOf(
+                KeywordType.NotAvailable.component,
+                Component.text(""),
+                Component.text("이 카드가 버려지면 모든 아군은 3의 피해를 막는 ", TextColorType.Gray.textColor).append(KeywordType.Shield.component.append(Component.text("을 얻는다.", TextColorType.Gray.textColor))),
+                Component.text(""),
+                dictionary.dictionaryList["사용 불가"]!!,
+                dictionary.dictionaryList["보호막"]!!,
+            ), CardRarity.Rare, 0, null, null,
+            { usePlayerData, _ ->
+                selectionFactordManager.run {
+                    val targets = usePlayerData.allTeamMembers(excludeSelf = true, includeDeceased = false)
+
+                    playerManager.run {
+                        targets.forEach {
+                            it.addShield(3)
+                        }
+                    }
+                }
+            }
+        )
+        //endregion
+
+        //region diversifiedInvestment Legend Initialization
+        val diversifiedInvestment = Card(
+            "분산 투자", listOf(
+                Component.text("패의 모든 카드를 버리고 발동할 수 있다.", TextColorType.Gray.textColor),
+                Component.text("모든 적에게 (버린 카드의 수 x 10)의 피해를 나누어 입힌다.", TextColorType.Gray.textColor)
+            ), CardRarity.Legend, 0,
+            { usePlayerData, card ->
+                selectionFactordManager.run {
+                    val target = usePlayerData.allEnemyMembers()
+
+                    val cardList = usePlayerData.hand.filter { it !== card }
+
+                    cardManager.run {
+                        usePlayerData.cardThrow(*cardList.toTypedArray())
+                    }
+
+                    enemyManager.run {
+                        target.forEach {
+                            it.damage(((cardList.size * 10) / target.size), usePlayerData)
+                        }
+                    }
+                    return@Card true
+                }
+            }
+        )
+        //endregion
+
 
 
         cardPack.cardList.addAll(
@@ -97,6 +302,25 @@ class SelectionAndFocusCardPack {
                 protectiveSelling,
                 protectiveSelling,
                 protectiveSelling,
+                sacrificialChoice,
+                sacrificialChoice,
+                sacrificialChoice,
+                totalLoss,
+                totalLoss,
+                totalLoss,
+                liquidationOfTotalAssets,
+                liquidationOfTotalAssets,
+                liquidationOfTotalAssets,
+                coerciveBurden,
+                coerciveBurden,
+                coerciveBurden,
+                welfareBenefits,
+                welfareBenefits,
+                welfareBenefits,
+                safetyGuaranteed,
+                safetyGuaranteed,
+                safetyGuaranteed,
+                diversifiedInvestment
             )
         )
 
