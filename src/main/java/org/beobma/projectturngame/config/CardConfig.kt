@@ -18,5 +18,6 @@ class CardConfig {
 
     private fun cardConfig() {
         CirculationCardPack()
+        SelectionAndFocusCardPack()
     }
 }
