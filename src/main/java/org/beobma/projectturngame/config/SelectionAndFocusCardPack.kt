@@ -202,13 +202,11 @@ class SelectionAndFocusCardPack {
                 dictionary.dictionaryList["고정 피해"]!!,
             ), CardRarity.Rare, 0, null, null,
             { usePlayerData, _ ->
-                selectionFactordManager.run {
-                    val enemys = usePlayerData.allEnemyMembers()
+                val enemys = selectionFactordManager.run { usePlayerData.allEnemyMembers() }
 
-                    enemyManager.run {
-                        enemys.forEach {
-                            it.damage(3, usePlayerData, true)
-                        }
+                enemyManager.run {
+                    enemys.forEach {
+                        it.damage(3, usePlayerData, true)
                     }
                 }
             }
@@ -225,13 +223,11 @@ class SelectionAndFocusCardPack {
                 dictionary.dictionaryList["사용 불가"]!!
             ), CardRarity.Rare, 0, null, null,
             { usePlayerData, _ ->
-                selectionFactordManager.run {
-                    val targets = usePlayerData.allTeamMembers(excludeSelf = true, includeDeceased = false)
+                val targets = selectionFactordManager.run { usePlayerData.allTeamMembers(excludeSelf = true, includeDeceased = false) }
 
-                    playerManager.run {
-                        targets.forEach {
-                            it.heal(3, usePlayerData)
-                        }
+                playerManager.run {
+                    targets.forEach {
+                        it.heal(3, usePlayerData)
                     }
                 }
             }
@@ -249,13 +245,10 @@ class SelectionAndFocusCardPack {
                 dictionary.dictionaryList["보호막"]!!,
             ), CardRarity.Rare, 0, null, null,
             { usePlayerData, _ ->
-                selectionFactordManager.run {
-                    val targets = usePlayerData.allTeamMembers(excludeSelf = true, includeDeceased = false)
-
-                    playerManager.run {
-                        targets.forEach {
-                            it.addShield(3)
-                        }
+                val targets = selectionFactordManager.run {usePlayerData.allTeamMembers(excludeSelf = true, includeDeceased = false) }
+                playerManager.run {
+                    targets.forEach {
+                        it.addShield(3)
                     }
                 }
             }
@@ -269,22 +262,19 @@ class SelectionAndFocusCardPack {
                 Component.text("모든 적에게 (버린 카드의 수 x 10)의 피해를 나누어 입힌다.", TextColorType.Gray.textColor)
             ), CardRarity.Legend, 0,
             { usePlayerData, card ->
-                selectionFactordManager.run {
-                    val target = usePlayerData.allEnemyMembers()
+                val target = selectionFactordManager.run { usePlayerData.allEnemyMembers() }
+                val cardList = usePlayerData.hand.filter { it !== card }
 
-                    val cardList = usePlayerData.hand.filter { it !== card }
-
-                    cardManager.run {
-                        usePlayerData.cardThrow(*cardList.toTypedArray())
-                    }
-
-                    enemyManager.run {
-                        target.forEach {
-                            it.damage(((cardList.size * 10) / target.size), usePlayerData)
-                        }
-                    }
-                    return@Card true
+                cardManager.run {
+                    usePlayerData.cardThrow(*cardList.toTypedArray())
                 }
+
+                enemyManager.run {
+                    target.forEach {
+                        it.damage(((cardList.size * 10) / target.size), usePlayerData)
+                    }
+                }
+                return@Card true
             }
         )
         //endregion
