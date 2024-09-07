@@ -14,6 +14,7 @@ class Player(
     val graveyard: MutableList<Card>,
     val banish: MutableList<Card>,
     val turnStartUnit: MutableList<() -> Unit> = mutableListOf(),
-    val turnEndUnit: MutableList<() -> Unit> = mutableListOf()
+    val turnEndUnit: MutableList<() -> Unit> = mutableListOf(),
+    var diceWeight: Int = 0
 
 ) : Entity(player.name, (player.getAttribute(Attribute.GENERIC_MAX_HEALTH)!!.baseValue).toInt(), (player.health).toInt(), 3)
