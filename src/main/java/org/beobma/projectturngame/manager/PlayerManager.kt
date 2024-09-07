@@ -1,10 +1,13 @@
 package org.beobma.projectturngame.manager
 
+import net.kyori.adventure.text.Component
 import org.beobma.projectturngame.entity.enemy.Enemy
 import org.beobma.projectturngame.entity.player.Player
 import org.beobma.projectturngame.info.Info
+import org.beobma.projectturngame.text.TextColorType
 import org.beobma.projectturngame.util.ResetType
 import org.beobma.projectturngame.util.ResetType.*
+import kotlin.random.Random
 
 interface PlayerHandler {
     fun Player.deckShuffle()
@@ -22,6 +25,8 @@ interface PlayerHandler {
     fun Player.heal(damage: Int, healer: Player)
     fun Player.death()
     fun Player.resurrection()
+
+    fun Player.diceRoll(min: Int, max: Int): Int
 
     fun Player.isTurn(): Boolean
     fun Player.addTag(tag: String, resetType: ResetType)
@@ -182,6 +187,42 @@ class DefaultPlayerManager : PlayerHandler {
         battleManager.playerLocationRetake()
     }
 
+    override fun Player.diceRoll(min: Int, max: Int): Int {
+        var dice = Random.nextInt(min, max + 1)
+        dice += this.diceWeight
+
+        if (dice > max) {
+            dice = max
+        }
+        else if (dice < min) {
+            dice = min
+        }
+
+        if (player.scoreboardTags.contains("minMax")) {
+            dice = if (Random.nextBoolean()) {
+                min
+            } else {
+                max
+            }
+            player.scoreboardTags.remove("minMax")
+        }
+
+        if (player.scoreboardTags.contains("chanceAdvantage")) {
+            val secondRoll = Random.nextInt(min, max + 1) + this.diceWeight
+
+            val adjustedSecondRoll = when {
+                secondRoll > max -> max
+                secondRoll < min -> min
+                else -> secondRoll
+            }
+
+            dice = maxOf(dice, adjustedSecondRoll)
+        }
+
+        player.sendMessage(Component.text("주사위를 굴린 결과, ${dice}이(가) 나왔습니다.", TextColorType.Gray.textColor))
+        return dice
+    }
+
     override fun Player.isTurn(): Boolean {
         return this.player.scoreboardTags.contains("this_Turn")
     }
@@ -266,5 +307,9 @@ class PlayerManager(private val converter: PlayerHandler) {
 
     fun Player.addShield(int: Int) {
         converter.run { addShield(int) }
+    }
+
+    fun Player.diceRoll(min: Int, max: Int): Int {
+        return  converter.run { diceRoll(min, max) }
     }
 }
