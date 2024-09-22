@@ -11,11 +11,11 @@ enum class KeywordType(val component: Component) {
     Extinction(Component.text("소멸", TextColorType.DarkGray.textColor).decorate(TextDecoration.BOLD)),
     Volatilization(Component.text("휘발", TextColorType.DarkGray.textColor).decorate(TextDecoration.BOLD)),
     SameCardDisappears(Component.text("동일 카드 소멸", TextColorType.Gold.textColor).decorate(TextDecoration.BOLD)),
-    Cloudy(Component.text("흐림", TextColorType.Aqua.textColor).decorate(TextDecoration.BOLD)),
-    Electroshock(Component.text("전격", TextColorType.Yellow.textColor).decorate(TextDecoration.BOLD)),
-    Nutrients(Component.text("양분", TextColorType.Green.textColor).decorate(TextDecoration.BOLD)),
     Fix(Component.text("고정", TextColorType.DarkGray.textColor).decorate(TextDecoration.BOLD)),
     NotAvailable(Component.text("사용 불가", TextColorType.Red.textColor).decorate(TextDecoration.BOLD)),
     Shield(Component.text("보호막", TextColorType.Aqua.textColor).decorate(TextDecoration.BOLD)),
-    TrueDamage(Component.text("고정 피해", TextColorType.White.textColor).decorate(TextDecoration.BOLD))
+    TrueDamage(Component.text("고정 피해", TextColorType.White.textColor).decorate(TextDecoration.BOLD)),
+    AlchemYingredientsPile(Component.text("연금술 재료 더미", TextColorType.Gold.textColor).decorate(TextDecoration.BOLD)),
+    AlchemYingredients(Component.text("연금술 재료", TextColorType.Gold.textColor).decorate(TextDecoration.BOLD)),
+    Ductility(Component.text("연성", TextColorType.Gold.textColor).decorate(TextDecoration.BOLD))
 }
