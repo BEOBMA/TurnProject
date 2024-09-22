@@ -3,8 +3,7 @@ package org.beobma.projectturngame.listener
 import org.beobma.projectturngame.ProjectTurnGame
 import org.beobma.projectturngame.game.Game
 import org.beobma.projectturngame.info.Info
-import org.beobma.projectturngame.manager.DefaultGameManager
-import org.beobma.projectturngame.manager.GameManager
+import org.beobma.projectturngame.manager.GameManager.nextSector
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -49,14 +48,11 @@ class OnInventoryCloseEvent : Listener {
     }
 
     private fun handleRewardChoice(player: Player, game: Game) {
-        val gameManager = GameManager(DefaultGameManager())
         player.scoreboardTags.remove("inventory_MapChoice")
         player.inventory.clear()
 
         if (game.players.none { it.scoreboardTags.contains("inventory_MapChoice") }) {
-            gameManager.run {
-                game.nextSector()
-            }
+            game.nextSector()
         }
     }
 }

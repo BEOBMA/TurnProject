@@ -4,6 +4,9 @@ import org.beobma.projectturngame.entity.enemy.Enemy
 import org.beobma.projectturngame.game.GameDifficulty
 import org.beobma.projectturngame.game.GameField
 import org.beobma.projectturngame.info.Info
+import org.beobma.projectturngame.manager.EnemyManager.set
+import org.beobma.projectturngame.manager.EnemyManager.setHealth
+import org.beobma.projectturngame.manager.EnemyManager.setMaxHealth
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.EntityType
@@ -22,7 +25,6 @@ interface Battlehandler {
 class DefaultBattleManager : Battlehandler {
     override fun spawnNormalEnemy(field: GameField) {
         val game = Info.game ?: return
-        val enemyManager = EnemyManager(DefaultEnemyManager())
         val difficultyWeight = when (game.gameDifficulty) {
             GameDifficulty.Easy -> 0.75
             GameDifficulty.Normal -> 1.0
@@ -40,11 +42,9 @@ class DefaultBattleManager : Battlehandler {
         fun spawnEnemy(enemy: Enemy, healthBase: Int) {
             val health = (healthBase * healthWeight).toInt()
 
-            enemyManager.run {
-                enemy.set()
-                enemy.setMaxHealth(health)
-                enemy.setHealth(health)
-            }
+            enemy.set()
+            enemy.setMaxHealth(health)
+            enemy.setHealth(health)
         }
 
         when (field) {
@@ -76,7 +76,6 @@ class DefaultBattleManager : Battlehandler {
 
     override fun spawnHardEnemy(field: GameField) {
         val game = Info.game ?: return
-        val enemyManager = EnemyManager(DefaultEnemyManager())
         val difficultyWeight = when (game.gameDifficulty) {
             GameDifficulty.Easy -> 0.8
             GameDifficulty.Normal -> 1.0
@@ -94,11 +93,9 @@ class DefaultBattleManager : Battlehandler {
         fun spawnEnemy(enemy: Enemy, healthBase: Int) {
             val health = (healthBase * healthWeight).toInt()
 
-            enemyManager.run {
-                enemy.set()
-                enemy.setMaxHealth(health)
-                enemy.setHealth(health)
-            }
+            enemy.set()
+            enemy.setMaxHealth(health)
+            enemy.setHealth(health)
         }
 
         when (field) {
@@ -130,7 +127,6 @@ class DefaultBattleManager : Battlehandler {
 
     override fun spawnBossEnemy(field: GameField) {
         val game = Info.game ?: return
-        val enemyManager = EnemyManager(DefaultEnemyManager())
         val difficultyWeight = when (game.gameDifficulty) {
             GameDifficulty.Easy -> 1.0
             GameDifficulty.Normal -> 1.2
@@ -148,11 +144,9 @@ class DefaultBattleManager : Battlehandler {
         fun spawnEnemy(enemy: Enemy, healthBase: Int) {
             val health = (healthBase * healthWeight).toInt()
 
-            enemyManager.run {
-                enemy.set()
-                enemy.setMaxHealth(health)
-                enemy.setHealth(health)
-            }
+            enemy.set()
+            enemy.setMaxHealth(health)
+            enemy.setHealth(health)
         }
 
         when (field) {
@@ -222,7 +216,9 @@ class DefaultBattleManager : Battlehandler {
 
 }
 
-class BattleManager(private val converter: Battlehandler) {
+object BattleManager {
+    private val converter: Battlehandler = DefaultBattleManager()
+
     fun spawnNormalEnemy(field: GameField) {
         converter.run { spawnNormalEnemy(field) }
     }

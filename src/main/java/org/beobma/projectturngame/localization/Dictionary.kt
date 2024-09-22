@@ -21,10 +21,6 @@ class Dictionary {
         ), Pair(
             "동일 카드 소멸", KeywordType.SameCardDisappears.component.append(Component.text(": 사용 시 덱, 묘지에 있는 사용된 카드와 동일한 카드를 모두 제외한다.", TextColorType.Gray.textColor))
         ), Pair(
-            "흐림", KeywordType.Cloudy.component.append(Component.text(": 특정 상태이상과 시너지를 발동하고 소멸한다.", TextColorType.Gray.textColor))
-        ), Pair(
-            "전격", KeywordType.Electroshock.component.append(Component.text(": ", TextColorType.Gray.textColor).append(KeywordType.Cloudy.component.append(Component.text(" 상태이상과 동시에 존재한다면, 두 상태이상을 제거하고 18의 고정 피해를 입는다.", TextColorType.Gray.textColor))) )
-        ), Pair(
             "고정", KeywordType.Fix.component.append(Component.text(": 카드의 효과로 카드가 이동되지 않는다. (만약, 해당 효과가 카드 사용의 조건인 경우 조건을 만족한 것으로 간주한다.)", TextColorType.Gray.textColor))
         ), Pair(
             "사용 불가", KeywordType.NotAvailable.component.append(Component.text(": 사용할 수 없다.", TextColorType.Gray.textColor))
@@ -32,6 +28,12 @@ class Dictionary {
             "보호막", KeywordType.Shield.component.append(Component.text(": 피해를 받을 때, 수치만큼 피해를 경감하고 경감한 수치 만큼 보호막을 제거한다.", TextColorType.Gray.textColor))
         ), Pair(
             "고정 피해", KeywordType.TrueDamage.component.append(Component.text(": 모든 피해 계산을 무시하고 수치 그대로의 피해를 입힌다.", TextColorType.Gray.textColor))
+        ), Pair(
+            "연금술 재료 더미", KeywordType.AlchemYingredientsPile.component.append(Component.text(": 연금술 재료 카드를 들고 Q를 누르면 이 더미에 카드를 넣는다. 더미에 들어간 카드를 꺼낼 수는 없다.", TextColorType.Gray.textColor))
+        ), Pair(
+            "연금술 재료", KeywordType.AlchemYingredients.component.append(Component.text(": Q를 누르면 연금술 재료 더미에 넣을 수 있으며, 새로운 카드를 연성하는데 사용할 수 있다. 다시 꺼낼 수는 없다.", TextColorType.Gray.textColor))
+        ), Pair(
+            "연성", KeywordType.Ductility.component.append(Component.text(": 연금술 재료 더미에 있는 카드들을 게임에서 소멸시키고 그 카드들로 만들 수 있는 카드를 생성하고 패에 넣는다.", TextColorType.Gray.textColor))
         )
     )
 }

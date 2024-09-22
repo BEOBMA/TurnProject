@@ -20,5 +20,6 @@ class CardConfig {
         CirculationCardPack()
         SelectionAndFocusCardPack()
         IcosahedronCardPack()
+        MasterOfAlchemyCardPack()
     }
 }

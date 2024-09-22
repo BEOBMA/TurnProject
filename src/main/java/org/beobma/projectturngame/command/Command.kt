@@ -9,10 +9,9 @@ import org.beobma.projectturngame.game.GameField
 import org.beobma.projectturngame.game.GameType
 import org.beobma.projectturngame.info.Info
 import org.beobma.projectturngame.localization.Dictionary
-import org.beobma.projectturngame.manager.CardManager
-import org.beobma.projectturngame.manager.DefaultCardManager
-import org.beobma.projectturngame.manager.DefaultGameManager
-import org.beobma.projectturngame.manager.GameManager
+import org.beobma.projectturngame.manager.CardManager.toItem
+import org.beobma.projectturngame.manager.GameManager.start
+import org.beobma.projectturngame.manager.GameManager.stop
 import org.beobma.projectturngame.text.TextColorType
 import org.bukkit.Bukkit
 import org.bukkit.Difficulty
@@ -25,8 +24,6 @@ import org.bukkit.event.Listener
 import java.util.*
 
 class Command : Listener, CommandExecutor, TabCompleter {
-    private val gameManager = GameManager(DefaultGameManager())
-
     override fun onCommand(sender: CommandSender, cmd: Command, label: String, args: Array<String>): Boolean {
         if (cmd.name.equals("pt", ignoreCase = true) && args.isNotEmpty()) {
             if (sender !is Player) {
@@ -78,16 +75,13 @@ class Command : Listener, CommandExecutor, TabCompleter {
                         )
                         return true
                     }
-
-                    gameManager.run {
-                        Game(
-                            Bukkit.getOnlinePlayers().toMutableList(),
-                            gameType,
-                            gameDifficulty,
-                            mutableListOf(),
-                            GameField.Forest
-                        ).start()
-                    }
+                    Game(
+                        Bukkit.getOnlinePlayers().toMutableList(),
+                        gameType,
+                        gameDifficulty,
+                        mutableListOf(),
+                        GameField.Forest
+                    ).start()
                 }
 
                 "stop" -> {
@@ -109,7 +103,7 @@ class Command : Listener, CommandExecutor, TabCompleter {
                         return false
                     }
 
-                    gameManager.run { game.stop() }
+                    game.stop()
                     return true
                 }
 
@@ -158,8 +152,7 @@ class Command : Listener, CommandExecutor, TabCompleter {
                         return false
                     }
 
-                    val cardManager = CardManager(DefaultCardManager())
-                    sender.inventory.addItem(cardManager.run { definition.toItem() })
+                    sender.inventory.addItem(definition.toItem())
                     return true
                 }
 

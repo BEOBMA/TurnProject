@@ -32,7 +32,9 @@ class DefaultTextManager : TextHandler {
     }
 }
 
-class TextManager(private val converter: TextHandler) {
+object TextManager {
+    private val converter: TextHandler = DefaultTextManager()
+
     fun targetingFailText(): Component {
         return converter.run { targetingFailText() }
     }

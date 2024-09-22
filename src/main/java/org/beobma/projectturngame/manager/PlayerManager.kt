@@ -4,6 +4,9 @@ import net.kyori.adventure.text.Component
 import org.beobma.projectturngame.entity.enemy.Enemy
 import org.beobma.projectturngame.entity.player.Player
 import org.beobma.projectturngame.info.Info
+import org.beobma.projectturngame.manager.BattleManager.playerLocationRetake
+import org.beobma.projectturngame.manager.GameManager.gameOver
+import org.beobma.projectturngame.manager.UtilManager.getScore
 import org.beobma.projectturngame.text.TextColorType
 import org.beobma.projectturngame.util.ResetType
 import org.beobma.projectturngame.util.ResetType.*
@@ -168,23 +171,20 @@ class DefaultPlayerManager : PlayerHandler {
     override fun Player.death() {
         val game = Info.game ?: return
         val playerData = game.playerDatas.find { it.player == player } as Player
-        val gameManager = GameManager(DefaultGameManager())
-        val battleManager = BattleManager(DefaultBattleManager())
+
         this.isDead = true
 
         if (game.playerDatas.all { it.isDead }) {
-            gameManager.gameOver()
+            gameOver()
         } else {
-            battleManager.playerLocationRetake()
+            playerLocationRetake()
             game.gameTurnOrder.remove(playerData)
         }
     }
 
     override fun Player.resurrection() {
-        val battleManager = BattleManager(DefaultBattleManager())
-
         this.isDead = false
-        battleManager.playerLocationRetake()
+        playerLocationRetake()
     }
 
     override fun Player.diceRoll(min: Int, max: Int): Int {
@@ -247,16 +247,14 @@ class DefaultPlayerManager : PlayerHandler {
 
 
     private fun Player.applyScoreboard() {
-        val utilManager = UtilManager(DefaultUtilManager())
-
-        utilManager.run {
-            this@applyScoreboard.player.getScore("mana").score = this@applyScoreboard.mana
-            this@applyScoreboard.player.getScore("maxMana").score = this@applyScoreboard.maxMana
+            player.getScore("mana").score = this@applyScoreboard.mana
+            player.getScore("maxMana").score = this@applyScoreboard.maxMana
         }
-    }
 }
 
-class PlayerManager(private val converter: PlayerHandler) {
+object PlayerManager {
+    private val converter: PlayerHandler = DefaultPlayerManager()
+
     fun Player.deckShuffle() {
         converter.run { this@deckShuffle.deckShuffle() }
     }

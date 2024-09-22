@@ -13,6 +13,20 @@ import org.beobma.projectturngame.game.Game
 import org.beobma.projectturngame.game.GameDifficulty
 import org.beobma.projectturngame.game.GameField
 import org.beobma.projectturngame.info.Info
+import org.beobma.projectturngame.manager.BattleManager.enemyLocationRetake
+import org.beobma.projectturngame.manager.BattleManager.playerLocationRetake
+import org.beobma.projectturngame.manager.BattleManager.spawnNormalEnemy
+import org.beobma.projectturngame.manager.CardManager.applyHotbar
+import org.beobma.projectturngame.manager.CardManager.drow
+import org.beobma.projectturngame.manager.CompensationManager.eliteReward
+import org.beobma.projectturngame.manager.CompensationManager.normalReward
+import org.beobma.projectturngame.manager.CompensationManager.relicsReward
+import org.beobma.projectturngame.manager.HealthManager.setHealth
+import org.beobma.projectturngame.manager.InventoryManager.openMapInventory
+import org.beobma.projectturngame.manager.MaxHealthManager.setMaxHealth
+import org.beobma.projectturngame.manager.PlayerManager.addMana
+import org.beobma.projectturngame.manager.PlayerManager.setMana
+import org.beobma.projectturngame.manager.PlayerManager.setMaxMana
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Location
@@ -39,12 +53,6 @@ interface GameHandler {
 
 
 class DefaultGameManager : GameHandler {
-    private val abnormalStatusManager = AbnormalStatusManager()
-    private val maxHealthManager = abnormalStatusManager.createMaxHealthManager()
-    private val healthManager = abnormalStatusManager.createHealthManager()
-    private val playerManager = PlayerManager(DefaultPlayerManager())
-    private val cardManager = CardManager(DefaultCardManager())
-    private val compensationManager = CompensationManager(DefaultCompensationManager())
 
     override fun Game.start() {
         Info.game = this@start
@@ -99,13 +107,12 @@ class DefaultGameManager : GameHandler {
 
     override fun Game.battleStart() {
         val game = Info.game ?: return
-        val battleManager = BattleManager(DefaultBattleManager())
         val field = game.gameField
-        battleManager.run {
-            this.spawnNormalEnemy(field)
-            this.playerLocationRetake()
-            this.enemyLocationRetake()
-        }
+
+        spawnNormalEnemy(field)
+        playerLocationRetake()
+        enemyLocationRetake()
+
         game.playerDatas.forEach { player ->
             player.battleStartReset()
         }
@@ -115,21 +122,18 @@ class DefaultGameManager : GameHandler {
     override fun Game.battleStop() {
         this.playerDatas.forEach { playerData ->
             playerData.battleEndReset()
-            compensationManager.run {
-                playerData.normalReward()
-            }
+            playerData.normalReward()
         }
     }
 
     override fun Game.hardBattleStart() {
         val game = Info.game ?: return
-        val battleManager = BattleManager(DefaultBattleManager())
         val field = game.gameField
-        battleManager.run {
-            this.spawnNormalEnemy(field)
-            this.playerLocationRetake()
-            this.enemyLocationRetake()
-        }
+
+        spawnNormalEnemy(field)
+        playerLocationRetake()
+        enemyLocationRetake()
+
         game.playerDatas.forEach { player ->
             player.battleStartReset()
         }
@@ -139,21 +143,18 @@ class DefaultGameManager : GameHandler {
     override fun Game.hardBattleStop() {
         this.playerDatas.forEach { playerData ->
             playerData.battleEndReset()
-            compensationManager.run {
-                playerData.eliteReward()
-            }
+            playerData.eliteReward()
         }
     }
 
     override fun Game.bossStart() {
         val game = Info.game ?: return
-        val battleManager = BattleManager(DefaultBattleManager())
         val field = game.gameField
-        battleManager.run {
-            this.spawnNormalEnemy(field)
-            this.playerLocationRetake()
-            this.enemyLocationRetake()
-        }
+
+        spawnNormalEnemy(field)
+        playerLocationRetake()
+        enemyLocationRetake()
+
         game.playerDatas.forEach { player ->
             player.battleStartReset()
         }
@@ -163,9 +164,7 @@ class DefaultGameManager : GameHandler {
     override fun Game.bossStop() {
         this.playerDatas.forEach { playerData ->
             playerData.battleEndReset()
-            compensationManager.run {
-                playerData.relicsReward()
-            }
+            playerData.relicsReward()
         }
     }
 
@@ -181,7 +180,7 @@ class DefaultGameManager : GameHandler {
         this.tileStep = 0
 
         this.playerDatas.forEach { playerData ->
-            healthManager.run { playerData.setHealth(playerData.maxHealth) }
+            playerData.setHealth(playerData.maxHealth)
         }
         this.gameSector.remove(this.gameField)
         this.gameMapInventory = null
@@ -196,15 +195,14 @@ class DefaultGameManager : GameHandler {
 
     override fun Entity.turnStart() {
         if (this is Player) {
-            playerManager.run {
-                this@turnStart.addMana(1)
-            }
+            this@turnStart.addMana(1)
+
             this.player.run {
                 sendMessage(Component.text("당신의 턴입니다.").decorate(TextDecoration.BOLD))
                 sendMessage(Component.text("점프하면 턴을 종료합니다.").decorate(TextDecoration.BOLD))
                 isGlowing = true
                 playSound(location, Sound.BLOCK_NOTE_BLOCK_GUITAR, 1.0F, 1.0F)
-                cardManager.run { drow(5) }
+                drow(5)
                 scoreboardTags.add("this_Turn")
                 turnStartUnit.forEach {
                     it.invoke()
@@ -307,10 +305,10 @@ class DefaultGameManager : GameHandler {
         }
 
         game.playerDatas.forEach { playerData ->
-            maxHealthManager.run { playerData.setMaxHealth(40) }
-            healthManager.run { playerData.setHealth(40) }
-            playerManager.run { playerData.setMaxMana(3) }
-            playerManager.run { playerData.setMana(3) }
+            playerData.setMaxHealth(40)
+            playerData.setHealth(40)
+            playerData.setMaxMana(3)
+            playerData.setMana(3)
             playerData.deck.addAll(startCardList)
         }
 
@@ -327,13 +325,10 @@ class DefaultGameManager : GameHandler {
 
     private fun moveTile() {
         val game = Info.game ?: return
-        val inventoryManager = InventoryManager(DefaultInventoryManager())
 
         game.tileStep++
-        inventoryManager.run {
-            game.players.forEach { player ->
-                player.openMapInventory(InventoryOpenType.Choice)
-            }
+        game.players.forEach { player ->
+            player.openMapInventory(InventoryOpenType.Choice)
         }
     }
 
@@ -353,15 +348,11 @@ class DefaultGameManager : GameHandler {
 
     private fun Player.battleStartReset() {
         this.deck.shuffle()
-        playerManager.run {
-            this@battleStartReset.setMana(this@battleStartReset.maxMana)
-        }
+        this@battleStartReset.setMana(this@battleStartReset.maxMana)
     }
 
     private fun Player.battleEndReset() {
-        playerManager.run {
-            this@battleEndReset.setMana(this@battleEndReset.maxMana)
-        }
+        this@battleEndReset.setMana(this@battleEndReset.maxMana)
 
         this.turnEndUnit.forEach {
             it.invoke()
@@ -375,13 +366,13 @@ class DefaultGameManager : GameHandler {
         this.graveyard.clear()
         this.banish.clear()
 
-        cardManager.run {
-            this@battleEndReset.applyHotbar()
-        }
+        this@battleEndReset.applyHotbar()
     }
 }
 
-class GameManager(private val converter: GameHandler) {
+object GameManager {
+    private val converter: GameHandler = DefaultGameManager()
+
     fun Game.start() {
         converter.run { this@start.start() }
     }

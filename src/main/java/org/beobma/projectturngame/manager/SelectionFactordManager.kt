@@ -60,7 +60,9 @@ class DefaultSelectionFactordManager : SelectionFactordHandler {
 }
 
 
-class SelectionFactordManager(private val converter: SelectionFactordHandler) {
+object SelectionFactordManager {
+    private val converter: SelectionFactordHandler = DefaultSelectionFactordManager()
+
     fun Player.focusOn(): Entity? {
         return converter.run { this@focusOn.focusOn() }
     }

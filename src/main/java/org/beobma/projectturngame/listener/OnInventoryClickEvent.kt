@@ -5,7 +5,14 @@ import org.beobma.projectturngame.game.Game
 import org.beobma.projectturngame.game.GameField
 import org.beobma.projectturngame.info.Info
 import org.beobma.projectturngame.localization.Localization
-import org.beobma.projectturngame.manager.*
+import org.beobma.projectturngame.manager.CardManager.toItem
+import org.beobma.projectturngame.manager.GameManager.battleStart
+import org.beobma.projectturngame.manager.GameManager.bossStart
+import org.beobma.projectturngame.manager.GameManager.eventStart
+import org.beobma.projectturngame.manager.GameManager.hardBattleStart
+import org.beobma.projectturngame.manager.GameManager.nextSector
+import org.beobma.projectturngame.manager.GameManager.restStart
+import org.beobma.projectturngame.manager.InventoryManager.openSectorInventory
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -45,8 +52,6 @@ class OnInventoryClickEvent : Listener {
 
     private fun mapMoveHandler(game: Game, clickItem: ItemStack, slot: Int) {
         val localization = Localization()
-        val gameManager = GameManager(DefaultGameManager())
-        val inventoryManager = InventoryManager(DefaultInventoryManager())
         val battleSlot = localization.battleSlot
         val eventSlot = localization.eventSlot
         val hardBattleSlot = localization.hardBattleSlot
@@ -96,16 +101,12 @@ class OnInventoryClickEvent : Listener {
             }
         }
         when (clickItem) {
-            battleSlot -> gameManager.run { game.battleStart() }
-            eventSlot -> gameManager.run { game.eventStart() }
-            hardBattleSlot -> gameManager.run { game.hardBattleStart() }
-            restSlot -> gameManager.run { game.restStart() }
-            bossSlot -> gameManager.run { game.bossStart() }
-            endSlot -> inventoryManager.run {
-                game.players.forEach { player ->
-                    player.openSectorInventory()
-                }
-            }
+            battleSlot -> game.battleStart()
+            eventSlot -> game.eventStart()
+            hardBattleSlot -> game.hardBattleStart()
+            restSlot -> game.restStart()
+            bossSlot -> game.bossStart()
+            endSlot -> game.players.forEach { player -> player.openSectorInventory() }
             else -> {
                 return
             }
@@ -148,7 +149,6 @@ class OnInventoryClickEvent : Listener {
     }
 
     private fun sectorChoiceHandler(game: Game, clickItem: ItemStack) {
-        val gameManager = GameManager(DefaultGameManager())
         val field = GameField.entries.find { it.itemStack == clickItem }
         if (field !is GameField) return
 
@@ -157,13 +157,11 @@ class OnInventoryClickEvent : Listener {
             player.scoreboardTags.remove("inventory_MapChoice")
             player.closeInventory()
         }
-        gameManager.run { game.nextSector() }
+        game.nextSector()
     }
 
     private fun compensationCardChoiceHandler(game: Game, clickItem: ItemStack, player: Player) {
-        val gameManager = GameManager(DefaultGameManager())
-        val cardManager = CardManager(DefaultCardManager())
-        val card = cardManager.run { cardList.find { it.toItem() == clickItem } } ?: return
+        val card = cardList.find { it.toItem() == clickItem } ?: return
         val playerData = game.playerDatas.find { it.player == player } ?: return
 
         playerData.deck.add(card)
@@ -171,9 +169,7 @@ class OnInventoryClickEvent : Listener {
         player.inventory.clear()
         player.closeInventory()
         if (game.players.none { it.scoreboardTags.contains("inventory_MapChoice") }) {
-            gameManager.run {
-                game.nextSector()
-            }
+            game.nextSector()
         }
     }
 }

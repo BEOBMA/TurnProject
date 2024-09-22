@@ -13,7 +13,9 @@ class DefaultSoundManager : SoundHandler {
     }
 }
 
-class SoundManager(private val converter: SoundHandler) {
+object SoundManager {
+    private val converter: SoundHandler = DefaultSoundManager()
+
     fun Player.playTargetingFailSound() {
         converter.run { this@playTargetingFailSound.playTargetingFailSound() }
     }

@@ -8,18 +8,22 @@ import org.beobma.projectturngame.config.CardConfig.Companion.cardList
 import org.beobma.projectturngame.config.CardConfig.Companion.cardPackList
 import org.beobma.projectturngame.entity.enemy.Enemy
 import org.beobma.projectturngame.localization.Dictionary
-import org.beobma.projectturngame.manager.*
+import org.beobma.projectturngame.manager.CardManager.cardThrow
+import org.beobma.projectturngame.manager.CardManager.drow
+import org.beobma.projectturngame.manager.EnemyManager.damage
+import org.beobma.projectturngame.manager.PlayerManager.addMana
+import org.beobma.projectturngame.manager.PlayerManager.addShield
+import org.beobma.projectturngame.manager.PlayerManager.heal
+import org.beobma.projectturngame.manager.SelectionFactordManager.allEnemyMembers
+import org.beobma.projectturngame.manager.SelectionFactordManager.allTeamMembers
+import org.beobma.projectturngame.manager.SelectionFactordManager.focusOn
+import org.beobma.projectturngame.manager.SoundManager.playTargetingFailSound
+import org.beobma.projectturngame.manager.TextManager.cardUseFailText
+import org.beobma.projectturngame.manager.TextManager.targetingFailText
 import org.beobma.projectturngame.text.KeywordType
 import org.beobma.projectturngame.text.TextColorType
 
 class SelectionAndFocusCardPack {
-    private val selectionFactordManager = SelectionFactordManager(DefaultSelectionFactordManager())
-    private val playerManager = PlayerManager(DefaultPlayerManager())
-    private val enemyManager = EnemyManager(DefaultEnemyManager())
-    private val textManager = TextManager(DefaultTextManager())
-    private val soundManager = SoundManager(DefaultSoundManager())
-    private val cardManager = CardManager(DefaultCardManager())
-    private val utilManager = UtilManager(DefaultUtilManager())
     private val dictionary = Dictionary()
 
     init {
@@ -43,9 +47,7 @@ class SelectionAndFocusCardPack {
                 dictionary.dictionaryList["사용 불가"]!!
             ), CardRarity.Common, 0, null, null,
             { usePlayerData, _ ->
-                cardManager.run {
-                    usePlayerData.drow(1)
-                }
+                usePlayerData.drow(1)
             }
         )
         //endregion
@@ -60,9 +62,7 @@ class SelectionAndFocusCardPack {
                 dictionary.dictionaryList["사용 불가"]!!
             ), CardRarity.Common, 0, null, null,
             { usePlayerData, _ ->
-                playerManager.run {
-                    usePlayerData.addMana(1)
-                }
+                usePlayerData.addMana(1)
             }
         )
         //endregion
@@ -78,9 +78,7 @@ class SelectionAndFocusCardPack {
                 dictionary.dictionaryList["보호막"]!!
             ), CardRarity.Common, 0, null, null,
             { usePlayerData, _ ->
-                playerManager.run {
-                    usePlayerData.addShield(5)
-                }
+                usePlayerData.addShield(5)
             }
         )
         //endregion
@@ -93,34 +91,29 @@ class SelectionAndFocusCardPack {
                 Component.text(""),
                 Component.text("단, 버려졌을 때 효과가 있는 카드를 우선하여 버린다.", TextColorType.DarkGray.textColor),
             ), CardRarity.Uncommon, 1, { usePlayerData, _ ->
-                selectionFactordManager.run {
-                    val player = usePlayerData.player
-                    val target = usePlayerData.focusOn()
+                val player = usePlayerData.player
+                val target = usePlayerData.focusOn()
 
-                    if (target !is Enemy) {
-                        player.sendMessage(textManager.targetingFailText())
-                        soundManager.run { player.playTargetingFailSound() }
-                        return@Card false
-                    }
-
-                    val cardList = usePlayerData.hand.filter { it.name != "희생적 선택" }
-
-                    if (cardList.isEmpty()) {
-                        player.sendMessage(textManager.cardUseFailText())
-                        return@Card false
-                    }
-
-                    val cardToDiscard = cardList.firstOrNull { it.cardThrowEffect != null } ?: cardList.random()
-
-                    cardManager.run {
-                        usePlayerData.cardThrow(cardToDiscard)
-                    }
-
-                    enemyManager.run {
-                        target.damage(20, usePlayerData)
-                    }
-                    return@Card true
+                if (target !is Enemy) {
+                    player.sendMessage(targetingFailText())
+                    player.playTargetingFailSound()
+                    return@Card false
                 }
+
+                val cardList = usePlayerData.hand.filter { it.name != "희생적 선택" }
+
+                if (cardList.isEmpty()) {
+                    player.sendMessage(cardUseFailText())
+                    return@Card false
+                }
+
+                val cardToDiscard = cardList.firstOrNull { it.cardThrowEffect != null } ?: cardList.random()
+
+
+                usePlayerData.cardThrow(cardToDiscard)
+                target.damage(20, usePlayerData)
+
+                return@Card true
             }
         )
         //endregion
@@ -131,31 +124,25 @@ class SelectionAndFocusCardPack {
                 Component.text("패에서 '총체적 손실'을 제외한 무작위 카드 3장을 버리고 발동할 수 있다.", TextColorType.Gray.textColor),
                 Component.text("모든 적에게 10의 피해를 입힌다.", TextColorType.Gray.textColor)
             ), CardRarity.Uncommon, 1, { usePlayerData, _ ->
-                selectionFactordManager.run {
-                    val player = usePlayerData.player
-                    val target = usePlayerData.allEnemyMembers()
+                val player = usePlayerData.player
+                val target = usePlayerData.allEnemyMembers()
 
-                    val cardList = usePlayerData.hand.filter { it.name != "총체적 손실" }
+                val cardList = usePlayerData.hand.filter { it.name != "총체적 손실" }
 
-                    if (cardList.size < 3) {
-                        player.sendMessage(textManager.cardUseFailText())
-                        return@Card false
-                    }
-
-                    val finalCardList = cardList.shuffled()
-                    cardManager.run {
-                        usePlayerData.cardThrow(finalCardList[0])
-                        usePlayerData.cardThrow(finalCardList[1])
-                        usePlayerData.cardThrow(finalCardList[2])
-                    }
-
-                    enemyManager.run {
-                        target.forEach {
-                            it.damage(10, usePlayerData)
-                        }
-                    }
-                    return@Card true
+                if (cardList.size < 3) {
+                    player.sendMessage(cardUseFailText())
+                    return@Card false
                 }
+
+                val finalCardList = cardList.shuffled()
+                usePlayerData.cardThrow(finalCardList[0])
+                usePlayerData.cardThrow(finalCardList[1])
+                usePlayerData.cardThrow(finalCardList[2])
+
+                target.forEach {
+                    it.damage(10, usePlayerData)
+                }
+                return@Card true
             }
         )
         //endregion
@@ -166,27 +153,22 @@ class SelectionAndFocusCardPack {
                 Component.text("패의 모든 카드를 버리고 발동할 수 있다.", TextColorType.Gray.textColor),
                 Component.text("바라보는 적에게 40의 피해를 입힌다.", TextColorType.Gray.textColor)
             ), CardRarity.Uncommon, 2, { usePlayerData, card ->
-                selectionFactordManager.run {
-                    val player = usePlayerData.player
-                    val target = usePlayerData.focusOn()
+                val player = usePlayerData.player
+                val target = usePlayerData.focusOn()
 
-                    if (target !is Enemy) {
-                        player.sendMessage(textManager.targetingFailText())
-                        soundManager.run { player.playTargetingFailSound() }
-                        return@Card false
-                    }
-
-                    val cardList = usePlayerData.hand.filter { it !== card }
-
-                    cardManager.run {
-                        usePlayerData.cardThrow(*cardList.toTypedArray())
-                    }
-
-                    enemyManager.run {
-                        target.damage(40, usePlayerData)
-                    }
-                    return@Card true
+                if (target !is Enemy) {
+                    player.sendMessage(targetingFailText())
+                    player.playTargetingFailSound()
+                    return@Card false
                 }
+
+                val cardList = usePlayerData.hand.filter { it !== card }
+
+                usePlayerData.cardThrow(*cardList.toTypedArray())
+
+                target.damage(40, usePlayerData)
+
+                return@Card true
             }
         )
         //endregion
@@ -196,18 +178,16 @@ class SelectionAndFocusCardPack {
             "강제적 부담", listOf(
                 KeywordType.NotAvailable.component,
                 Component.text(""),
-                Component.text("이 카드가 버려지면 모든 적은 3의 ", TextColorType.Gray.textColor).append(KeywordType.NotAvailable.component.append(Component.text("를 입는다.", TextColorType.Gray.textColor))),
+                Component.text("이 카드가 버려지면 모든 적은 3의 ", TextColorType.Gray.textColor).append(KeywordType.TrueDamage.component.append(Component.text("를 입는다.", TextColorType.Gray.textColor))),
                 Component.text(""),
                 dictionary.dictionaryList["사용 불가"]!!,
                 dictionary.dictionaryList["고정 피해"]!!,
             ), CardRarity.Rare, 0, null, null,
             { usePlayerData, _ ->
-                val enemys = selectionFactordManager.run { usePlayerData.allEnemyMembers() }
+                val enemys = usePlayerData.allEnemyMembers()
 
-                enemyManager.run {
-                    enemys.forEach {
-                        it.damage(3, usePlayerData, true)
-                    }
+                enemys.forEach {
+                    it.damage(3, usePlayerData, true)
                 }
             }
         )
@@ -223,12 +203,10 @@ class SelectionAndFocusCardPack {
                 dictionary.dictionaryList["사용 불가"]!!
             ), CardRarity.Rare, 0, null, null,
             { usePlayerData, _ ->
-                val targets = selectionFactordManager.run { usePlayerData.allTeamMembers(excludeSelf = true, includeDeceased = false) }
+                val targets = usePlayerData.allTeamMembers(excludeSelf = true, includeDeceased = false)
 
-                playerManager.run {
-                    targets.forEach {
-                        it.heal(3, usePlayerData)
-                    }
+                targets.forEach {
+                    it.heal(3, usePlayerData)
                 }
             }
         )
@@ -245,11 +223,9 @@ class SelectionAndFocusCardPack {
                 dictionary.dictionaryList["보호막"]!!,
             ), CardRarity.Rare, 0, null, null,
             { usePlayerData, _ ->
-                val targets = selectionFactordManager.run {usePlayerData.allTeamMembers(excludeSelf = true, includeDeceased = false) }
-                playerManager.run {
-                    targets.forEach {
-                        it.addShield(3)
-                    }
+                val targets = usePlayerData.allTeamMembers(excludeSelf = true, includeDeceased = false)
+                targets.forEach {
+                    it.addShield(3)
                 }
             }
         )
@@ -262,17 +238,13 @@ class SelectionAndFocusCardPack {
                 Component.text("모든 적에게 (버린 카드의 수 x 10)의 피해를 나누어 입힌다.", TextColorType.Gray.textColor)
             ), CardRarity.Legend, 0,
             { usePlayerData, card ->
-                val target = selectionFactordManager.run { usePlayerData.allEnemyMembers() }
+                val target = usePlayerData.allEnemyMembers()
                 val cardList = usePlayerData.hand.filter { it !== card }
 
-                cardManager.run {
-                    usePlayerData.cardThrow(*cardList.toTypedArray())
-                }
+                usePlayerData.cardThrow(*cardList.toTypedArray())
 
-                enemyManager.run {
-                    target.forEach {
-                        it.damage(((cardList.size * 10) / target.size), usePlayerData)
-                    }
+                target.forEach {
+                    it.damage(((cardList.size * 10) / target.size), usePlayerData)
                 }
                 return@Card true
             }

@@ -7,18 +7,23 @@ import org.beobma.projectturngame.card.CardRarity
 import org.beobma.projectturngame.config.CardConfig.Companion.cardList
 import org.beobma.projectturngame.config.CardConfig.Companion.cardPackList
 import org.beobma.projectturngame.localization.Dictionary
-import org.beobma.projectturngame.manager.*
+import org.beobma.projectturngame.manager.CardManager.addDeckCard
+import org.beobma.projectturngame.manager.CardManager.cardThrow
+import org.beobma.projectturngame.manager.CardManager.clearBanish
+import org.beobma.projectturngame.manager.CardManager.clearDeck
+import org.beobma.projectturngame.manager.CardManager.clearGraveyard
+import org.beobma.projectturngame.manager.CardManager.clearHand
+import org.beobma.projectturngame.manager.CardManager.drow
+import org.beobma.projectturngame.manager.CardManager.extinction
+import org.beobma.projectturngame.manager.CardManager.filterIsMoveCard
+import org.beobma.projectturngame.manager.PlayerManager.addMana
+import org.beobma.projectturngame.manager.PlayerManager.heal
+import org.beobma.projectturngame.manager.PlayerManager.setMana
+import org.beobma.projectturngame.manager.TextManager.cardUseFailText
 import org.beobma.projectturngame.text.KeywordType
 import org.beobma.projectturngame.text.TextColorType
 
 class CirculationCardPack {
-    private val selectionFactordManager = SelectionFactordManager(DefaultSelectionFactordManager())
-    private val playerManager = PlayerManager(DefaultPlayerManager())
-    private val enemyManager = EnemyManager(DefaultEnemyManager())
-    private val textManager = TextManager(DefaultTextManager())
-    private val soundManager = SoundManager(DefaultSoundManager())
-    private val cardManager = CardManager(DefaultCardManager())
-    private val utilManager = UtilManager(DefaultUtilManager())
     private val dictionary = Dictionary()
 
     init {
@@ -42,13 +47,13 @@ class CirculationCardPack {
                 val cardList = usePlayerData.hand.filter { it.name != "패 순환" }
 
                 if (cardList.isEmpty()) {
-                    usePlayerData.player.sendMessage(textManager.cardUseFailText())
+                    usePlayerData.player.sendMessage(cardUseFailText())
                     return@Card false
                 }
-                cardManager.run {
-                    usePlayerData.cardThrow(cardList.random())
-                    usePlayerData.drow(2)
-                }
+
+                usePlayerData.cardThrow(cardList.random())
+                usePlayerData.drow(2)
+
 
                 return@Card true
             }
@@ -65,18 +70,16 @@ class CirculationCardPack {
                 val cardList = usePlayerData.deck.filter { it.name != "덱 순환" }
 
                 if (cardList.isEmpty()) {
-                    usePlayerData.player.sendMessage(textManager.cardUseFailText())
+                    usePlayerData.player.sendMessage(cardUseFailText())
                     return@Card false
                 }
 
-                cardManager.run {
-                    val card = cardList.random()
-                    usePlayerData.deck.remove(card)
-                    usePlayerData.banish.add(card)
-                    repeat(2) {
-                        usePlayerData.deck.add(usePlayerData.graveyard.random())
-                        usePlayerData.deck.shuffle()
-                    }
+                val card = cardList.random()
+                usePlayerData.deck.remove(card)
+                usePlayerData.banish.add(card)
+                repeat(2) {
+                    usePlayerData.deck.add(usePlayerData.graveyard.random())
+                    usePlayerData.deck.shuffle()
                 }
 
                 return@Card true
@@ -104,21 +107,15 @@ class CirculationCardPack {
 
                 val removeCardList = cardList.filter { it.description.contains(KeywordType.Fix.component) }
                 cardList.removeAll(removeCardList)
-                cardManager.run {
-                    usePlayerData.addDeckCard(*cardList.toTypedArray())
-                    usePlayerData.clearHand()
-                    usePlayerData.clearGraveyard()
-                    usePlayerData.clearBanish()
-                }
-                cardManager.run {
-                    usePlayerData.drow(5)
-                }
+                usePlayerData.addDeckCard(*cardList.toTypedArray())
+                usePlayerData.clearHand()
+                usePlayerData.clearGraveyard()
+                usePlayerData.clearBanish()
+                usePlayerData.drow(5)
                 return@Card true
             },
             { usePlayerData, card ->
-                cardManager.run {
-                    usePlayerData.extinction(card)
-                }
+                usePlayerData.extinction(card)
             }
         )
         //endregion
@@ -129,9 +126,7 @@ class CirculationCardPack {
                 KeywordType.Mana.component.append(Component.text("를 1 회복한다.", TextColorType.Gray.textColor))
             ), CardRarity.Common, 0,
             { usePlayerData, _ ->
-                playerManager.run {
-                    usePlayerData.addMana(1)
-                }
+                usePlayerData.addMana(1)
                 return@Card true
             }
         )
@@ -146,12 +141,10 @@ class CirculationCardPack {
                 ))
             ), CardRarity.Common, 0,
             { usePlayerData, _ ->
-                playerManager.run {
                     usePlayerData.addMana(2)
                     usePlayerData.turnStartUnit.add {
                         usePlayerData.setMana(0)
                     }
-                }
                 return@Card true
             }
         )
@@ -164,10 +157,8 @@ class CirculationCardPack {
                 Component.text("패에서 무작위 카드 1장을 버린다.", TextColorType.Gray.textColor),
             ), CardRarity.Uncommon, 1,
             { usePlayerData, _ ->
-                cardManager.run {
-                    usePlayerData.drow(3)
-                    usePlayerData.cardThrow(usePlayerData.hand.random())
-                }
+                usePlayerData.drow(3)
+                usePlayerData.cardThrow(usePlayerData.hand.random())
                 return@Card true
             }
         )
@@ -181,13 +172,10 @@ class CirculationCardPack {
             ), CardRarity.Uncommon, 1,
             { usePlayerData, _ ->
                 if (usePlayerData.hand.isNotEmpty()) {
-                    usePlayerData.player.sendMessage(textManager.cardUseFailText())
+                    usePlayerData.player.sendMessage(cardUseFailText())
                     return@Card false
                 }
-
-                cardManager.run {
-                    usePlayerData.drow(3)
-                }
+                usePlayerData.drow(3)
                 return@Card true
             }
         )
@@ -199,9 +187,8 @@ class CirculationCardPack {
                 Component.text("패의 카드를 모두 버린다.", TextColorType.Gray.textColor)
             ), CardRarity.Uncommon, 1,
             { usePlayerData, _ ->
-                cardManager.run {
-                    usePlayerData.cardThrow(*usePlayerData.hand.toTypedArray())
-                }
+                usePlayerData.cardThrow(*usePlayerData.hand.toTypedArray())
+
                 return@Card true
             }
         )
@@ -214,17 +201,11 @@ class CirculationCardPack {
                 Component.text("뽑은 후 덱에 남은 카드를 모두 제외한다.", TextColorType.Gray.textColor)
             ), CardRarity.Rare, 1,
             { usePlayerData, _ ->
-                cardManager.run {
-                    val handSize = (usePlayerData.hand.size - 8) * -1
+                val handSize = (usePlayerData.hand.size - 8) * -1
+                usePlayerData.drow(handSize)
+                usePlayerData.banish.addAll(filterIsMoveCard(*usePlayerData.deck.toTypedArray()))
+                usePlayerData.clearDeck()
 
-                    cardManager.run {
-                        usePlayerData.drow(handSize)
-                        usePlayerData.banish.addAll(filterIsMoveCard(*usePlayerData.deck.toTypedArray()))
-                        usePlayerData.clearDeck()
-                    }
-
-
-                }
                 return@Card true
             }
         )
@@ -237,18 +218,14 @@ class CirculationCardPack {
                 Component.text("되돌린 카드의 수 만큼 덱에서 카드를 뽑는다.", TextColorType.Gray.textColor)
             ), CardRarity.Rare, 1,
             { usePlayerData, _ ->
-                cardManager.run {
-                    val handSize = (usePlayerData.hand.size - 8) * -1
+                val handSize = (usePlayerData.hand.size - 8) * -1
 
-                    cardManager.run {
-                        usePlayerData.deck.addAll(filterIsMoveCard(*usePlayerData.hand.toTypedArray()))
-                        usePlayerData.deck.shuffle()
-                        usePlayerData.clearHand()
-                        usePlayerData.drow(handSize)
-                    }
+                usePlayerData.deck.addAll(filterIsMoveCard(*usePlayerData.hand.toTypedArray()))
+                usePlayerData.deck.shuffle()
+                usePlayerData.clearHand()
+                usePlayerData.drow(handSize)
 
 
-                }
                 return@Card true
             }
         )
@@ -260,9 +237,7 @@ class CirculationCardPack {
                 Component.text("체력을 12 회복한다.", TextColorType.Gray.textColor)
             ), CardRarity.Rare, 2,
             { usePlayerData, _ ->
-                playerManager.run {
-                    usePlayerData.heal(12, usePlayerData)
-                }
+                usePlayerData.heal(12, usePlayerData)
                 return@Card true
             }
         )

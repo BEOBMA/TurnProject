@@ -2,6 +2,7 @@ package org.beobma.projectturngame.manager
 
 import org.beobma.projectturngame.entity.player.Player
 import org.beobma.projectturngame.info.Info
+import org.beobma.projectturngame.manager.InventoryManager.openCompensationInventory
 
 interface CompensationHandler {
     fun Player.normalReward()
@@ -12,20 +13,16 @@ interface CompensationHandler {
 class DefaultCompensationManager : CompensationHandler {
     override fun Player.normalReward() {
         val game = Info.game ?: return
-        val inventoryManager = InventoryManager(DefaultInventoryManager())
+
         val cardPacks = game.gameCardPack
-        inventoryManager.run {
-            player.openCompensationInventory(cardPacks.random().cardList)
-        }
+        player.openCompensationInventory(cardPacks.random().cardList)
     }
 
     override fun Player.eliteReward() {
         val game = Info.game ?: return
-        val inventoryManager = InventoryManager(DefaultInventoryManager())
         val cardPacks = game.gameCardPack
-        inventoryManager.run {
-            player.openCompensationInventory(cardPacks.random().cardList)
-        }
+
+        player.openCompensationInventory(cardPacks.random().cardList)
     }
 
     override fun Player.relicsReward() {
@@ -33,7 +30,9 @@ class DefaultCompensationManager : CompensationHandler {
     }
 }
 
-class CompensationManager(private val converter: CompensationHandler) {
+object CompensationManager {
+    private val converter: CompensationHandler = DefaultCompensationManager()
+
     fun Player.normalReward() {
         converter.run { this@normalReward.normalReward() }
     }

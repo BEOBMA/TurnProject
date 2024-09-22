@@ -5,17 +5,16 @@ import org.beobma.projectturngame.card.Card
 import org.beobma.projectturngame.card.CardRarity
 import org.beobma.projectturngame.config.CardConfig.Companion.cardList
 import org.beobma.projectturngame.entity.enemy.Enemy
-import org.beobma.projectturngame.manager.*
+import org.beobma.projectturngame.manager.EnemyManager.damage
+import org.beobma.projectturngame.manager.PlayerManager.addMana
+import org.beobma.projectturngame.manager.PlayerManager.heal
+import org.beobma.projectturngame.manager.SelectionFactordManager.focusOn
+import org.beobma.projectturngame.manager.SoundManager.playTargetingFailSound
+import org.beobma.projectturngame.manager.TextManager.targetingFailText
 import org.beobma.projectturngame.text.KeywordType
 import org.beobma.projectturngame.text.TextColorType
 
 class StartCardPack {
-    private val selectionFactordManager = SelectionFactordManager(DefaultSelectionFactordManager())
-    private val playerManager = PlayerManager(DefaultPlayerManager())
-    private val enemyManager = EnemyManager(DefaultEnemyManager())
-    private val textManager = TextManager(DefaultTextManager())
-    private val soundManager = SoundManager(DefaultSoundManager())
-
     companion object {
         val startCardList: MutableList<Card> = mutableListOf()
     }
@@ -31,21 +30,16 @@ class StartCardPack {
                 Component.text("바라보는 적에게 5의 피해를 입힌다.", TextColorType.Gray.textColor)
             ), CardRarity.Common, 1,
             { usePlayerData, _ ->
-                selectionFactordManager.run {
-                    val player = usePlayerData.player
-                    val target = usePlayerData.focusOn()
+                val player = usePlayerData.player
+                val target = usePlayerData.focusOn()
 
-                    if (target !is Enemy) {
-                        val targetingFailText = textManager.targetingFailText()
-                        player.sendMessage(targetingFailText)
-                        soundManager.run { player.playTargetingFailSound() }
-                        return@Card false
-                    }
-
-                    enemyManager.run {
-                        target.damage(5, usePlayerData)
-                    }
+                if (target !is Enemy) {
+                    player.sendMessage(targetingFailText())
+                    player.playTargetingFailSound()
+                    return@Card false
                 }
+
+                target.damage(5, usePlayerData)
                 return@Card true
             }
         )
@@ -57,9 +51,7 @@ class StartCardPack {
                 Component.text("체력을 5 회복한다.", TextColorType.Gray.textColor)
             ), CardRarity.Common, 1,
             { usePlayerData, _ ->
-                playerManager.run {
-                    usePlayerData.heal(5, usePlayerData)
-                }
+                usePlayerData.heal(5, usePlayerData)
                 return@Card true
             }
         )
@@ -71,21 +63,17 @@ class StartCardPack {
                 Component.text("바라보는 적에게 12의 피해를 입힌다", TextColorType.Gray.textColor)
             ), CardRarity.Common, 2,
             { usePlayerData, _ ->
-                selectionFactordManager.run {
-                    val player = usePlayerData.player
-                    val target = usePlayerData.focusOn()
+                val player = usePlayerData.player
+                val target = usePlayerData.focusOn()
 
-                    if (target !is Enemy) {
-                        val targetingFailText = textManager.targetingFailText()
-                        player.sendMessage(targetingFailText)
-                        soundManager.run { player.playTargetingFailSound() }
-                        return@Card false
-                    }
-
-                    enemyManager.run {
-                        target.damage(12, usePlayerData)
-                    }
+                if (target !is Enemy) {
+                    player.sendMessage(targetingFailText())
+                    player.playTargetingFailSound()
+                    return@Card false
                 }
+
+                target.damage(12, usePlayerData)
+
                 return@Card true
             }
         )
@@ -97,9 +85,7 @@ class StartCardPack {
                 KeywordType.Mana.component.append(Component.text("를 1 회복한다.", TextColorType.Gray.textColor))
             ), CardRarity.Common, 0,
             { usePlayerData, _ ->
-                playerManager.run {
-                    usePlayerData.addMana(1)
-                }
+                usePlayerData.addMana(1)
                 return@Card true
             }
         )
@@ -111,21 +97,16 @@ class StartCardPack {
                 Component.text("바라보는 적에게 20의 피해를 입힌다.", TextColorType.Gray.textColor)
             ), CardRarity.Common, 3,
             { usePlayerData, _ ->
-                selectionFactordManager.run {
-                    val player = usePlayerData.player
-                    val target = usePlayerData.focusOn()
+                val player = usePlayerData.player
+                val target = usePlayerData.focusOn()
 
-                    if (target !is Enemy) {
-                        val targetingFailText = textManager.targetingFailText()
-                        player.sendMessage(targetingFailText)
-                        soundManager.run { player.playTargetingFailSound() }
-                        return@Card false
-                    }
-
-                    enemyManager.run {
-                        target.damage(20, usePlayerData)
-                    }
+                if (target !is Enemy) {
+                    player.sendMessage(targetingFailText())
+                    player.playTargetingFailSound()
+                    return@Card false
                 }
+                target.damage(20, usePlayerData)
+
                 return@Card true
             }
         )

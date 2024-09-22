@@ -5,6 +5,8 @@ import net.kyori.adventure.text.format.TextDecoration
 import org.beobma.projectturngame.entity.enemy.Enemy
 import org.beobma.projectturngame.entity.player.Player
 import org.beobma.projectturngame.info.Info
+import org.beobma.projectturngame.manager.BattleManager.enemyLocationRetake
+import org.beobma.projectturngame.manager.GameManager.battleStop
 import org.beobma.projectturngame.text.TextColorType
 import org.bukkit.attribute.Attribute
 
@@ -48,8 +50,6 @@ class DefaultEnemyManager : EnemyHandler{
 
     override fun Enemy.death() {
         val game = Info.game ?: return
-        val gameManager = GameManager(DefaultGameManager())
-        val battleManager = BattleManager(DefaultBattleManager())
 
         if (this.isDead) {
             return
@@ -60,11 +60,9 @@ class DefaultEnemyManager : EnemyHandler{
         this.entity.remove()
 
         if (game.gameEnemys.size < 1) {
-            gameManager.run {
-                game.battleStop()
-            }
+            game.battleStop()
         } else {
-            battleManager.enemyLocationRetake()
+            enemyLocationRetake()
         }
     }
 
@@ -112,7 +110,9 @@ class DefaultEnemyManager : EnemyHandler{
     }
 }
 
-class EnemyManager(private val converter: EnemyHandler) {
+object EnemyManager {
+    private val converter: EnemyHandler = DefaultEnemyManager()
+
     fun Enemy.set() {
         converter.run { this@set.set() }
     }

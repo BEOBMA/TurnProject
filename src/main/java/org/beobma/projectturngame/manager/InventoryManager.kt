@@ -5,6 +5,8 @@ import org.beobma.projectturngame.card.Card
 import org.beobma.projectturngame.game.GameField
 import org.beobma.projectturngame.info.Info
 import org.beobma.projectturngame.localization.Localization
+import org.beobma.projectturngame.manager.CardManager.toItem
+import org.beobma.projectturngame.manager.GameManager.stop
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
@@ -41,18 +43,13 @@ class DefaultInventoryManager : InventoryHandler {
         this.openInventory(inventory)
     }
 
-
     private fun Player.loadDeckToInventory() {
         val game = Info.game ?: return
-        val cardManager = CardManager(DefaultCardManager())
         val playerData = game.playerDatas.find { it.player == this } ?: return
         val inventoryDeck = playerData.deck
         val nonHotbarSlots = 35
-
-        cardManager.run {
-            inventoryDeck.take(nonHotbarSlots).forEachIndexed { index, card ->
-                this@loadDeckToInventory.inventory.setItem(index + 9, card.toItem())
-            }
+        inventoryDeck.take(nonHotbarSlots).forEachIndexed { index, card ->
+            this@loadDeckToInventory.inventory.setItem(index + 9, card.toItem())
         }
     }
 
@@ -101,9 +98,7 @@ class DefaultInventoryManager : InventoryHandler {
 
     private fun createSectorInventory() {
         val game = Info.game ?: return
-
         val localization = Localization()
-        val gameManager = GameManager(DefaultGameManager())
         val emptySlot = localization.emptySlot
         val inventory: Inventory = Bukkit.createInventory(null, 27, Component.text("다음에 진행할 필드를 선택하세요."))
 
@@ -123,13 +118,12 @@ class DefaultInventoryManager : InventoryHandler {
                 fieldList.remove(field)
             }
         }
-        if (inventory.getItem(11) == emptySlot && inventory.getItem(13) == emptySlot && inventory.getItem(15) == emptySlot) gameManager.run { game.stop() }
+        if (inventory.getItem(11) == emptySlot && inventory.getItem(13) == emptySlot && inventory.getItem(15) == emptySlot) game.stop()
         game.gameMapInventory = inventory
     }
 
     private fun createCompensationInventory(cardList: List<Card>): Inventory {
         val localization = Localization()
-        val cardManager = CardManager(DefaultCardManager())
         val emptySlot = localization.emptySlot
         val inventory: Inventory = Bukkit.createInventory(null, 27, Component.text("일반 보상"))
 
@@ -139,17 +133,17 @@ class DefaultInventoryManager : InventoryHandler {
 
 
         if (cardList.size > 3) {
-            cardManager.run {
-                inventory.setItem(11, cardList[0].toItem())
-                inventory.setItem(13, cardList[1].toItem())
-                inventory.setItem(15, cardList[2].toItem())
-            }
+            inventory.setItem(11, cardList[0].toItem())
+            inventory.setItem(13, cardList[1].toItem())
+            inventory.setItem(15, cardList[2].toItem())
         }
         return inventory
     }
 }
 
-class InventoryManager(private val converter: InventoryHandler) {
+object InventoryManager {
+    private val converter: InventoryHandler = DefaultInventoryManager()
+
     fun Player.openMapInventory(inventoryOpenType: InventoryOpenType) {
         converter.run { this@openMapInventory.openMapInventory(inventoryOpenType) }
     }

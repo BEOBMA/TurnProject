@@ -8,19 +8,24 @@ import org.beobma.projectturngame.config.CardConfig.Companion.cardList
 import org.beobma.projectturngame.config.CardConfig.Companion.cardPackList
 import org.beobma.projectturngame.entity.enemy.Enemy
 import org.beobma.projectturngame.localization.Dictionary
-import org.beobma.projectturngame.manager.*
+import org.beobma.projectturngame.manager.CardManager.cardThrow
+import org.beobma.projectturngame.manager.CardManager.clearHand
+import org.beobma.projectturngame.manager.CardManager.drow
+import org.beobma.projectturngame.manager.EnemyManager.damage
+import org.beobma.projectturngame.manager.PlayerManager.addMana
+import org.beobma.projectturngame.manager.PlayerManager.addTag
+import org.beobma.projectturngame.manager.PlayerManager.death
+import org.beobma.projectturngame.manager.PlayerManager.diceRoll
+import org.beobma.projectturngame.manager.PlayerManager.heal
+import org.beobma.projectturngame.manager.PlayerManager.setMana
+import org.beobma.projectturngame.manager.SelectionFactordManager.focusOn
+import org.beobma.projectturngame.manager.SoundManager.playTargetingFailSound
+import org.beobma.projectturngame.manager.TextManager.targetingFailText
 import org.beobma.projectturngame.text.KeywordType
 import org.beobma.projectturngame.text.TextColorType
 import org.beobma.projectturngame.util.ResetType
 
 class IcosahedronCardPack {
-    private val selectionFactordManager = SelectionFactordManager(DefaultSelectionFactordManager())
-    private val playerManager = PlayerManager(DefaultPlayerManager())
-    private val enemyManager = EnemyManager(DefaultEnemyManager())
-    private val textManager = TextManager(DefaultTextManager())
-    private val soundManager = SoundManager(DefaultSoundManager())
-    private val cardManager = CardManager(DefaultCardManager())
-    private val utilManager = UtilManager(DefaultUtilManager())
     private val dictionary = Dictionary()
 
     init {
@@ -41,19 +46,17 @@ class IcosahedronCardPack {
             ), CardRarity.Common, 1,
             { usePlayerData, _ ->
                 val player = usePlayerData.player
-                val target = selectionFactordManager.run {usePlayerData.focusOn() }
+                val target = usePlayerData.focusOn()
 
                 if (target !is Enemy) {
-                    val targetingFailText = textManager.targetingFailText()
-                    player.sendMessage(targetingFailText)
-                    soundManager.run { player.playTargetingFailSound() }
+                    player.sendMessage(targetingFailText())
+                    player.playTargetingFailSound()
                     return@Card false
                 }
 
-                val dice = playerManager.run { usePlayerData.diceRoll(1, 20) }
-                enemyManager.run {
-                    target.damage(dice, usePlayerData)
-                }
+                val dice = usePlayerData.diceRoll(1, 20)
+
+                target.damage(dice, usePlayerData)
                 return@Card true
             }
         )
@@ -67,18 +70,14 @@ class IcosahedronCardPack {
                 Component.text("이 외의 경우에는 패에서 무작위 카드 1장을 버린다.", TextColorType.Gray.textColor)
             ), CardRarity.Common, 1,
             { usePlayerData, _ ->
-                val dice = playerManager.run { usePlayerData.diceRoll(1, 20) }
+                val dice = usePlayerData.diceRoll(1, 20)
 
                 if (dice >= 10) {
-                    cardManager.run {
-                        usePlayerData.drow(2)
-                    }
+                    usePlayerData.drow(2)
                 }
                 else {
                     val card = usePlayerData.hand.random()
-                    cardManager.run {
-                        usePlayerData.cardThrow(card)
-                    }
+                    usePlayerData.cardThrow(card)
                 }
                 return@Card true
             }
@@ -93,25 +92,16 @@ class IcosahedronCardPack {
                 Component.text("이 외의 경우에는 ", TextColorType.Gray.textColor).append(KeywordType.Mana.component.append(Component.text("를 0으로 만들고 패의 카드를 전부 버린다.", TextColorType.Gray.textColor)))
             ), CardRarity.Common, 3,
             { usePlayerData, _ ->
-                val dice = playerManager.run { usePlayerData.diceRoll(1, 20) }
+                val dice = usePlayerData.diceRoll(1, 20)
 
                 if (dice == 20) {
-                    playerManager.run {
-                        usePlayerData.addMana(usePlayerData.maxMana)
-                    }
+                    usePlayerData.addMana(usePlayerData.maxMana)
 
-                    cardManager.run {
-                        usePlayerData.drow(5)
-                    }
+                    usePlayerData.drow(5)
                 }
                 else {
-                    playerManager.run {
-                        usePlayerData.setMana(0)
-                    }
-
-                    cardManager.run {
-                        usePlayerData.clearHand()
-                    }
+                    usePlayerData.setMana(0)
+                    usePlayerData.clearHand()
                 }
                 return@Card true
             }
@@ -127,26 +117,21 @@ class IcosahedronCardPack {
             ), CardRarity.Uncommon, 0,
             { usePlayerData, _ ->
                 val player = usePlayerData.player
-                val target = selectionFactordManager.run {usePlayerData.focusOn() }
+                val target = usePlayerData.focusOn()
 
                 if (target !is Enemy) {
-                    val targetingFailText = textManager.targetingFailText()
-                    player.sendMessage(targetingFailText)
-                    soundManager.run { player.playTargetingFailSound() }
+                    player.sendMessage(targetingFailText())
+                    player.playTargetingFailSound()
                     return@Card false
                 }
 
-                val dice = playerManager.run { usePlayerData.diceRoll(1, 20) }
+                val dice = usePlayerData.diceRoll(1, 20)
 
                 if (dice == 1) {
-                    playerManager.run {
-                        usePlayerData.death()
-                    }
+                    usePlayerData.death()
                 }
                 else {
-                    enemyManager.run {
-                        target.damage(15, usePlayerData)
-                    }
+                    target.damage(15, usePlayerData)
                 }
                 return@Card true
             }
@@ -161,17 +146,14 @@ class IcosahedronCardPack {
                 Component.text("값이 홀수라면 ", TextColorType.Gray.textColor).append(KeywordType.Mana.component.append(Component.text("를 1 회복한다.", TextColorType.Gray.textColor)))
             ), CardRarity.Uncommon, 1,
             { usePlayerData, _ ->
-                val dice = playerManager.run { usePlayerData.diceRoll(1, 20) }
+                val dice = usePlayerData.diceRoll(1, 20)
 
                 if (dice % 2 == 0) {
-                    playerManager.run {
-                        usePlayerData.addMana(2)
-                    }
+                    usePlayerData.addMana(2)
                 }
                 else {
-                    playerManager.run {
-                        usePlayerData.addMana(1)
-                    }
+                    usePlayerData.addMana(1)
+
                 }
                 return@Card true
             }
@@ -184,11 +166,10 @@ class IcosahedronCardPack {
                 Component.text("체력을 20면체 주사위를 굴려 나온 값만큼 회복한다.", TextColorType.Gray.textColor),
             ), CardRarity.Uncommon, 1,
             { usePlayerData, _ ->
-                val dice = playerManager.run { usePlayerData.diceRoll(1, 20) }
+                val dice = usePlayerData.diceRoll(1, 20)
 
-                playerManager.run {
-                    usePlayerData.heal(dice, usePlayerData)
-                }
+                usePlayerData.heal(dice, usePlayerData)
+
                 return@Card true
             }
         )
@@ -215,7 +196,7 @@ class IcosahedronCardPack {
                 Component.text("이외의 경우에는 이번 턴 동안 주사위를 굴려 나온 값에 이 주사위 값을 더한다.", TextColorType.Gray.textColor),
             ), CardRarity.Rare, 1,
             { usePlayerData, _ ->
-                val dice = playerManager.run { usePlayerData.diceRoll(1, 20) }
+                val dice = usePlayerData.diceRoll(1, 20)
 
                 if (dice >= 10) {
                     usePlayerData.diceWeight -= dice
@@ -236,9 +217,8 @@ class IcosahedronCardPack {
                 Component.text("다음번 주사위를 굴리면 그 값은 반드시 최솟값 또는 최댓값으로 결정된다.", TextColorType.Gray.textColor)
             ), CardRarity.Rare, 2,
             { usePlayerData, _ ->
-                playerManager.run {
-                    usePlayerData.addTag("minMax", ResetType.None)
-                }
+                usePlayerData.addTag("minMax", ResetType.None)
+
                 return@Card true
             }
         )
@@ -250,9 +230,7 @@ class IcosahedronCardPack {
                 Component.text("다음번 주사위를 굴리면 주사위를 2개 굴려 더 높은 값이 나온 주사위를 사용한다.", TextColorType.Gray.textColor)
             ), CardRarity.Legend, 3,
             { usePlayerData, _ ->
-                playerManager.run {
-                    usePlayerData.addTag("chanceAdvantage", ResetType.None)
-                }
+                usePlayerData.addTag("chanceAdvantage", ResetType.None)
                 return@Card true
             }
         )

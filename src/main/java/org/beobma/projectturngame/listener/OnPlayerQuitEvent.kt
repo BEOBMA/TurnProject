@@ -1,8 +1,7 @@
 package org.beobma.projectturngame.listener
 
 import org.beobma.projectturngame.info.Info
-import org.beobma.projectturngame.manager.DefaultGameManager
-import org.beobma.projectturngame.manager.GameManager
+import org.beobma.projectturngame.manager.GameManager.stop
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Location
@@ -16,22 +15,20 @@ class OnPlayerQuitEvent : Listener {
     fun onPlayerQuit(event: PlayerQuitEvent) {
         val player = event.player
         val game = Info.game ?: return
-        val gameManager = GameManager(DefaultGameManager())
 
         if (player in game.players) {
             if (game.players.size <= 1) {
-                gameManager.run {
-                    game.stop()
-                }
+                game.stop()
             } else {
                 val playerData = game.playerDatas.find { it.player == player }
+                val tags = player.scoreboardTags.toList()
+
                 game.players.remove(player)
                 game.playerDatas.remove(playerData)
-
                 player.isGlowing = false
                 player.inventory.clear()
                 player.gameMode = GameMode.ADVENTURE
-                val tags = player.scoreboardTags.toList()
+
                 tags.forEach { tag ->
                     player.removeScoreboardTag(tag)
                 }

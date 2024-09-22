@@ -7,6 +7,9 @@ import org.beobma.projectturngame.card.CardRarity
 import org.beobma.projectturngame.config.CardConfig.Companion.cardList
 import org.beobma.projectturngame.entity.player.Player
 import org.beobma.projectturngame.info.Info
+import org.beobma.projectturngame.manager.PlayerManager.addMana
+import org.beobma.projectturngame.manager.PlayerManager.graveyardReset
+import org.beobma.projectturngame.manager.TextManager.cardNotAvailableText
 import org.beobma.projectturngame.text.KeywordType
 import org.beobma.projectturngame.text.TextColorType
 import org.bukkit.Material
@@ -36,12 +39,9 @@ interface CardHandler {
 
 class DefaultCardManager : CardHandler {
     override fun Player.use(card: Card) {
-        val textManager = TextManager(DefaultTextManager())
-        val playerManager = PlayerManager(DefaultPlayerManager())
-
         // 사용 불가
         if (card.description.contains(KeywordType.NotAvailable.component)) {
-            this.player.sendMessage(textManager.cardNotAvailableText())
+            this.player.sendMessage(cardNotAvailableText())
             return
         }
 
@@ -54,20 +54,19 @@ class DefaultCardManager : CardHandler {
 
         // 카드 사용에 성공한 경우
         this.hand.remove(card)
-        playerManager.run { this@use.addMana(-(card.cost)) }
+        this@use.addMana(-card.cost)
         card.postCardUseEffect?.invoke(this@use, card)
         applyHotbar()
     }
 
     override fun Player.drow(int: Int) {
         val game = Info.game ?: return
-        val playerManager = PlayerManager(DefaultPlayerManager())
 
         repeat(int) {
             if (this.hand.size >= 9) return
 
             val drawCard = deck.removeFirstOrNull() ?: run {
-                playerManager.run { this@drow.graveyardReset() }
+                graveyardReset()
                 deck.removeFirstOrNull()
             } ?: return
 
@@ -209,7 +208,9 @@ class DefaultCardManager : CardHandler {
     }
 }
 
-class CardManager(private val converter: CardHandler) {
+object CardManager {
+    private val converter: CardHandler = DefaultCardManager()
+
     fun Player.use(card: Card) {
         converter.run { use(card) }
     }
