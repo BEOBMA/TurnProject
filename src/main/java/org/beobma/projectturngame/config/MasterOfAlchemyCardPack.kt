@@ -105,6 +105,7 @@ class MasterOfAlchemyCardPack {
                 val cardB = usePlayerData.alchemYingredientsPile.random()
                 usePlayerData.alchemYingredientsPile.remove(cardB)
 
+                // setOf() 로 간소화 예정
                 usePlayerData.getCard(
                     when {
                         cardA.name == "물" && cardB.name == "물" -> {
