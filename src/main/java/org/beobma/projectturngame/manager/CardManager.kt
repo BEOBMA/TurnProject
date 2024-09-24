@@ -17,11 +17,12 @@ import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 
 
+// 파라미터 vararg -> List로 변경 필요
 interface CardHandler {
     fun Player.use(card: Card)
     fun Player.drow(int: Int)
     fun Player.cardThrow(vararg card: Card)
-    fun Player.getCard(vararg card: Card)
+    fun Player.getCard(vararg card: Card) // addCard로 변경 필요
     fun Player.addDeckCard(vararg card: Card)
     fun Player.clearHand()
     fun Player.clearGraveyard()
