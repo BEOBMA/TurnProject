@@ -12,6 +12,8 @@ import org.beobma.projectturngame.util.ResetType
 import org.beobma.projectturngame.util.ResetType.*
 import kotlin.random.Random
 
+// 미래를 위한 용어 변경 예정
+// 기존 add 함수를 add / remove 함수로 개별화 예정
 interface PlayerHandler {
     fun Player.deckShuffle()
     fun Player.graveyardReset()
