@@ -105,13 +105,12 @@ class MasterOfAlchemyCardPack {
                 val cardB = usePlayerData.alchemYingredientsPile.random()
                 usePlayerData.alchemYingredientsPile.remove(cardB)
 
-                // setOf() 로 간소화 예정
                 usePlayerData.getCard(
-                    when {
-                        cardA.name == "물" && cardB.name == "물" -> {
+                    when (setOf(cardA.name, cardB.name)) {
+                        setOf("물, 물") -> {
                             river
                         }
-                        cardA.name == "불" && cardB.name == "불" -> {
+                        setOf("불, 불") -> {
                             // 태양
                             Card(
                                 "물", listOf(
@@ -123,7 +122,7 @@ class MasterOfAlchemyCardPack {
                                 ), CardRarity.Common, 0
                             )
                         }
-                        cardA.name == "흙" && cardB.name == "흙" -> {
+                        setOf("흙, 흙") -> {
                             // 대지
                             Card(
                                 "물", listOf(
@@ -135,7 +134,7 @@ class MasterOfAlchemyCardPack {
                                 ), CardRarity.Common, 0
                             )
                         }
-                        cardA.name == "공기" && cardB.name == "공기" -> {
+                        setOf("공기, 공기") -> {
                             // 바람
                             Card(
                                 "물", listOf(
@@ -147,8 +146,7 @@ class MasterOfAlchemyCardPack {
                                 ), CardRarity.Common, 0
                             )
                         }
-
-                        cardA.name == "물" && cardB.name == "불" || cardA.name == "불" && cardB.name == "물" -> {
+                        setOf("물, 불") -> {
                             // 증기
                             Card(
                                 "물", listOf(
@@ -160,7 +158,7 @@ class MasterOfAlchemyCardPack {
                                 ), CardRarity.Common, 0
                             )
                         }
-                        cardA.name == "물" && cardB.name == "흙" || cardA.name == "흙" && cardB.name == "물" -> {
+                        setOf("물, 흙") -> {
                             // 진흙
                             Card(
                                 "물", listOf(
@@ -172,7 +170,7 @@ class MasterOfAlchemyCardPack {
                                 ), CardRarity.Common, 0
                             )
                         }
-                        cardA.name == "물" && cardB.name == "공기" || cardA.name == "공기" && cardB.name == "물" -> {
+                        setOf("물, 공기") -> {
                             // 안개
                             Card(
                                 "물", listOf(
@@ -184,7 +182,7 @@ class MasterOfAlchemyCardPack {
                                 ), CardRarity.Common, 0
                             )
                         }
-                        cardA.name == "불" && cardB.name == "흙" || cardA.name == "흙" && cardB.name == "불" -> {
+                        setOf("불, 흙") -> {
                             // 용암
                             Card(
                                 "물", listOf(
@@ -196,7 +194,7 @@ class MasterOfAlchemyCardPack {
                                 ), CardRarity.Common, 0
                             )
                         }
-                        cardA.name == "불" && cardB.name == "공기" || cardA.name == "공기" && cardB.name == "불" -> {
+                        setOf("불, 공기") -> {
                             // 번개
                             Card(
                                 "물", listOf(
@@ -208,7 +206,7 @@ class MasterOfAlchemyCardPack {
                                 ), CardRarity.Common, 0
                             )
                         }
-                        cardA.name == "흙" && cardB.name == "공기" || cardA.name == "공기" && cardB.name == "흙" -> {
+                        setOf("흙, 공기") -> {
                             // 먼지
                             Card(
                                 "물", listOf(
@@ -222,11 +220,7 @@ class MasterOfAlchemyCardPack {
                         }
 
                         else -> {
-                            Card(
-                                "연금술 잔여물", listOf(
-                                    Component.text("연금술에 실패한 잔여물.")
-                                ), CardRarity.Common, 0
-                            )
+                            return@Card false
                         }
                     }
                 )
