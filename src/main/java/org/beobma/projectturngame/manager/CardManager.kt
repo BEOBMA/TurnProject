@@ -54,6 +54,7 @@ class DefaultCardManager : CardHandler {
         if (!isUsing) return
 
         // 카드 사용에 성공한 경우
+        // 각종 키워드 효과를 이곳으로 이동 예정
         this.hand.remove(card)
         this@use.addMana(-card.cost)
         card.postCardUseEffect?.invoke(this@use, card)
