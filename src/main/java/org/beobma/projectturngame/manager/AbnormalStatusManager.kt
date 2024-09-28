@@ -1,7 +1,10 @@
 package org.beobma.projectturngame.manager
 
+import org.beobma.projectturngame.abnormalityStatus.AbnormalityStatus
+import org.beobma.projectturngame.entity.Entity
 import org.beobma.projectturngame.entity.player.Player
 import org.beobma.projectturngame.manager.PlayerManager.death
+import org.beobma.projectturngame.text.KeywordType
 import org.bukkit.attribute.Attribute
 
 
@@ -95,17 +98,78 @@ object MaxHealthManager {
     }
 }
 
-
-
-interface AbnormalStatusHandler {
-
+interface BurnHandler {
+    fun Player.increaseBurn(int: Int, caster: Entity)
+    fun Player.getBurn(): AbnormalityStatus?
+    fun Player.setBurn(int: Int, caster: Entity)
+    fun Player.decreaseBurn(int: Int, caster: Entity)
 }
 
-class DefaultAbnormalStatusHandler : AbnormalStatusHandler {
+class DefaultBurnHandler : BurnHandler {
+    override fun Player.increaseBurn(int: Int, caster: Entity) {
+        val burn = this.getBurn()
 
+        if (burn is AbnormalityStatus) {
+            burn.caster.add(caster)
+            burn.power += int
+        }
+        else {
+            this.abnormalityStatus.add(AbnormalityStatus(KeywordType.Burn, mutableListOf(caster), int))
+        }
+    }
+
+    override fun Player.getBurn(): AbnormalityStatus? {
+        val abnormalityStatus = this.abnormalityStatus.find { it.keywordType == KeywordType.Burn}
+
+        return if (abnormalityStatus !is AbnormalityStatus) {
+            return null
+        } else {
+            abnormalityStatus
+        }
+    }
+
+    override fun Player.setBurn(int: Int, caster: Entity) {
+        val burn = this.getBurn()
+
+        if (burn is AbnormalityStatus) {
+            burn.caster.add(caster)
+            burn.power = int
+        }
+        else {
+            this.abnormalityStatus.add(AbnormalityStatus(KeywordType.Burn, mutableListOf(caster), int))
+        }
+    }
+
+    override fun Player.decreaseBurn(int: Int, caster: Entity) {
+        val burn = this.getBurn()
+
+        if (burn is AbnormalityStatus) {
+            burn.caster.add(caster)
+
+            if (burn.power - int <= 0) {
+                this.abnormalityStatus.remove(burn)
+            }
+            burn.power -= int
+        }
+    }
 }
 
-object AbnormalStatusManager {
-    private val converter: AbnormalStatusHandler = DefaultAbnormalStatusHandler()
+object BurnManager {
+    private val converter: BurnHandler = DefaultBurnHandler()
 
+    fun Player.increaseBurn(int: Int) {
+        converter.run { increaseBurn(int) }
+    }
+
+    fun Player.getBurn(): AbnormalityStatus? {
+        return converter.run { getBurn() }
+    }
+
+    fun Player.setBurn(int: Int) {
+        return converter.run { setBurn(int) }
+    }
+
+    fun Player.decreaseBurn(int: Int){
+        converter.run { decreaseBurn(int) }
+    }
 }
