@@ -17,5 +17,6 @@ enum class KeywordType(val component: Component) {
     TrueDamage(Component.text("고정 피해", TextColorType.White.textColor).decorate(TextDecoration.BOLD)),
     AlchemYingredientsPile(Component.text("연금술 재료 더미", TextColorType.Gold.textColor).decorate(TextDecoration.BOLD)),
     AlchemYingredients(Component.text("연금술 재료", TextColorType.Gold.textColor).decorate(TextDecoration.BOLD)),
-    Ductility(Component.text("연성", TextColorType.Gold.textColor).decorate(TextDecoration.BOLD))
+    Ductility(Component.text("연성", TextColorType.Gold.textColor).decorate(TextDecoration.BOLD)),
+    Burn(Component.text("화상", TextColorType.Red.textColor).decorate(TextDecoration.BOLD))
 }

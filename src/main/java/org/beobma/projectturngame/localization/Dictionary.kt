@@ -34,6 +34,8 @@ class Dictionary {
             "연금술 재료", KeywordType.AlchemYingredients.component.append(Component.text(": Q를 누르면 연금술 재료 더미에 넣을 수 있으며, 새로운 카드를 연성하는데 사용할 수 있다. 다시 꺼낼 수는 없다.", TextColorType.Gray.textColor))
         ), Pair(
             "연성", KeywordType.Ductility.component.append(Component.text(": 연금술 재료 더미에 있는 카드들을 게임에서 소멸시키고 그 카드들로 만들 수 있는 카드를 생성하고 패에 넣는다.", TextColorType.Gray.textColor))
+        ), Pair(
+            "화상", KeywordType.Burn.component.append(Component.text(": 다음 턴 시작 시 수치만큼 피해를 입고 수치를 절반으로 만든다.", TextColorType.Gray.textColor))
         )
     )
 }
