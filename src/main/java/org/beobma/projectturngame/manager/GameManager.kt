@@ -9,6 +9,7 @@ import org.beobma.projectturngame.config.StartCardPack.Companion.startCardList
 import org.beobma.projectturngame.entity.Entity
 import org.beobma.projectturngame.entity.enemy.Enemy
 import org.beobma.projectturngame.entity.player.Player
+import org.beobma.projectturngame.event.EntityTurnStartEvent
 import org.beobma.projectturngame.game.Game
 import org.beobma.projectturngame.game.GameDifficulty
 import org.beobma.projectturngame.game.GameField
@@ -194,6 +195,13 @@ class DefaultGameManager : GameHandler {
     }
 
     override fun Entity.turnStart() {
+        val event = EntityTurnStartEvent(this)
+        ProjectTurnGame.instance.server.pluginManager.callEvent(event)
+        if (event.isCancelled) {
+            this.turnEnd()
+            return
+        }
+
         if (this is Player) {
             this@turnStart.addMana(1)
 
@@ -226,7 +234,6 @@ class DefaultGameManager : GameHandler {
 
         if (this is Player) {
             this.player.run {
-                sendMessage(Component.text("턴을 종료했습니다.").decorate(TextDecoration.BOLD))
                 isGlowing = false
                 scoreboardTags.remove("this_Turn")
                 turnEndUnit.forEach {
