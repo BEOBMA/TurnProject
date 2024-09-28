@@ -19,7 +19,7 @@ class Dictionary {
         ), Pair(
             "휘발", KeywordType.Volatilization.component.append(Component.text(": 사용 시 묘지로 보내지지 않고, 게임에서 완전히 소멸한다.", TextColorType.Gray.textColor))
         ), Pair(
-            "동일 카드 소멸", KeywordType.SameCardDisappears.component.append(Component.text(": 사용 시 덱, 묘지에 있는 사용된 카드와 동일한 카드를 모두 제외한다.", TextColorType.Gray.textColor))
+            "동일 카드 소멸", KeywordType.SameCardDisappears.component.append(Component.text(": 사용 시 패, 덱, 묘지에 있는 카드명이 같은 카드를 모두 제외한다.", TextColorType.Gray.textColor))
         ), Pair(
             "고정", KeywordType.Fix.component.append(Component.text(": 이 카드명, 다른 카드명을 가진 카드의 효과로 카드가 이동되지 않는다. (만약, 카드 사용의 조건으로 이동시켜야할 경우 이동되지 않으며 만족한 것으로 간주한다.)", TextColorType.Gray.textColor))
         ), Pair(
