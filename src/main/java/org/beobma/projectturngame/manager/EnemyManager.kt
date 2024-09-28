@@ -8,6 +8,7 @@ import org.beobma.projectturngame.info.Info
 import org.beobma.projectturngame.manager.BattleManager.enemyLocationRetake
 import org.beobma.projectturngame.manager.GameManager.battleStop
 import org.beobma.projectturngame.text.TextColorType
+import org.beobma.projectturngame.util.DamageType
 import org.bukkit.attribute.Attribute
 
 interface EnemyHandler {
@@ -17,7 +18,7 @@ interface EnemyHandler {
     fun Enemy.setHealth(int: Int)
     fun Enemy.death()
 
-    fun Enemy.damage(damage: Int, attacker: Player?, isTrueDamage: Boolean = false)
+    fun Enemy.damage(damage: Int, attacker: Player?, damageTypes: List<DamageType>)
 }
 
 class DefaultEnemyManager : EnemyHandler{
@@ -59,21 +60,21 @@ class DefaultEnemyManager : EnemyHandler{
         game.gameEnemys.remove(this)
         this.entity.remove()
 
-        if (game.gameEnemys.size < 1) {
+        if (game.gameEnemys.isEmpty()) {
             game.battleStop()
         } else {
             enemyLocationRetake()
         }
     }
 
-    override fun Enemy.damage(damage: Int, attacker: Player?, isTrueDamage: Boolean) {
+    override fun Enemy.damage(damage: Int, attacker: Player?, damageTypes: List<DamageType>) {
         // 대상이 이미 사망한 경우
         if (this.isDead) return
 
         var finalDamage = damage
 
         // 고정 피해가 아닌 경우
-        if (!isTrueDamage) {
+        if (!damageTypes.contains(DamageType.True)) {
             // 피해 계산 추가
         }
 
@@ -125,7 +126,7 @@ object EnemyManager {
         converter.run { this@setHealth.setHealth(int) }
     }
 
-    fun Enemy.damage(damage: Int, attacker: Player?, isTrueDamage: Boolean = false) {
-        converter.run { this@damage.damage(damage, attacker, isTrueDamage) }
+    fun Enemy.damage(damage: Int, attacker: Player?, damageTypes: List<DamageType>) {
+        converter.run { this@damage.damage(damage, attacker, damageTypes) }
     }
 }

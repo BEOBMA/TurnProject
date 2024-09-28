@@ -8,6 +8,7 @@ import org.beobma.projectturngame.manager.BattleManager.playerLocationRetake
 import org.beobma.projectturngame.manager.GameManager.gameOver
 import org.beobma.projectturngame.manager.UtilManager.getScore
 import org.beobma.projectturngame.text.TextColorType
+import org.beobma.projectturngame.util.DamageType
 import org.beobma.projectturngame.util.ResetType
 import org.beobma.projectturngame.util.ResetType.*
 import kotlin.random.Random
@@ -26,7 +27,7 @@ interface PlayerHandler {
 
     fun Player.addShield(int: Int)
 
-    fun Player.damage(damage: Int, attacker: Enemy?, isTrueDamage: Boolean = false)
+    fun Player.damage(damage: Int, attacker: Enemy?, damageTypes: List<DamageType>)
     fun Player.heal(damage: Int, healer: Player)
     fun Player.death()
     fun Player.resurrection()
@@ -108,14 +109,14 @@ class DefaultPlayerManager : PlayerHandler {
         }
     }
 
-    override fun Player.damage(damage: Int, attacker: Enemy?, isTrueDamage: Boolean) {
+    override fun Player.damage(damage: Int, attacker: Enemy?, damageTypes: List<DamageType>) {
         // 대상이 이미 사망한 경우
         if (this.isDead) return
 
         var finalDamage = damage
 
         // 고정 피해가 아닌 경우
-        if (!isTrueDamage) {
+        if (!damageTypes.contains(DamageType.True)) {
             // 피해 계산 추가
         }
 
@@ -301,8 +302,8 @@ object PlayerManager {
         converter.run { this@death.death() }
     }
 
-    fun Player.damage(damage: Int, attacker: Enemy?, isTrueDamage: Boolean = false) {
-        converter.run { damage(damage, attacker, isTrueDamage) }
+    fun Player.damage(damage: Int, attacker: Enemy?, damageTypes: List<DamageType>) {
+        converter.run { damage(damage, attacker, damageTypes) }
     }
 
     fun Player.addShield(int: Int) {
