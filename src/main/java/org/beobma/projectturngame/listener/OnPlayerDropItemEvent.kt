@@ -15,7 +15,6 @@ class OnPlayerDropItemEvent : Listener {
         val player = event.player
         val game = Info.game ?: return
         val playerData = game.playerDatas.find { it.player == player } ?: return
-
         val card = item.itemStack.toCard()
         val description = card.description
 
@@ -23,7 +22,6 @@ class OnPlayerDropItemEvent : Listener {
             playerData.alchemYingredientsPile.add(card)
             playerData.hand.remove(card)
         }
-
         event.isCancelled = true
     }
 }
