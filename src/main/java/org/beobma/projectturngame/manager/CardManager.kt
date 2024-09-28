@@ -17,21 +17,19 @@ import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 
 
-// 파라미터 vararg -> List로 변경 필요
 interface CardHandler {
     fun Player.use(card: Card)
     fun Player.drow(int: Int)
-    fun Player.cardThrow(vararg card: Card)
-    fun Player.getCard(vararg card: Card) // addCard로 변경 필요
-    fun Player.addDeckCard(vararg card: Card)
+    fun Player.cardThrow(card: Card)
+    fun Player.addCard(card: Card)
+    fun Player.addDeckCard(card: Card)
     fun Player.clearHand()
     fun Player.clearGraveyard()
     fun Player.clearBanish()
     fun Player.clearDeck()
-    fun Player.cardBanish(vararg card: Card)
+    fun Player.cardBanish(cards: List<Card>)
     fun Player.extinction(card: Card)
 
-    fun filterIsMoveCard(vararg card: Card): List<Card>
     fun findCard(name: String): Card?
     fun Card.toItem(): ItemStack
     fun ItemStack.toCard(): Card
@@ -53,12 +51,49 @@ class DefaultCardManager : CardHandler {
         // 카드 사용에 실패한 경우
         if (!isUsing) return
 
-        // 카드 사용에 성공한 경우
-        // 각종 키워드 효과를 이곳으로 이동 예정
-        this.hand.remove(card)
         this@use.addMana(-card.cost)
+
+        // 사용 후 카드 처리
+        this.useCardProcessing(card)
+
         card.postCardUseEffect?.invoke(this@use, card)
         applyHotbar()
+    }
+
+    private fun Player.useCardProcessing(card: Card) {
+        // 잔존 카드 처리
+        if (card.description.contains(KeywordType.Remnant.component)) {
+            return
+        }
+
+        // 소멸 카드 처리
+        if (card.description.contains(KeywordType.Extinction.component)) {
+            this.hand.remove(card)
+            this.banish.add(card)
+            return
+        }
+
+        // 휘발 카드 처리
+        if (card.description.contains(KeywordType.Volatilization.component)) {
+            this.hand.remove(card)
+            return
+        }
+
+        // 동일 카드 소멸 카드 처리
+        if (card.description.contains(KeywordType.SameCardDisappears.component)) {
+            val handCards = this.hand.filter { it.name == card.name }
+            this.hand.removeAll(handCards)
+            this.banish.addAll(handCards)
+
+            val deckCards = this.deck.filter { it.name == card.name }
+            this.deck.removeAll(deckCards)
+            this.banish.addAll(deckCards)
+
+            val graveyardCards = this.graveyard.filter { it.name == card.name }
+            this.graveyard.removeAll(graveyardCards)
+            this.banish.addAll(graveyardCards)
+            return
+        }
     }
 
     override fun Player.drow(int: Int) {
@@ -79,64 +114,66 @@ class DefaultCardManager : CardHandler {
         }
     }
 
-    override fun Player.cardThrow(vararg card: Card) {
-        card.forEach {
-            // 고정 효과가 적용된 경우
-            if (it.description.contains(KeywordType.Fix.component)) {
-                return@forEach
-            }
-
-            it.cardThrowEffect?.invoke(this, it)
-            this.hand.remove(it)
+    override fun Player.cardThrow(card: Card) {
+        // 고정 효과가 적용된 경우
+        if (card.description.contains(KeywordType.Fix.component)) {
+            return
         }
+
+        card.cardThrowEffect?.invoke(this, card)
+        this.hand.remove(card)
         applyHotbar()
     }
 
-    override fun Player.getCard(vararg card: Card) {
+    override fun Player.addCard(card: Card) {
         val game = Info.game ?: return
 
-        card.forEach {
-            if (this.hand.size >= 9) return
+        if (this.hand.size >= 9) return
 
-            this.hand.add(it)
-            game.drowCardInt++
-
-            this.applyHotbar()
-        }
+        this.hand.add(card)
+        game.drowCardInt++
+        this.applyHotbar()
     }
 
-    override fun Player.addDeckCard(vararg card: Card) {
-        card.forEach {
-            if (it.description.contains(KeywordType.Fix.component)) {
-                return
-            }
+    override fun Player.addDeckCard(card: Card) {
+        if (card.description.contains(KeywordType.Fix.component)) {
+            return
         }
-        this.deck.addAll(card)
+        this.deck.add(card)
     }
 
     override fun Player.clearHand() {
-        val cardList = filterIsMoveCard(*this.hand.toTypedArray())
+        // 고정된 카드 제외
+        val cardList = this.hand.filter { !it.description.contains(KeywordType.Fix.component) }
+
         this.hand.removeAll(cardList)
         applyHotbar()
     }
 
     override fun Player.clearGraveyard() {
-        val cardList = filterIsMoveCard(*this.graveyard.toTypedArray())
+        // 고정된 카드 제외
+        val cardList = this.hand.filter { !it.description.contains(KeywordType.Fix.component) }
+
         this.graveyard.removeAll(cardList)
     }
 
     override fun Player.clearBanish() {
-        val cardList = filterIsMoveCard(*this.banish.toTypedArray())
+        // 고정된 카드 제외
+        val cardList = this.hand.filter { !it.description.contains(KeywordType.Fix.component) }
+
         this.banish.removeAll(cardList)
     }
 
     override fun Player.clearDeck() {
-        val cardList = filterIsMoveCard(*this.deck.toTypedArray())
+        // 고정된 카드 제외
+        val cardList = this.hand.filter { !it.description.contains(KeywordType.Fix.component) }
+
         this.deck.removeAll(cardList)
     }
 
-    override fun Player.cardBanish(vararg card: Card) {
-        card.forEach {
+    override fun Player.cardBanish(cards: List<Card>) {
+        cards.forEach {
+            // 고정된 카드 제외
             if (!it.description.contains(KeywordType.Fix.component)) {
                 this.hand.remove(it)
             }
@@ -146,11 +183,6 @@ class DefaultCardManager : CardHandler {
 
     override fun Player.extinction(card: Card) {
         this.graveyard.remove(card)
-    }
-
-    override fun filterIsMoveCard(vararg card: Card): List<Card> {
-        val cardList = card.filter { !it.description.contains(KeywordType.Fix.component) }
-        return cardList
     }
 
     override fun findCard(name: String): Card? {
@@ -221,8 +253,8 @@ object CardManager {
         converter.run { drow(int) }
     }
 
-    fun Player.getCard(vararg card: Card) {
-        converter.run { getCard(*card) }
+    fun Player.getCard(card: Card) {
+        converter.run { addCard(card) }
     }
 
     fun Card.toItem(): ItemStack {
@@ -233,16 +265,16 @@ object CardManager {
         return converter.run { toCard() }
     }
 
-    fun Player.cardThrow(vararg card: Card) {
-        converter.run { cardThrow(*card) }
+    fun Player.cardThrow(card: Card) {
+        converter.run { cardThrow(card) }
     }
 
     fun Player.applyHotbar() {
         return converter.run { applyHotbar() }
     }
 
-    fun Player.addDeckCard(vararg card: Card) {
-        converter.run { addDeckCard(*card) }
+    fun Player.addDeckCard(cards: List<Card>) {
+        converter.run { addDeckCard(cards) }
     }
 
     fun Player.clearHand() {

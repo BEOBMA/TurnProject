@@ -161,13 +161,12 @@ class SelectionAndFocusCardPack {
                     player.playTargetingFailSound()
                     return@Card false
                 }
-
                 val cardList = usePlayerData.hand.filter { it !== card }
 
-                usePlayerData.cardThrow(*cardList.toTypedArray())
-
+                cardList.forEach {
+                    usePlayerData.cardThrow(it)
+                }
                 target.damage(40, usePlayerData)
-
                 return@Card true
             }
         )
@@ -241,7 +240,10 @@ class SelectionAndFocusCardPack {
                 val target = usePlayerData.allEnemyMembers()
                 val cardList = usePlayerData.hand.filter { it !== card }
 
-                usePlayerData.cardThrow(*cardList.toTypedArray())
+                cardList.forEach {
+                    usePlayerData.cardThrow(it)
+                }
+
 
                 target.forEach {
                     it.damage(((cardList.size * 10) / target.size), usePlayerData)

@@ -14,7 +14,6 @@ import org.beobma.projectturngame.manager.CardManager.clearDeck
 import org.beobma.projectturngame.manager.CardManager.clearGraveyard
 import org.beobma.projectturngame.manager.CardManager.clearHand
 import org.beobma.projectturngame.manager.CardManager.drow
-import org.beobma.projectturngame.manager.CardManager.extinction
 import org.beobma.projectturngame.manager.CardManager.filterIsMoveCard
 import org.beobma.projectturngame.manager.PlayerManager.addMana
 import org.beobma.projectturngame.manager.PlayerManager.heal
@@ -107,15 +106,12 @@ class CirculationCardPack {
 
                 val removeCardList = cardList.filter { it.description.contains(KeywordType.Fix.component) }
                 cardList.removeAll(removeCardList)
-                usePlayerData.addDeckCard(*cardList.toTypedArray())
+                usePlayerData.addDeckCard(cardList)
                 usePlayerData.clearHand()
                 usePlayerData.clearGraveyard()
                 usePlayerData.clearBanish()
                 usePlayerData.drow(5)
                 return@Card true
-            },
-            { usePlayerData, card ->
-                usePlayerData.extinction(card)
             }
         )
         //endregion
@@ -187,8 +183,9 @@ class CirculationCardPack {
                 Component.text("패의 카드를 모두 버린다.", TextColorType.Gray.textColor)
             ), CardRarity.Uncommon, 1,
             { usePlayerData, _ ->
-                usePlayerData.cardThrow(*usePlayerData.hand.toTypedArray())
-
+                usePlayerData.hand.forEach {
+                    usePlayerData.cardThrow(it)
+                }
                 return@Card true
             }
         )

@@ -239,7 +239,8 @@ class MasterOfAlchemyCardPack {
             ), CardRarity.Common, 1,
             { usePlayerData, _ ->
                 val cardList = listOf(water, fire, dirt, air)
-                usePlayerData.getCard(cardList.random(), cardList.random())
+                usePlayerData.getCard(cardList.random())
+                usePlayerData.getCard(cardList.random())
                 return@Card true
             }
         )
