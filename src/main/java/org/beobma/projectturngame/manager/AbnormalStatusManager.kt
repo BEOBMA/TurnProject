@@ -3,7 +3,6 @@ package org.beobma.projectturngame.manager
 import org.beobma.projectturngame.abnormalityStatus.AbnormalityStatus
 import org.beobma.projectturngame.entity.Entity
 import org.beobma.projectturngame.entity.player.Player
-import org.beobma.projectturngame.info.Info
 import org.beobma.projectturngame.manager.PlayerManager.death
 import org.beobma.projectturngame.text.KeywordType
 import org.bukkit.attribute.Attribute
@@ -252,100 +251,6 @@ object WeaknessManager {
     }
 }
 
-
-interface SlownessHandler {
-    fun Entity.increaseSlowness(int: Int, caster: Entity)
-    fun Entity.getSlowness(): AbnormalityStatus?
-    fun Entity.setSlowness(int: Int, caster: Entity)
-    fun Entity.decreaseSlowness(int: Int, caster: Entity)
-}
-
-class DefaultSlownessHandler : SlownessHandler {
-    override fun Entity.increaseSlowness(int: Int, caster: Entity) {
-        val slowness = this.getSlowness()
-
-        if (slowness is AbnormalityStatus) {
-            slowness.caster.add(caster)
-            slowness.power += int
-        }
-        else {
-            this.abnormalityStatus.add(AbnormalityStatus(KeywordType.Slowness, mutableListOf(caster), int))
-        }
-        turnOtherReload()
-    }
-
-    override fun Entity.getSlowness(): AbnormalityStatus? {
-        val abnormalityStatus = this.abnormalityStatus.find { it.keywordType == KeywordType.Slowness}
-
-        return if (abnormalityStatus !is AbnormalityStatus) {
-            return null
-        } else {
-            abnormalityStatus
-        }
-    }
-
-    override fun Entity.setSlowness(int: Int, caster: Entity) {
-        val slowness = this.getSlowness()
-
-        if (slowness is AbnormalityStatus) {
-            slowness.caster.add(caster)
-            slowness.power = int
-        }
-        else {
-            this.abnormalityStatus.add(AbnormalityStatus(KeywordType.Blindness, mutableListOf(caster), int))
-        }
-        turnOtherReload()
-    }
-
-    override fun Entity.decreaseSlowness(int: Int, caster: Entity) {
-        val slowness = this.getSlowness()
-
-        if (slowness is AbnormalityStatus) {
-            slowness.caster.add(caster)
-
-            if (slowness.power - int <= 0) {
-                this.abnormalityStatus.remove(slowness)
-            }
-            slowness.power -= int
-        }
-        turnOtherReload()
-    }
-
-
-    private fun turnOtherReload() {
-        val game = Info.game ?: return
-
-        game.gameTurnOrder.sortByDescending {
-            val slowness = it.abnormalityStatus.find { it.keywordType == KeywordType.Slowness }
-            if (slowness is AbnormalityStatus ) {
-                it.speed - slowness.power
-            }
-            else {
-                it.speed
-            }
-        }
-    }
-}
-
-object SlownessManager {
-    private val converter: SlownessHandler = DefaultSlownessHandler()
-
-    fun Entity.increaseSlowness(int: Int, caster: Entity) {
-        converter.run { increaseSlowness(int, caster) }
-    }
-
-    fun Entity.getSlowness(): AbnormalityStatus? {
-        return converter.run { getSlowness() }
-    }
-
-    fun Entity.setSlowness(int: Int, caster: Entity) {
-        return converter.run { setSlowness(int, caster) }
-    }
-
-    fun Entity.decreaseSlowness(int: Int, caster: Entity){
-        converter.run { decreaseSlowness(int, caster) }
-    }
-}
 
 interface BlindnessHandler {
     fun Entity.increaseBlindness(int: Int, caster: Entity)

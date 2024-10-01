@@ -14,19 +14,12 @@ class OnEntityTurnEndEvent : Listener {
         val entity = event.entity
 
         weaknessHandler(entity)
-        slownessHandler(entity)
     }
 
     private fun weaknessHandler(entity: Entity) {
         val weakness = entity.abnormalityStatus.find { it.keywordType == KeywordType.Weakness }
         if (weakness is AbnormalityStatus) {
             entity.abnormalityStatus.remove(weakness)
-        }
-    }
-    private fun slownessHandler(entity: Entity) {
-        val slowness = entity.abnormalityStatus.find { it.keywordType == KeywordType.Slowness }
-        if (slowness is AbnormalityStatus) {
-            entity.abnormalityStatus.remove(slowness)
         }
     }
 }

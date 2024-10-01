@@ -195,6 +195,8 @@ class DefaultGameManager : GameHandler {
     }
 
     override fun Entity.turnStart() {
+        val game = Info.game ?: return
+        game.gameTurnOrder.remove(this)
         val event = EntityTurnStartEvent(this)
         ProjectTurnGame.instance.server.pluginManager.callEvent(event)
         if (event.isCancelled) {
@@ -249,11 +251,9 @@ class DefaultGameManager : GameHandler {
                 scoreboardTags.remove("this_Turn")
             }
         }
-        game.gameTurnOrder.remove(this)
         val firstEntry = game.gameTurnOrder.firstOrNull()
         if (firstEntry != null) {
             firstEntry.turnStart()
-            game.gameTurnOrder.remove(firstEntry)
         } else {
             allTurnEnd()
         }
@@ -262,11 +262,17 @@ class DefaultGameManager : GameHandler {
     private fun allTurnStart() {
         val game = Info.game ?: return
         val speed: MutableMap<Int, MutableList<Entity>> = mutableMapOf()
+        val diceSides = 12
 
+        fun rollDice(sides: Int): Int {
+            return (1..sides).random()
+        }
 
-        fun addEntitySpeed(entity: Entity, speedMap: MutableMap<Int, MutableList<Entity>>, speed: Int?) {
-            speed?.let {
-                speedMap.getOrPut(it) { mutableListOf() }.add(entity)
+        fun addEntitySpeed(entity: Entity, speedMap: MutableMap<Int, MutableList<Entity>>, baseSpeed: Int?) {
+            baseSpeed?.let {
+                // 주사위를 굴려 나온 값과 속도를 더함
+                val finalSpeed = it + rollDice(diceSides)
+                speedMap.getOrPut(finalSpeed) { mutableListOf() }.add(entity)
             }
         }
 
@@ -281,14 +287,10 @@ class DefaultGameManager : GameHandler {
             val enemySpeed = it.speed
             addEntitySpeed(it, speed, enemySpeed)
         }
-
         val sortedSpeed = speed.toSortedMap(compareByDescending { it })
-        game.gameTurnOrder = sortedSpeed.values.flatten().toMutableList()
 
-        game.gameTurnOrder.firstOrNull()?.let { firstEntity ->
-            firstEntity.turnStart()
-            game.gameTurnOrder.remove(firstEntity)
-        } ?: allTurnEnd()
+        game.gameTurnOrder = sortedSpeed.values.flatten().toMutableList()
+        game.gameTurnOrder.firstOrNull()?.turnStart() ?: allTurnEnd()
     }
 
     private fun allTurnEnd() {
