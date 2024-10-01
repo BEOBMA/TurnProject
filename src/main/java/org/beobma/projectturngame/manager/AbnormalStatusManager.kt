@@ -99,14 +99,14 @@ object MaxHealthManager {
 }
 
 interface BurnHandler {
-    fun Player.increaseBurn(int: Int, caster: Entity)
-    fun Player.getBurn(): AbnormalityStatus?
-    fun Player.setBurn(int: Int, caster: Entity)
-    fun Player.decreaseBurn(int: Int, caster: Entity)
+    fun Entity.increaseBurn(int: Int, caster: Entity)
+    fun Entity.getBurn(): AbnormalityStatus?
+    fun Entity.setBurn(int: Int, caster: Entity)
+    fun Entity.decreaseBurn(int: Int, caster: Entity)
 }
 
 class DefaultBurnHandler : BurnHandler {
-    override fun Player.increaseBurn(int: Int, caster: Entity) {
+    override fun Entity.increaseBurn(int: Int, caster: Entity) {
         val burn = this.getBurn()
 
         if (burn is AbnormalityStatus) {
@@ -118,7 +118,7 @@ class DefaultBurnHandler : BurnHandler {
         }
     }
 
-    override fun Player.getBurn(): AbnormalityStatus? {
+    override fun Entity.getBurn(): AbnormalityStatus? {
         val abnormalityStatus = this.abnormalityStatus.find { it.keywordType == KeywordType.Burn}
 
         return if (abnormalityStatus !is AbnormalityStatus) {
@@ -128,7 +128,7 @@ class DefaultBurnHandler : BurnHandler {
         }
     }
 
-    override fun Player.setBurn(int: Int, caster: Entity) {
+    override fun Entity.setBurn(int: Int, caster: Entity) {
         val burn = this.getBurn()
 
         if (burn is AbnormalityStatus) {
@@ -140,7 +140,7 @@ class DefaultBurnHandler : BurnHandler {
         }
     }
 
-    override fun Player.decreaseBurn(int: Int, caster: Entity) {
+    override fun Entity.decreaseBurn(int: Int, caster: Entity) {
         val burn = this.getBurn()
 
         if (burn is AbnormalityStatus) {
@@ -157,19 +157,96 @@ class DefaultBurnHandler : BurnHandler {
 object BurnManager {
     private val converter: BurnHandler = DefaultBurnHandler()
 
-    fun Player.increaseBurn(int: Int) {
-        converter.run { increaseBurn(int) }
+    fun Entity.increaseBurn(int: Int, caster: Entity) {
+        converter.run { increaseBurn(int, caster) }
     }
 
-    fun Player.getBurn(): AbnormalityStatus? {
+    fun Entity.getBurn(): AbnormalityStatus? {
         return converter.run { getBurn() }
     }
 
-    fun Player.setBurn(int: Int) {
-        return converter.run { setBurn(int) }
+    fun Entity.setBurn(int: Int, caster: Entity) {
+        return converter.run { setBurn(int, caster) }
     }
 
-    fun Player.decreaseBurn(int: Int){
-        converter.run { decreaseBurn(int) }
+    fun Entity.decreaseBurn(int: Int, caster: Entity){
+        converter.run { decreaseBurn(int, caster) }
+    }
+}
+
+
+interface WeaknessHandler {
+    fun Entity.increaseWeakness(int: Int, caster: Entity)
+    fun Entity.getWeakness(): AbnormalityStatus?
+    fun Entity.setWeakness(int: Int, caster: Entity)
+    fun Entity.decreaseWeakness(int: Int, caster: Entity)
+}
+
+class DefaultWeaknessHandler : WeaknessHandler {
+    override fun Entity.increaseWeakness(int: Int, caster: Entity) {
+        val weakness = this.getWeakness()
+
+        if (weakness is AbnormalityStatus) {
+            weakness.caster.add(caster)
+            weakness.power += int
+        }
+        else {
+            this.abnormalityStatus.add(AbnormalityStatus(KeywordType.Weakness, mutableListOf(caster), int))
+        }
+    }
+
+    override fun Entity.getWeakness(): AbnormalityStatus? {
+        val abnormalityStatus = this.abnormalityStatus.find { it.keywordType == KeywordType.Weakness}
+
+        return if (abnormalityStatus !is AbnormalityStatus) {
+            return null
+        } else {
+            abnormalityStatus
+        }
+    }
+
+    override fun Entity.setWeakness(int: Int, caster: Entity) {
+        val weakness = this.getWeakness()
+
+        if (weakness is AbnormalityStatus) {
+            weakness.caster.add(caster)
+            weakness.power = int
+        }
+        else {
+            this.abnormalityStatus.add(AbnormalityStatus(KeywordType.Weakness, mutableListOf(caster), int))
+        }
+    }
+
+    override fun Entity.decreaseWeakness(int: Int, caster: Entity) {
+        val weakness = this.getWeakness()
+
+        if (weakness is AbnormalityStatus) {
+            weakness.caster.add(caster)
+
+            if (weakness.power - int <= 0) {
+                this.abnormalityStatus.remove(weakness)
+            }
+            weakness.power -= int
+        }
+    }
+}
+
+object WeaknessManager {
+    private val converter: WeaknessHandler = DefaultWeaknessHandler()
+
+    fun Entity.increaseWeakness(int: Int, caster: Entity) {
+        converter.run { increaseWeakness(int, caster) }
+    }
+
+    fun Entity.getWeakness(): AbnormalityStatus? {
+        return converter.run { getWeakness() }
+    }
+
+    fun Entity.setWeakness(int: Int, caster: Entity) {
+        return converter.run { setWeakness(int, caster) }
+    }
+
+    fun Entity.decreaseWeakness(int: Int, caster: Entity){
+        converter.run { decreaseWeakness(int, caster) }
     }
 }
