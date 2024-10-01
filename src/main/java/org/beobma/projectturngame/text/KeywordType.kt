@@ -18,5 +18,6 @@ enum class KeywordType(val component: Component) {
     AlchemYingredientsPile(Component.text("연금술 재료 더미", TextColorType.Gold.textColor).decorate(TextDecoration.BOLD)),
     AlchemYingredients(Component.text("연금술 재료", TextColorType.Gold.textColor).decorate(TextDecoration.BOLD)),
     Ductility(Component.text("연성", TextColorType.Gold.textColor).decorate(TextDecoration.BOLD)),
-    Burn(Component.text("화상", TextColorType.Red.textColor).decorate(TextDecoration.BOLD))
+    Burn(Component.text("화상", TextColorType.Red.textColor).decorate(TextDecoration.BOLD)),
+    Weakness(Component.text("나약함", TextColorType.Gray.textColor).decorate(TextDecoration.BOLD))
 }

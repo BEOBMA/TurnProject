@@ -35,7 +35,9 @@ class Dictionary {
         ), Pair(
             "연성", KeywordType.Ductility.component.append(Component.text(": 연금술 재료 더미에 있는 카드들을 게임에서 소멸시키고 그 카드들로 만들 수 있는 카드를 생성하고 패에 넣는다.", TextColorType.Gray.textColor))
         ), Pair(
-            "화상", KeywordType.Burn.component.append(Component.text(": 다음 턴 시작 시 수치만큼 피해를 입고 수치를 절반으로 만든다.", TextColorType.Gray.textColor))
+            "화상", KeywordType.Burn.component.append(Component.text(": 턴 시작 시 수치만큼 피해를 입고 수치를 절반으로 만든다.", TextColorType.Gray.textColor))
+        ), Pair(
+            "나약함", KeywordType.Weakness.component.append(Component.text(": 한 턴 동안 공격 적중 시 해당 공격의 피해량을 수치만큼 경감한다.", TextColorType.Gray.textColor))
         )
     )
 }
