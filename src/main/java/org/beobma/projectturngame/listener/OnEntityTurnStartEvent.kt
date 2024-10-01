@@ -5,6 +5,7 @@ import org.beobma.projectturngame.entity.Entity
 import org.beobma.projectturngame.entity.enemy.Enemy
 import org.beobma.projectturngame.entity.player.Player
 import org.beobma.projectturngame.event.EntityTurnStartEvent
+import org.beobma.projectturngame.info.Info
 import org.beobma.projectturngame.manager.EnemyManager.damage
 import org.beobma.projectturngame.manager.PlayerManager.damage
 import org.beobma.projectturngame.text.KeywordType
@@ -18,23 +19,38 @@ class OnEntityTurnStartEvent : Listener {
     fun onEntityTurnStartEvent(event: EntityTurnStartEvent) {
         val entity = event.entity
 
-        val burn = entity.abnormalityStatus.find { it.keywordType == KeywordType.Burn }
-        if (burn is AbnormalityStatus) {
-            entity.abnormalityStatusBurnHandler(burn)
-        }
+        burnHandler(entity)
+        slownessHandler(entity)
     }
 
-    // 화상 피해 계산
-    private fun Entity.abnormalityStatusBurnHandler(abnormalityStatus: AbnormalityStatus) {
+    private fun burnHandler(entity: Entity) {
+        val burn = entity.abnormalityStatus.find { it.keywordType == KeywordType.Burn }
+        if (burn !is AbnormalityStatus) return
 
-        if (this is Enemy) {
-            this.damage(abnormalityStatus.power, null, DamageType.AbnormalStatus)
+        if (entity is Enemy) {
+            entity.damage(burn.power, null, DamageType.AbnormalStatus)
         }
 
-        if (this is Player) {
-            this.damage(abnormalityStatus.power, null, DamageType.AbnormalStatus)
+        if (entity is Player) {
+            entity.damage(burn.power, null, DamageType.AbnormalStatus)
         }
 
-        abnormalityStatus.power /= 2
+        burn.power /= 2
+    }
+    private fun slownessHandler(entity: Entity) {
+        val slowness = entity.abnormalityStatus.find { it.keywordType == KeywordType.Slowness }
+        if (slowness is AbnormalityStatus) {
+            val game = Info.game ?: return
+
+            game.gameTurnOrder.sortByDescending {
+                val slowness = it.abnormalityStatus.find { it.keywordType == KeywordType.Slowness }
+                if (slowness is AbnormalityStatus ) {
+                    it.speed - slowness.power
+                }
+                else {
+                    it.speed
+                }
+            }
+        }
     }
 }

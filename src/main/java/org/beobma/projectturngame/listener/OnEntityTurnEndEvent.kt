@@ -1,6 +1,7 @@
 package org.beobma.projectturngame.listener
 
 import org.beobma.projectturngame.abnormalityStatus.AbnormalityStatus
+import org.beobma.projectturngame.entity.Entity
 import org.beobma.projectturngame.event.EntityTurnEndEvent
 import org.beobma.projectturngame.text.KeywordType
 import org.bukkit.event.EventHandler
@@ -12,9 +13,20 @@ class OnEntityTurnEndEvent : Listener {
     fun onEntityTurnEndEvent(event: EntityTurnEndEvent) {
         val entity = event.entity
 
+        weaknessHandler(entity)
+        slownessHandler(entity)
+    }
+
+    private fun weaknessHandler(entity: Entity) {
         val weakness = entity.abnormalityStatus.find { it.keywordType == KeywordType.Weakness }
         if (weakness is AbnormalityStatus) {
             entity.abnormalityStatus.remove(weakness)
+        }
+    }
+    private fun slownessHandler(entity: Entity) {
+        val slowness = entity.abnormalityStatus.find { it.keywordType == KeywordType.Slowness }
+        if (slowness is AbnormalityStatus) {
+            entity.abnormalityStatus.remove(slowness)
         }
     }
 }

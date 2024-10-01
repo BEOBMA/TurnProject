@@ -37,7 +37,11 @@ class Dictionary {
         ), Pair(
             "화상", KeywordType.Burn.component.append(Component.text(": 턴 시작 시 수치만큼 피해를 입고 수치를 절반으로 만든다.", TextColorType.Gray.textColor))
         ), Pair(
-            "나약함", KeywordType.Weakness.component.append(Component.text(": 한 턴 동안 공격 적중 시 해당 공격의 피해량을 수치만큼 경감한다.", TextColorType.Gray.textColor))
+            "나약함", KeywordType.Weakness.component.append(Component.text(": 턴 종료 시까지 가하는 피해가 수치만큼 감소한다.", TextColorType.Gray.textColor))
+        ), Pair(
+            "구속", KeywordType.Slowness.component.append(Component.text(": 턴 종료 시까지 수치만큼 속도가 감소한다.", TextColorType.Gray.textColor))
+        ), Pair(
+            "실명", KeywordType.Blindness.component.append(Component.text(": 공격 적중 시 (수치 x 5)%로 공격이 빗나간다. 이 효과가 발동한 후, 실명을 제거한다.", TextColorType.Gray.textColor))
         )
     )
 }
