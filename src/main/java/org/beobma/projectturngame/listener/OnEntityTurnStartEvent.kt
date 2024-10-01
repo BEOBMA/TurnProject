@@ -28,11 +28,11 @@ class OnEntityTurnStartEvent : Listener {
     private fun Entity.abnormalityStatusBurnHandler(abnormalityStatus: AbnormalityStatus) {
 
         if (this is Enemy) {
-            this.damage(abnormalityStatus.power, null, listOf(DamageType.AbnormalStatus))
+            this.damage(abnormalityStatus.power, null, DamageType.AbnormalStatus)
         }
 
         if (this is Player) {
-            this.damage(abnormalityStatus.power, null, listOf(DamageType.AbnormalStatus))
+            this.damage(abnormalityStatus.power, null, DamageType.AbnormalStatus)
         }
 
         abnormalityStatus.power /= 2

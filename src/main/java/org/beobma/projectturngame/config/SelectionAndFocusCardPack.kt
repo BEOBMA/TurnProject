@@ -22,6 +22,7 @@ import org.beobma.projectturngame.manager.TextManager.cardUseFailText
 import org.beobma.projectturngame.manager.TextManager.targetingFailText
 import org.beobma.projectturngame.text.KeywordType
 import org.beobma.projectturngame.text.TextColorType
+import org.beobma.projectturngame.util.DamageType
 
 class SelectionAndFocusCardPack {
     private val dictionary = Dictionary()
@@ -186,7 +187,7 @@ class SelectionAndFocusCardPack {
                 val enemys = usePlayerData.allEnemyMembers()
 
                 enemys.forEach {
-                    it.damage(3, usePlayerData, true)
+                    it.damage(3, usePlayerData, DamageType.True)
                 }
             }
         )
