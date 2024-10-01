@@ -2,8 +2,11 @@ package org.beobma.projectturngame.manager
 
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
+import org.beobma.projectturngame.ProjectTurnGame
+import org.beobma.projectturngame.entity.Entity
 import org.beobma.projectturngame.entity.enemy.Enemy
 import org.beobma.projectturngame.entity.player.Player
+import org.beobma.projectturngame.event.EntityDamageEvent
 import org.beobma.projectturngame.info.Info
 import org.beobma.projectturngame.manager.BattleManager.enemyLocationRetake
 import org.beobma.projectturngame.manager.GameManager.battleStop
@@ -68,10 +71,18 @@ class DefaultEnemyManager : EnemyHandler{
     }
 
     override fun Enemy.damage(damage: Int, attacker: Player?, damageType: DamageType) {
+        if (attacker !is Entity) return
         // 대상이 이미 사망한 경우
         if (this.isDead) return
 
         var finalDamage = damage
+
+        val event = EntityDamageEvent(finalDamage, damageType, this, attacker)
+        ProjectTurnGame.instance.server.pluginManager.callEvent(event)
+        if (event.isCancelled) {
+            return
+        }
+        finalDamage = event.damage
 
         // 고정 피해가 아닌 경우
         if (damageType != DamageType.True) {
