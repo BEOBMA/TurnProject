@@ -27,7 +27,7 @@ interface PlayerHandler {
 
     fun Player.addShield(int: Int)
 
-    fun Player.damage(damage: Int, attacker: Enemy?, damageTypes: List<DamageType>)
+    fun Player.damage(damage: Int, attacker: Enemy?, damageType: DamageType = DamageType.Normal)
     fun Player.heal(damage: Int, healer: Player)
     fun Player.death()
     fun Player.resurrection()
@@ -109,14 +109,14 @@ class DefaultPlayerManager : PlayerHandler {
         }
     }
 
-    override fun Player.damage(damage: Int, attacker: Enemy?, damageTypes: List<DamageType>) {
+    override fun Player.damage(damage: Int, attacker: Enemy?, damageType: DamageType) {
         // 대상이 이미 사망한 경우
         if (this.isDead) return
 
         var finalDamage = damage
 
         // 고정 피해가 아닌 경우
-        if (!damageTypes.contains(DamageType.True)) {
+        if (damageType != DamageType.True) {
             // 피해 계산 추가
         }
 
@@ -302,8 +302,8 @@ object PlayerManager {
         converter.run { this@death.death() }
     }
 
-    fun Player.damage(damage: Int, attacker: Enemy?, damageTypes: List<DamageType>) {
-        converter.run { damage(damage, attacker, damageTypes) }
+    fun Player.damage(damage: Int, attacker: Enemy?, damageType: DamageType = DamageType.Normal) {
+        converter.run { damage(damage, attacker, damageType) }
     }
 
     fun Player.addShield(int: Int) {

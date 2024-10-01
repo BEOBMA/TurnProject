@@ -18,7 +18,7 @@ interface EnemyHandler {
     fun Enemy.setHealth(int: Int)
     fun Enemy.death()
 
-    fun Enemy.damage(damage: Int, attacker: Player?, damageTypes: List<DamageType>)
+    fun Enemy.damage(damage: Int, attacker: Player?, damageType: DamageType = DamageType.Normal)
 }
 
 class DefaultEnemyManager : EnemyHandler{
@@ -67,14 +67,14 @@ class DefaultEnemyManager : EnemyHandler{
         }
     }
 
-    override fun Enemy.damage(damage: Int, attacker: Player?, damageTypes: List<DamageType>) {
+    override fun Enemy.damage(damage: Int, attacker: Player?, damageType: DamageType) {
         // 대상이 이미 사망한 경우
         if (this.isDead) return
 
         var finalDamage = damage
 
         // 고정 피해가 아닌 경우
-        if (!damageTypes.contains(DamageType.True)) {
+        if (damageType != DamageType.True) {
             // 피해 계산 추가
         }
 
@@ -126,7 +126,7 @@ object EnemyManager {
         converter.run { this@setHealth.setHealth(int) }
     }
 
-    fun Enemy.damage(damage: Int, attacker: Player?, damageTypes: List<DamageType>) {
-        converter.run { this@damage.damage(damage, attacker, damageTypes) }
+    fun Enemy.damage(damage: Int, attacker: Player?, damageType: DamageType = DamageType.Normal) {
+        converter.run { this@damage.damage(damage, attacker, damageType) }
     }
 }
