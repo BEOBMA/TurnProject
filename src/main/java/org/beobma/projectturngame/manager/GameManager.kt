@@ -28,6 +28,7 @@ import org.beobma.projectturngame.manager.MaxHealthManager.setMaxHealth
 import org.beobma.projectturngame.manager.PlayerManager.addMana
 import org.beobma.projectturngame.manager.PlayerManager.setMana
 import org.beobma.projectturngame.manager.PlayerManager.setMaxMana
+import org.beobma.projectturngame.util.ResetType
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Location
@@ -362,6 +363,7 @@ class DefaultGameManager : GameHandler {
 
     private fun Player.battleEndReset() {
         this@battleEndReset.setMana(this@battleEndReset.maxMana)
+        this.abnormalityStatus.removeAll(this.abnormalityStatus.filter { it.resetType == ResetType.BattleEnd })
 
         this.turnEndUnit.forEach {
             it.invoke()
