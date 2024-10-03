@@ -27,7 +27,7 @@ interface CardHandler {
     fun Player.clearGraveyard()
     fun Player.clearBanish()
     fun Player.clearDeck()
-    fun Player.cardBanish(cards: List<Card>)
+    fun Player.cardBanish(card: Card)
     fun Player.extinction(card: Card)
 
     fun findCard(name: String): Card?
@@ -171,14 +171,10 @@ class DefaultCardManager : CardHandler {
         this.deck.removeAll(cardList)
     }
 
-    override fun Player.cardBanish(cards: List<Card>) {
-        cards.forEach {
-            // 고정된 카드 제외
-            if (!it.description.contains(KeywordType.Fix.component)) {
-                this.hand.remove(it)
-            }
+    override fun Player.cardBanish(card: Card) {
+        if (!card.description.contains(KeywordType.Fix.component)) {
+            this.banish.add(card)
         }
-        applyHotbar()
     }
 
     override fun Player.extinction(card: Card) {
@@ -253,7 +249,7 @@ object CardManager {
         converter.run { drow(int) }
     }
 
-    fun Player.getCard(card: Card) {
+    fun Player.addCard(card: Card) {
         converter.run { addCard(card) }
     }
 
@@ -301,8 +297,8 @@ object CardManager {
         return converter.run { findCard(name) }
     }
 
-    fun Player.cardBanish(vararg card: Card) {
-        converter.run { cardBanish(*card) }
+    fun Player.cardBanish(card: Card) {
+        converter.run { cardBanish(card) }
     }
 
     fun filterIsMoveCard(vararg card: Card): List<Card> {
