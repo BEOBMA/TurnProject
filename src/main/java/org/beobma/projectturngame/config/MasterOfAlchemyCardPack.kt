@@ -158,7 +158,7 @@ class MasterOfAlchemyCardPack {
                 Component.text("바라보는 적에게 ", TextColorType.Gray.textColor).append(KeywordType.Weakness.component.append(Component.text(" 3을 부여한다.", TextColorType.Gray.textColor))),
                 Component.text(""),
                 dictionary.dictionaryList["휘발"]!!,
-                dictionary.dictionaryList["허약"]!!
+                dictionary.dictionaryList["나약함"]!!
             ), CardRarity.Uncommon, 0, { usePlayerData, _ ->
                 val player = usePlayerData.player
                 val target = usePlayerData.focusOn()
@@ -239,6 +239,7 @@ class MasterOfAlchemyCardPack {
                 Component.text(""),
                 Component.text("무작위 적에게 3의 피해를 입힌다.", TextColorType.Gray.textColor),
                 Component.text("위 효과는 3번 사용하며, 첫번째 대상에게 여러번 적중할 때마다 추가로 3의 피해를 입힌다.", TextColorType.Gray.textColor),
+                Component.text(""),
                 dictionary.dictionaryList["휘발"]!!
             ), CardRarity.Uncommon, 0, { usePlayerData, _ ->
                 val targets = usePlayerData.allEnemyMembers()

@@ -36,6 +36,9 @@ class ProjectTurnGame : JavaPlugin() {
         server.pluginManager.registerEvents(OnPlayerMoveEvent(), this)
         server.pluginManager.registerEvents(OnPlayerJumpEvent(), this)
         server.pluginManager.registerEvents(OnPlayerSwapHandItemsEvent(), this)
+        server.pluginManager.registerEvents(OnEntityTurnStartEvent(), this)
+        server.pluginManager.registerEvents(OnEntityTurnEndEvent(), this)
+        server.pluginManager.registerEvents(OnDamageEvent(), this)
     }
 
     fun loggerInfo(string: String) {
