@@ -9,10 +9,14 @@ import org.beobma.projectturngame.game.GameField
 import org.beobma.projectturngame.game.GameType
 import org.beobma.projectturngame.info.Info
 import org.beobma.projectturngame.localization.Dictionary
-import org.beobma.projectturngame.manager.CardManager.toItem
+import org.beobma.projectturngame.manager.CardManager.addCard
 import org.beobma.projectturngame.manager.GameManager.start
 import org.beobma.projectturngame.manager.GameManager.stop
+import org.beobma.projectturngame.manager.InventoryManager.openBanishInfoInventory
+import org.beobma.projectturngame.manager.InventoryManager.openDeckInfoInventory
+import org.beobma.projectturngame.manager.InventoryManager.openGraveyardInfoInventory
 import org.beobma.projectturngame.text.TextColorType
+import org.beobma.projectturngame.util.CardPosition
 import org.bukkit.Bukkit
 import org.bukkit.Difficulty
 import org.bukkit.command.Command
@@ -35,7 +39,7 @@ class Command : Listener, CommandExecutor, TabCompleter {
             }
 
             when (args[0].lowercase(Locale.getDefault())) {
-                "start" -> {
+                "start", "시작" -> {
                     if (!sender.isOp) {
                         sender.sendMessage(
                             Component.text("[!] 이 명령어를 사용할 권한이 없습니다.", TextColorType.Red.textColor)
@@ -84,7 +88,7 @@ class Command : Listener, CommandExecutor, TabCompleter {
                     ).start()
                 }
 
-                "stop" -> {
+                "stop", "종료" -> {
                     if (!sender.isOp) {
                         sender.sendMessage(
                             Component.text("[!] 이 명령어를 사용할 권한이 없습니다.", TextColorType.Red.textColor)
@@ -132,6 +136,43 @@ class Command : Listener, CommandExecutor, TabCompleter {
                     return true
                 }
 
+                "info", "정보" -> {
+                    if (args.size < 2) {
+                        sender.sendMessage(
+                            Component.text("[!] 올바른 인수를 제공해주세요.", TextColorType.Red.textColor)
+                                .decorate(TextDecoration.BOLD)
+                        )
+                        return false
+                    }
+
+                    val key = args.drop(1).joinToString(" ").trim()
+
+                    when (key) {
+                        "deck", "덱" -> {
+                            sender.openDeckInfoInventory()
+                        }
+
+                        "graveyard", "묘지" -> {
+                            sender.openGraveyardInfoInventory()
+                        }
+
+                        "banish", "제외" -> {
+                            sender.openBanishInfoInventory()
+                        }
+
+
+                        else -> {
+                            sender.sendMessage(
+                                Component.text("[!] 올바르지 않은 인수입니다.", TextColorType.Red.textColor)
+                                    .decorate(TextDecoration.BOLD)
+                            )
+                            return false
+                        }
+                    }
+                    return true
+                }
+
+                // 이하 디버그 전용 명령어
                 "get" -> {
                     if (args.size < 2) {
                         sender.sendMessage(
@@ -141,18 +182,39 @@ class Command : Listener, CommandExecutor, TabCompleter {
                         return false
                     }
 
-                    val key = args.drop(1).joinToString(" ").trim()
-
-                    val definition = cardList.find { it.name.trim() == key }
-                    if (definition == null) {
+                    if (args.size < 3) {
                         sender.sendMessage(
-                            Component.text("[!] '$key' 이름을 가진 카드가 존재하지 않습니다.", TextColorType.Red.textColor)
+                            Component.text("[!] 카드를 넣을 위치를 제공해주세요.", TextColorType.Red.textColor)
                                 .decorate(TextDecoration.BOLD)
                         )
                         return false
                     }
 
-                    sender.inventory.addItem(definition.toItem())
+                    val cardName = args[1].trim().replace(" ", "")
+                    val cardPosition = args[2].trim()
+
+                    val definition = cardList.find { it.name.trim().replace(" ", "") == cardName }
+                    if (definition == null) {
+                        sender.sendMessage(
+                            Component.text("[!] '$cardName' 이름을 가진 카드가 존재하지 않습니다.", TextColorType.Red.textColor)
+                                .decorate(TextDecoration.BOLD)
+                        )
+                        return false
+                    }
+
+                    val position = CardPosition.entries.find { it.name == cardPosition }
+                    if (position !is CardPosition) {
+                        sender.sendMessage(
+                            Component.text("[!] 카드를 넣을 위치가 올바르지 않습니다.", TextColorType.Red.textColor)
+                                .decorate(TextDecoration.BOLD)
+                        )
+                        return false
+                    }
+
+
+                    val playerData = Info.game?.playerDatas?.find { it.player == sender } ?: return false
+
+                    playerData.addCard(definition, position)
                     return true
                 }
 
@@ -178,7 +240,7 @@ class Command : Listener, CommandExecutor, TabCompleter {
                 2 -> when (args[0].lowercase(Locale.getDefault())) {
                     "start" -> GameType.entries.map { it.name }
                     "dictionary", "사전" -> Dictionary().dictionaryList.keys.toList()
-                    "info", "정보" -> listOf("deck", "덱", "cemetery", "묘지", "except", "제외", "relics", "유물")
+                    "info", "정보" -> listOf("deck", "덱", "graveyard", "묘지", "banish", "제외")
                     else -> emptyList()
                 }
 
