@@ -1,22 +1,31 @@
 package org.beobma.projectturngame.listener
 
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.TextDecoration
 import org.beobma.projectturngame.config.CardConfig.Companion.cardList
 import org.beobma.projectturngame.game.Game
 import org.beobma.projectturngame.game.GameField
 import org.beobma.projectturngame.info.Info
 import org.beobma.projectturngame.localization.Localization
 import org.beobma.projectturngame.manager.CardManager.toItem
+import org.beobma.projectturngame.manager.EventManager.toEventOption
 import org.beobma.projectturngame.manager.GameManager.battleStart
 import org.beobma.projectturngame.manager.GameManager.bossStart
 import org.beobma.projectturngame.manager.GameManager.eventStart
 import org.beobma.projectturngame.manager.GameManager.hardBattleStart
+import org.beobma.projectturngame.manager.GameManager.moveTile
 import org.beobma.projectturngame.manager.GameManager.nextSector
 import org.beobma.projectturngame.manager.GameManager.restStart
+import org.beobma.projectturngame.manager.InventoryManager.openBanishInfoInventory
+import org.beobma.projectturngame.manager.InventoryManager.openDeckInfoInventory
+import org.beobma.projectturngame.manager.InventoryManager.openGraveyardInfoInventory
 import org.beobma.projectturngame.manager.InventoryManager.openSectorInventory
+import org.beobma.projectturngame.text.TextColorType
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
 
 class OnInventoryClickEvent : Listener {
@@ -24,6 +33,7 @@ class OnInventoryClickEvent : Listener {
     @EventHandler
     fun onClickItem(event: InventoryClickEvent) {
         val player = event.whoClicked
+        val inventory = event.view
         val clickItem = event.currentItem ?: return
         val game = Info.game ?: return
 
@@ -42,8 +52,38 @@ class OnInventoryClickEvent : Listener {
         }
 
         if (player.scoreboardTags.contains("inventory_CardChoice")) {
+            if (event.clickedInventory == player.inventory) {
+                event.isCancelled = true
+                return
+            }
+
             compensationCardChoiceHandler(game, clickItem, player)
             event.isCancelled = true
+            return
+        }
+
+        if (player.scoreboardTags.contains("inventory_DeckInfo")) {
+            deckInfoChoiceHandler(clickItem, player, inventory)
+            event.isCancelled = true
+        }
+
+        if (player.scoreboardTags.contains("inventory_GraveyardInfo")) {
+            graveyardInfoChoiceHandler(clickItem, player, inventory)
+            event.isCancelled = true
+        }
+
+        if (player.scoreboardTags.contains("inventory_BanishInfo")) {
+            banishInfoChoiceHandler(clickItem, player, inventory)
+            event.isCancelled = true
+        }
+
+        if (player.scoreboardTags.contains("inventory_EventOptionChoice")) {
+            if (event.clickedInventory == player.inventory) {
+                event.isCancelled = true
+                return
+            }
+
+            eventOptionChoiceHandler(game, clickItem, player)
             return
         }
 
@@ -58,6 +98,7 @@ class OnInventoryClickEvent : Listener {
         val restSlot = localization.restSlot
         val bossSlot = localization.bossSlot
         val endSlot = localization.endSlot
+
         when (game.tileStep) {
             1 -> {
                 if (slot != 1 && slot != 10 && slot != 19) {
@@ -169,7 +210,73 @@ class OnInventoryClickEvent : Listener {
         player.inventory.clear()
         player.closeInventory()
         if (game.players.none { it.scoreboardTags.contains("inventory_MapChoice") }) {
-            game.nextSector()
+            game.moveTile()
         }
+    }
+
+    private fun deckInfoChoiceHandler(clickItem: ItemStack, player: Player, inventory: InventoryView) {
+        player.closeInventory()
+        val itemMeta = clickItem.itemMeta ?: return
+        when (itemMeta.displayName()) {
+            Component.text("이전 페이지", TextColorType.Gray.textColor).decorate(TextDecoration.BOLD) -> {
+                val currentPage = getCurrentPageFromTitle(inventory.title().toString())
+                player.openDeckInfoInventory(currentPage - 1)
+            }
+            Component.text("다음 페이지", TextColorType.Gray.textColor).decorate(TextDecoration.BOLD) -> {
+                val currentPage = getCurrentPageFromTitle(inventory.title().toString())
+                player.openDeckInfoInventory(currentPage + 1)
+            }
+        }
+    }
+
+    private fun graveyardInfoChoiceHandler(clickItem: ItemStack, player: Player, inventory: InventoryView) {
+        player.closeInventory()
+        val itemMeta = clickItem.itemMeta ?: return
+        when (itemMeta.displayName()) {
+            Component.text("이전 페이지", TextColorType.Gray.textColor).decorate(TextDecoration.BOLD) -> {
+                inventory
+                val currentPage = getCurrentPageFromTitle(inventory.title().toString())
+                player.openGraveyardInfoInventory(currentPage - 1)
+            }
+            Component.text("다음 페이지", TextColorType.Gray.textColor).decorate(TextDecoration.BOLD) -> {
+                val currentPage = getCurrentPageFromTitle(inventory.title().toString())
+                player.openGraveyardInfoInventory(currentPage + 1)
+            }
+        }
+    }
+
+    private fun banishInfoChoiceHandler(clickItem: ItemStack, player: Player, inventory: InventoryView) {
+        player.closeInventory()
+        val itemMeta = clickItem.itemMeta ?: return
+        when (itemMeta.displayName()) {
+            Component.text("이전 페이지", TextColorType.Gray.textColor).decorate(TextDecoration.BOLD) -> {
+                inventory
+                val currentPage = getCurrentPageFromTitle(inventory.title().toString())
+                player.openBanishInfoInventory(currentPage - 1)
+            }
+            Component.text("다음 페이지", TextColorType.Gray.textColor).decorate(TextDecoration.BOLD) -> {
+                val currentPage = getCurrentPageFromTitle(inventory.title().toString())
+                player.openBanishInfoInventory(currentPage + 1)
+            }
+        }
+    }
+
+    private fun eventOptionChoiceHandler(game: Game, clickItem: ItemStack, player: Player) {
+        val playerData = game.playerDatas.find { it.player == player } ?: return
+        val eventOption = clickItem.toEventOption()
+
+        eventOption.optionChoiceEffect?.invoke(playerData)
+        player.scoreboardTags.remove("inventory_EventOptionChoice")
+        player.inventory.clear()
+        player.closeInventory()
+        if (game.players.none { it.scoreboardTags.contains("inventory_EventOptionChoice") }) {
+            game.moveTile()
+        }
+    }
+
+    private fun getCurrentPageFromTitle(title: String): Int {
+        val regex = "페이지 (\\d+)/(\\d+)".toRegex()
+        val matchResult = regex.find(title) ?: return 0
+        return matchResult.groupValues[1].toInt() - 1
     }
 }

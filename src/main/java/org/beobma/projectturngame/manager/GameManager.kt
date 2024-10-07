@@ -5,6 +5,7 @@ import net.kyori.adventure.text.format.TextDecoration
 import org.beobma.projectturngame.ProjectTurnGame
 import org.beobma.projectturngame.config.CardConfig
 import org.beobma.projectturngame.config.CardConfig.Companion.cardPackList
+import org.beobma.projectturngame.config.EventConfig.Companion.eventList
 import org.beobma.projectturngame.config.StartCardPack.Companion.startCardList
 import org.beobma.projectturngame.entity.Entity
 import org.beobma.projectturngame.entity.enemy.Enemy
@@ -23,6 +24,7 @@ import org.beobma.projectturngame.manager.CompensationManager.eliteReward
 import org.beobma.projectturngame.manager.CompensationManager.normalReward
 import org.beobma.projectturngame.manager.CompensationManager.relicsReward
 import org.beobma.projectturngame.manager.HealthManager.setHealth
+import org.beobma.projectturngame.manager.InventoryManager.openEventInventory
 import org.beobma.projectturngame.manager.InventoryManager.openMapInventory
 import org.beobma.projectturngame.manager.MaxHealthManager.setMaxHealth
 import org.beobma.projectturngame.manager.PlayerManager.addMana
@@ -47,6 +49,8 @@ interface GameHandler {
     fun Game.eventStart()
     fun Game.restStart()
     fun Game.nextSector()
+    fun Game.moveTile()
+
     fun gameOver()
 
     fun Entity.turnStart()
@@ -86,12 +90,10 @@ class DefaultGameManager : GameHandler {
     }
 
     override fun Game.stop() {
-        val game = Info.game ?: return
         ProjectTurnGame.instance.server.scheduler.cancelTasks(ProjectTurnGame.instance)
 
-        game.players.forEach { player ->
+        players.forEach { player ->
             player.isGlowing = false
-            player.inventory.clear()
             player.gameMode = GameMode.ADVENTURE
             val tags = player.scoreboardTags.toList()
             tags.forEach { tag ->
@@ -100,22 +102,24 @@ class DefaultGameManager : GameHandler {
             CardConfig()
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "scoreboard players reset @a")
             player.teleport(Location(player.world, 0.5, -60.0, 0.5))
+            player.inventory.clear()
         }
 
-        game.gameEnemys.forEach { it.entity.remove() }
+        gameEnemys.forEach {
+            it.entity.remove()
+        }
 
         Info.game = null
     }
 
     override fun Game.battleStart() {
-        val game = Info.game ?: return
-        val field = game.gameField
+        val field = gameField
 
         spawnNormalEnemy(field)
         playerLocationRetake()
         enemyLocationRetake()
 
-        game.playerDatas.forEach { player ->
+        playerDatas.forEach { player ->
             player.battleStartReset()
         }
         allTurnStart()
@@ -171,7 +175,16 @@ class DefaultGameManager : GameHandler {
     }
 
     override fun Game.eventStart() {
-        TODO("Not yet implemented")
+        if (eventList.isEmpty()) {
+            moveTile()
+            return
+        }
+
+        val event = eventList.random()
+
+        players.forEach {
+            it.openEventInventory(event)
+        }
     }
 
     override fun Game.restStart() {
@@ -213,7 +226,7 @@ class DefaultGameManager : GameHandler {
                 sendMessage(Component.text("점프하면 턴을 종료합니다.").decorate(TextDecoration.BOLD))
                 isGlowing = true
                 playSound(location, Sound.BLOCK_NOTE_BLOCK_GUITAR, 1.0F, 1.0F)
-                drow(5)
+                drow(1)
                 scoreboardTags.add("this_Turn")
                 turnStartUnit.forEach {
                     it.invoke()
@@ -226,8 +239,8 @@ class DefaultGameManager : GameHandler {
             this.entity.run {
                 isGlowing = true
                 scoreboardTags.add("this_Turn")
-                this@turnStart.turnEnd()
                 // 적 행동 정리
+                this@turnStart.turnEnd()
             }
         }
     }
@@ -329,11 +342,12 @@ class DefaultGameManager : GameHandler {
             GameDifficulty.Hard -> GameField.Sea
         }
         game.gameSector.remove(game.gameField)
+        playerLocationRetake()
 
-        moveTile()
+        game.moveTile()
     }
 
-    private fun moveTile() {
+    override fun Game.moveTile() {
         val game = Info.game ?: return
 
         game.tileStep++
@@ -358,11 +372,12 @@ class DefaultGameManager : GameHandler {
 
     private fun Player.battleStartReset() {
         this.deck.shuffle()
+        this.drow(5)
         this@battleStartReset.setMana(this@battleStartReset.maxMana)
     }
 
     private fun Player.battleEndReset() {
-        this@battleEndReset.setMana(this@battleEndReset.maxMana)
+        this.setMana(this.maxMana)
         this.abnormalityStatus.removeAll(this.abnormalityStatus.filter { it.resetType == ResetType.BattleEnd })
 
         this.turnEndUnit.forEach {
@@ -377,7 +392,7 @@ class DefaultGameManager : GameHandler {
         this.graveyard.clear()
         this.banish.clear()
 
-        this@battleEndReset.applyHotbar()
+        this.applyHotbar()
     }
 }
 
@@ -438,5 +453,9 @@ object GameManager {
 
     fun Entity.turnEnd() {
         converter.run { this@turnEnd.turnEnd() }
+    }
+
+    fun Game.moveTile() {
+        converter.run { moveTile() }
     }
 }

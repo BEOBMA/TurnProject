@@ -17,7 +17,7 @@ class OnInventoryCloseEvent : Listener {
     fun onInventoryClose(event: InventoryCloseEvent) {
         val player = event.player as? Player ?: return
         val game = Info.game ?: return
-
+        val closeInventory = event.inventory
         if (player !in game.players) return
 
         when {
@@ -27,6 +27,12 @@ class OnInventoryCloseEvent : Listener {
                 "inventory_MapChoice"
             )
 
+            player.scoreboardTags.contains("inventory_EventOptionChoice") -> reopenInventoryLater(
+                player,
+                closeInventory,
+                "inventory_EventOptionChoice"
+            )
+
             player.scoreboardTags.contains("inventory_SectorChoice") -> reopenInventoryLater(
                 player,
                 game.gameMapInventory,
@@ -34,6 +40,12 @@ class OnInventoryCloseEvent : Listener {
             )
 
             player.scoreboardTags.contains("inventory_MapChoice") -> handleRewardChoice(player, game)
+
+            player.scoreboardTags.contains("inventory_DeckInfo") -> player.scoreboardTags.remove("inventory_DeckInfo")
+
+            player.scoreboardTags.contains("inventory_GraveyardInfo") -> player.scoreboardTags.remove("inventory_GraveyardInfo")
+
+            player.scoreboardTags.contains("inventory_BanishInfo") -> player.scoreboardTags.remove("inventory_BanishInfo")
         }
     }
 
