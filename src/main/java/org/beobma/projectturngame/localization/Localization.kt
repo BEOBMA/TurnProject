@@ -13,6 +13,18 @@ class Localization {
         }
     }
 
+    val nextPage = ItemStack(Material.ARROW, 1).apply {
+        itemMeta = itemMeta.apply {
+            displayName(Component.text("다음 페이지", TextColorType.Gray.textColor).decorate(TextDecoration.BOLD))
+        }
+    }
+
+    val previousPage = ItemStack(Material.ARROW, 1).apply {
+        itemMeta = itemMeta.apply {
+            displayName(Component.text("이전 페이지", TextColorType.Gray.textColor).decorate(TextDecoration.BOLD))
+        }
+    }
+
     val startSlot = ItemStack(Material.GOLD_BLOCK, 1).apply {
         itemMeta = itemMeta.apply {
             displayName(Component.text("시작", TextColorType.Gray.textColor).decorate(TextDecoration.BOLD))
@@ -22,7 +34,7 @@ class Localization {
         }
     }
 
-    val battleSlot = ItemStack(Material.RED_CONCRETE, 1).apply {
+    val battleSlot = ItemStack(Material.RED_WOOL, 1).apply {
         itemMeta = itemMeta.apply {
             displayName(Component.text("전투", TextColorType.Gray.textColor).decorate(TextDecoration.BOLD))
             lore(listOf(
