@@ -7,14 +7,13 @@ import org.beobma.projectturngame.card.CardRarity
 import org.beobma.projectturngame.config.CardConfig.Companion.cardList
 import org.beobma.projectturngame.config.CardConfig.Companion.cardPackList
 import org.beobma.projectturngame.localization.Dictionary
-import org.beobma.projectturngame.manager.CardManager.addDeckCard
 import org.beobma.projectturngame.manager.CardManager.cardThrow
 import org.beobma.projectturngame.manager.CardManager.clearBanish
 import org.beobma.projectturngame.manager.CardManager.clearDeck
 import org.beobma.projectturngame.manager.CardManager.clearGraveyard
 import org.beobma.projectturngame.manager.CardManager.clearHand
 import org.beobma.projectturngame.manager.CardManager.drow
-import org.beobma.projectturngame.manager.CardManager.filterIsMoveCard
+import org.beobma.projectturngame.manager.CardManager.isFix
 import org.beobma.projectturngame.manager.PlayerManager.addMana
 import org.beobma.projectturngame.manager.PlayerManager.heal
 import org.beobma.projectturngame.manager.PlayerManager.setMana
@@ -106,7 +105,8 @@ class CirculationCardPack {
 
                 val removeCardList = cardList.filter { it.description.contains(KeywordType.Fix.component) }
                 cardList.removeAll(removeCardList)
-                usePlayerData.addDeckCard(cardList)
+
+                usePlayerData.deck.addAll(cardList)
                 usePlayerData.clearHand()
                 usePlayerData.clearGraveyard()
                 usePlayerData.clearBanish()
@@ -183,7 +183,8 @@ class CirculationCardPack {
                 Component.text("패의 카드를 모두 버린다.", TextColorType.Gray.textColor)
             ), CardRarity.Uncommon, 1,
             { usePlayerData, _ ->
-                usePlayerData.hand.forEach {
+                val cardList = usePlayerData.hand.toList()
+                cardList.forEach {
                     usePlayerData.cardThrow(it)
                 }
                 return@Card true
@@ -199,8 +200,10 @@ class CirculationCardPack {
             ), CardRarity.Rare, 1,
             { usePlayerData, _ ->
                 val handSize = (usePlayerData.hand.size - 8) * -1
+                val cardList = usePlayerData.deck.filter { !it.isFix() }
+
                 usePlayerData.drow(handSize)
-                usePlayerData.banish.addAll(filterIsMoveCard(*usePlayerData.deck.toTypedArray()))
+                usePlayerData.banish.addAll(cardList)
                 usePlayerData.clearDeck()
 
                 return@Card true
@@ -216,8 +219,9 @@ class CirculationCardPack {
             ), CardRarity.Rare, 1,
             { usePlayerData, _ ->
                 val handSize = (usePlayerData.hand.size - 8) * -1
+                val cardList = usePlayerData.hand.filter { !it.isFix() }
 
-                usePlayerData.deck.addAll(filterIsMoveCard(*usePlayerData.hand.toTypedArray()))
+                usePlayerData.deck.addAll(cardList)
                 usePlayerData.deck.shuffle()
                 usePlayerData.clearHand()
                 usePlayerData.drow(handSize)

@@ -621,7 +621,7 @@ class MasterOfAlchemyCardPack {
         val substitutionDuctility = Card(
             "치환 연성", listOf(
                 KeywordType.AlchemYingredientsPile.component.append(Component.text("의 카드들 중, 무작위 카드 2장을 제외하고 발동할 수 있다.", TextColorType.Gray.textColor)),
-                Component.text("제외한 카드를", TextColorType.Gray.textColor).append(KeywordType.Ductility.component.append(Component.text("한 것으로 간주하고 연성한 카드를 패에 넣는다.", TextColorType.Gray.textColor))),
+                Component.text("제외한 카드를 ", TextColorType.Gray.textColor).append(KeywordType.Ductility.component.append(Component.text("한 것으로 간주하고 연성한 카드를 패에 넣는다.", TextColorType.Gray.textColor))),
                 Component.text(""),
                 dictionary.dictionaryList["연금술 재료 더미"]!!,
                 dictionary.dictionaryList["연성"]!!
