@@ -140,4 +140,8 @@ object EnemyManager {
     fun Enemy.damage(damage: Int, attacker: Player?, damageType: DamageType = DamageType.Normal) {
         converter.run { this@damage.damage(damage, attacker, damageType) }
     }
+
+    fun Enemy.death() {
+        converter.run { death() }
+    }
 }
