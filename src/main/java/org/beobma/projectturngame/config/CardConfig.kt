@@ -6,20 +6,24 @@ import org.beobma.projectturngame.card.CardPack
 
 class CardConfig {
     companion object {
-        val cardPackList: MutableList<CardPack> = mutableListOf()
+        val cardPackList: MutableSet<CardPack> = mutableSetOf()
 
-        val cardList: MutableList<Card> = mutableListOf()
+        val cardList: MutableSet<Card> = mutableSetOf()
     }
 
     init {
-        StartCardPack()
+        cardPackList.clear()
+        cardList.clear()
+
         cardConfig()
     }
 
     private fun cardConfig() {
+        StartCardPack()
         CirculationCardPack()
         SelectionAndFocusCardPack()
         IcosahedronCardPack()
         MasterOfAlchemyCardPack()
+        DebugCardPack()
     }
 }

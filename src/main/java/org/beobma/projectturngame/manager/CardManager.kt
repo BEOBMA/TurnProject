@@ -12,6 +12,8 @@ import org.beobma.projectturngame.manager.PlayerManager.graveyardReset
 import org.beobma.projectturngame.manager.TextManager.cardNotAvailableText
 import org.beobma.projectturngame.text.KeywordType
 import org.beobma.projectturngame.text.TextColorType
+import org.beobma.projectturngame.util.CardPosition
+import org.beobma.projectturngame.util.CardPosition.*
 import org.bukkit.Material
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
@@ -21,7 +23,7 @@ interface CardHandler {
     fun Player.use(card: Card)
     fun Player.drow(int: Int)
     fun Player.cardThrow(card: Card)
-    fun Player.addCard(card: Card)
+    fun Player.addCard(card: Card, cardPosition: CardPosition = CardPosition.Hand)
     fun Player.addDeckCard(card: Card)
     fun Player.clearHand()
     fun Player.clearGraveyard()
@@ -34,6 +36,8 @@ interface CardHandler {
     fun Card.toItem(): ItemStack
     fun ItemStack.toCard(): Card
     fun Player.applyHotbar()
+
+    fun Card.isFix(): Boolean
 }
 
 class DefaultCardManager : CardHandler {
@@ -47,6 +51,12 @@ class DefaultCardManager : CardHandler {
         // 사용 시 효과가 없는 경우
         if (card.cardUseEffect == null) return
         val isUsing = card.cardUseEffect.invoke(this@use, card)
+
+        val game = Info.game ?: return
+
+        if (game.gameEnemys.isEmpty()) {
+            return
+        }
 
         // 카드 사용에 실패한 경우
         if (!isUsing) return
@@ -94,6 +104,11 @@ class DefaultCardManager : CardHandler {
             this.banish.addAll(graveyardCards)
             return
         }
+
+
+        // 일반 카드 효과 처리
+        this.hand.remove(card)
+        this.graveyard.add(card)
     }
 
     override fun Player.drow(int: Int) {
@@ -122,15 +137,22 @@ class DefaultCardManager : CardHandler {
 
         card.cardThrowEffect?.invoke(this, card)
         this.hand.remove(card)
+        this.graveyard.add(card)
         applyHotbar()
     }
 
-    override fun Player.addCard(card: Card) {
+    override fun Player.addCard(card: Card, cardPosition: CardPosition) {
         val game = Info.game ?: return
 
-        if (this.hand.size >= 9) return
+        if (cardPosition == Hand && this.hand.size >= 9) return
 
-        this.hand.add(card)
+        when (cardPosition) {
+            Hand -> this.hand.add(card)
+            Deck -> this.deck.add(card)
+            Graveyard -> this.graveyard.add(card)
+            Banish -> this.banish.add(card)
+        }
+
         game.drowCardInt++
         this.applyHotbar()
     }
@@ -236,6 +258,10 @@ class DefaultCardManager : CardHandler {
             player.inventory.setItem(i, material.toItem())
         }
     }
+
+    override fun Card.isFix(): Boolean {
+        return this.description.contains(KeywordType.Fix.component)
+    }
 }
 
 object CardManager {
@@ -249,8 +275,8 @@ object CardManager {
         converter.run { drow(int) }
     }
 
-    fun Player.addCard(card: Card) {
-        converter.run { addCard(card) }
+    fun Player.addCard(card: Card, cardPosition: CardPosition = CardPosition.Hand) {
+        converter.run { addCard(card, cardPosition) }
     }
 
     fun Card.toItem(): ItemStack {
@@ -267,10 +293,6 @@ object CardManager {
 
     fun Player.applyHotbar() {
         return converter.run { applyHotbar() }
-    }
-
-    fun Player.addDeckCard(cards: List<Card>) {
-        converter.run { addDeckCard(cards) }
     }
 
     fun Player.clearHand() {
@@ -301,7 +323,7 @@ object CardManager {
         converter.run { cardBanish(card) }
     }
 
-    fun filterIsMoveCard(vararg card: Card): List<Card> {
-        return converter.run { filterIsMoveCard(*card) }
+    fun Card.isFix(): Boolean {
+        return converter.run { isFix() }
     }
 }
