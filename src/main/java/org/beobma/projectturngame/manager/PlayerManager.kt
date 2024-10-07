@@ -184,7 +184,6 @@ class DefaultPlayerManager : PlayerHandler {
 
     override fun Player.death() {
         val game = Info.game ?: return
-        val playerData = game.playerDatas.find { it.player == player } as Player
 
         this.isDead = true
 
@@ -192,7 +191,7 @@ class DefaultPlayerManager : PlayerHandler {
             gameOver()
         } else {
             playerLocationRetake()
-            game.gameTurnOrder.remove(playerData)
+            game.gameTurnOrder.remove(this)
         }
     }
 
@@ -202,35 +201,14 @@ class DefaultPlayerManager : PlayerHandler {
     }
 
     override fun Player.diceRoll(min: Int, max: Int): Int {
-        var dice = Random.nextInt(min, max + 1)
-        dice += this.diceWeight
+        val baseRoll = Random.nextInt(min, max + 1) + diceWeight
+        var dice = baseRoll.coerceIn(min, max)
 
-        if (dice > max) {
-            dice = max
-        }
-        else if (dice < min) {
-            dice = min
-        }
-
-        if (player.scoreboardTags.contains("minMax")) {
-            dice = if (Random.nextBoolean()) {
-                min
-            } else {
-                max
-            }
-            player.scoreboardTags.remove("minMax")
-        }
-
-        if (player.scoreboardTags.contains("chanceAdvantage")) {
-            val secondRoll = Random.nextInt(min, max + 1) + this.diceWeight
-
-            val adjustedSecondRoll = when {
-                secondRoll > max -> max
-                secondRoll < min -> min
-                else -> secondRoll
-            }
-
-            dice = maxOf(dice, adjustedSecondRoll)
+        if (player.scoreboardTags.remove("minMax")) {
+            dice = if (Random.nextBoolean()) min else max
+        } else if (player.scoreboardTags.remove("chanceAdvantage")) {
+            val secondRoll = (Random.nextInt(min, max + 1) + diceWeight).coerceIn(min, max)
+            dice = maxOf(dice, secondRoll)
         }
 
         player.sendMessage(Component.text("주사위를 굴린 결과, ${dice}이(가) 나왔습니다.", TextColorType.Gray.textColor))
