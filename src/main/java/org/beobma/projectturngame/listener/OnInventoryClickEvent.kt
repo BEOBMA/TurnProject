@@ -16,6 +16,7 @@ import org.beobma.projectturngame.manager.GameManager.hardBattleStart
 import org.beobma.projectturngame.manager.GameManager.moveTile
 import org.beobma.projectturngame.manager.GameManager.nextSector
 import org.beobma.projectturngame.manager.GameManager.restStart
+import org.beobma.projectturngame.manager.InventoryManager.openAlchemYingredientsPileInfoInventory
 import org.beobma.projectturngame.manager.InventoryManager.openBanishInfoInventory
 import org.beobma.projectturngame.manager.InventoryManager.openDeckInfoInventory
 import org.beobma.projectturngame.manager.InventoryManager.openGraveyardInfoInventory
@@ -74,6 +75,11 @@ class OnInventoryClickEvent : Listener {
 
         if (player.scoreboardTags.contains("inventory_BanishInfo")) {
             banishInfoChoiceHandler(clickItem, player, inventory)
+            event.isCancelled = true
+        }
+
+        if (player.scoreboardTags.contains("inventory_AlchemYingredientsPileInfo")) {
+            alchemYingredientsPileInfoChoiceHandler(clickItem, player, inventory)
             event.isCancelled = true
         }
 
@@ -215,14 +221,15 @@ class OnInventoryClickEvent : Listener {
     }
 
     private fun deckInfoChoiceHandler(clickItem: ItemStack, player: Player, inventory: InventoryView) {
-        player.closeInventory()
         val itemMeta = clickItem.itemMeta ?: return
         when (itemMeta.displayName()) {
             Component.text("이전 페이지", TextColorType.Gray.textColor).decorate(TextDecoration.BOLD) -> {
+                player.closeInventory()
                 val currentPage = getCurrentPageFromTitle(inventory.title().toString())
                 player.openDeckInfoInventory(currentPage - 1)
             }
             Component.text("다음 페이지", TextColorType.Gray.textColor).decorate(TextDecoration.BOLD) -> {
+                player.closeInventory()
                 val currentPage = getCurrentPageFromTitle(inventory.title().toString())
                 player.openDeckInfoInventory(currentPage + 1)
             }
@@ -230,15 +237,15 @@ class OnInventoryClickEvent : Listener {
     }
 
     private fun graveyardInfoChoiceHandler(clickItem: ItemStack, player: Player, inventory: InventoryView) {
-        player.closeInventory()
         val itemMeta = clickItem.itemMeta ?: return
         when (itemMeta.displayName()) {
             Component.text("이전 페이지", TextColorType.Gray.textColor).decorate(TextDecoration.BOLD) -> {
-                inventory
+                player.closeInventory()
                 val currentPage = getCurrentPageFromTitle(inventory.title().toString())
                 player.openGraveyardInfoInventory(currentPage - 1)
             }
             Component.text("다음 페이지", TextColorType.Gray.textColor).decorate(TextDecoration.BOLD) -> {
+                player.closeInventory()
                 val currentPage = getCurrentPageFromTitle(inventory.title().toString())
                 player.openGraveyardInfoInventory(currentPage + 1)
             }
@@ -246,17 +253,33 @@ class OnInventoryClickEvent : Listener {
     }
 
     private fun banishInfoChoiceHandler(clickItem: ItemStack, player: Player, inventory: InventoryView) {
-        player.closeInventory()
         val itemMeta = clickItem.itemMeta ?: return
         when (itemMeta.displayName()) {
             Component.text("이전 페이지", TextColorType.Gray.textColor).decorate(TextDecoration.BOLD) -> {
-                inventory
+                player.closeInventory()
                 val currentPage = getCurrentPageFromTitle(inventory.title().toString())
                 player.openBanishInfoInventory(currentPage - 1)
             }
             Component.text("다음 페이지", TextColorType.Gray.textColor).decorate(TextDecoration.BOLD) -> {
+                player.closeInventory()
                 val currentPage = getCurrentPageFromTitle(inventory.title().toString())
                 player.openBanishInfoInventory(currentPage + 1)
+            }
+        }
+    }
+
+    private fun alchemYingredientsPileInfoChoiceHandler(clickItem: ItemStack, player: Player, inventory: InventoryView) {
+        val itemMeta = clickItem.itemMeta ?: return
+        when (itemMeta.displayName()) {
+            Component.text("이전 페이지", TextColorType.Gray.textColor).decorate(TextDecoration.BOLD) -> {
+                player.closeInventory()
+                val currentPage = getCurrentPageFromTitle(inventory.title().toString())
+                player.openAlchemYingredientsPileInfoInventory(currentPage - 1)
+            }
+            Component.text("다음 페이지", TextColorType.Gray.textColor).decorate(TextDecoration.BOLD) -> {
+                player.closeInventory()
+                val currentPage = getCurrentPageFromTitle(inventory.title().toString())
+                player.openAlchemYingredientsPileInfoInventory(currentPage + 1)
             }
         }
     }

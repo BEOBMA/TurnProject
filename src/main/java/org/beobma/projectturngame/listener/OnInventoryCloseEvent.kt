@@ -46,6 +46,8 @@ class OnInventoryCloseEvent : Listener {
             player.scoreboardTags.contains("inventory_GraveyardInfo") -> player.scoreboardTags.remove("inventory_GraveyardInfo")
 
             player.scoreboardTags.contains("inventory_BanishInfo") -> player.scoreboardTags.remove("inventory_BanishInfo")
+
+            player.scoreboardTags.contains("inventory_AlchemYingredientsPileInfo") -> player.scoreboardTags.remove("inventory_AlchemYingredientsPileInfo")
         }
     }
 
