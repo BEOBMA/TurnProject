@@ -98,6 +98,7 @@ object MaxHealthManager {
     }
 }
 
+
 interface BurnHandler {
     fun Entity.increaseBurn(int: Int, caster: Entity)
     fun Entity.getBurn(): AbnormalityStatus?
@@ -116,6 +117,7 @@ class DefaultBurnHandler : BurnHandler {
         else {
             this.abnormalityStatus.add(AbnormalityStatus(KeywordType.Burn, mutableListOf(caster), int))
         }
+
     }
 
     override fun Entity.getBurn(): AbnormalityStatus? {
