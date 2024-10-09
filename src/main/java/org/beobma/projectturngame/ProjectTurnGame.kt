@@ -41,6 +41,7 @@ class ProjectTurnGame : JavaPlugin() {
         server.pluginManager.registerEvents(OnEntityTurnStartEvent(), this)
         server.pluginManager.registerEvents(OnEntityTurnEndEvent(), this)
         server.pluginManager.registerEvents(OnDamageEvent(), this)
+        server.pluginManager.registerEvents(OnItemSpawnEvent(), this)
     }
 
     fun loggerInfo(string: String) {
