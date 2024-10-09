@@ -12,6 +12,7 @@ import org.beobma.projectturngame.localization.Dictionary
 import org.beobma.projectturngame.manager.CardManager.addCard
 import org.beobma.projectturngame.manager.GameManager.start
 import org.beobma.projectturngame.manager.GameManager.stop
+import org.beobma.projectturngame.manager.InventoryManager.openAlchemYingredientsPileInfoInventory
 import org.beobma.projectturngame.manager.InventoryManager.openBanishInfoInventory
 import org.beobma.projectturngame.manager.InventoryManager.openDeckInfoInventory
 import org.beobma.projectturngame.manager.InventoryManager.openGraveyardInfoInventory
@@ -148,16 +149,20 @@ class Command : Listener, CommandExecutor, TabCompleter {
                     val key = args.drop(1).joinToString(" ").trim()
 
                     when (key) {
-                        "deck", "덱" -> {
+                        "덱" -> {
                             sender.openDeckInfoInventory()
                         }
 
-                        "graveyard", "묘지" -> {
+                        "묘지" -> {
                             sender.openGraveyardInfoInventory()
                         }
 
-                        "banish", "제외" -> {
+                        "제외" -> {
                             sender.openBanishInfoInventory()
+                        }
+
+                        "연금술 재료 더미" -> {
+                            sender.openAlchemYingredientsPileInfoInventory()
                         }
 
 
@@ -240,7 +245,7 @@ class Command : Listener, CommandExecutor, TabCompleter {
                 2 -> when (args[0].lowercase(Locale.getDefault())) {
                     "start" -> GameType.entries.map { it.name }
                     "dictionary", "사전" -> Dictionary().dictionaryList.keys.toList()
-                    "info", "정보" -> listOf("deck", "덱", "graveyard", "묘지", "banish", "제외")
+                    "info", "정보" -> listOf("덱", "묘지", "제외", "연금술 재료 더미")
                     else -> emptyList()
                 }
 
