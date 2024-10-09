@@ -1,6 +1,5 @@
 package org.beobma.projectturngame.listener
 
-import net.kyori.adventure.text.Component
 import org.beobma.projectturngame.info.Info
 import org.beobma.projectturngame.manager.CardManager.applyHotbar
 import org.beobma.projectturngame.text.KeywordType
@@ -22,9 +21,8 @@ class OnPlayerDropItemEvent : Listener {
         if (description.contains(KeywordType.AlchemYingredients.component)) {
             playerData.alchemYingredientsPile.add(card)
             playerData.hand.remove(card)
-            event.isCancelled = true
+            player.inventory.remove(item.itemStack)
             playerData.applyHotbar()
-            player.sendMessage(Component.text("${playerData.alchemYingredientsPile}"))
             return
         }
 

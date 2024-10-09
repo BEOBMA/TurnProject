@@ -13,7 +13,6 @@ import org.beobma.projectturngame.manager.BlindnessManager.increaseBlindness
 import org.beobma.projectturngame.manager.BurnManager.getBurn
 import org.beobma.projectturngame.manager.BurnManager.increaseBurn
 import org.beobma.projectturngame.manager.CardManager.addCard
-import org.beobma.projectturngame.manager.CardManager.cardBanish
 import org.beobma.projectturngame.manager.CardManager.drow
 import org.beobma.projectturngame.manager.EnemyManager.damage
 import org.beobma.projectturngame.manager.PlayerManager.addMana
@@ -302,41 +301,39 @@ class MasterOfAlchemyCardPack {
                 }
 
                 val cardA = usePlayerData.alchemYingredientsPile.random()
-                usePlayerData.alchemYingredientsPile.remove(cardA)
-
-                val cardB = usePlayerData.alchemYingredientsPile.random()
-                usePlayerData.alchemYingredientsPile.remove(cardB)
+                val cardB = if (usePlayerData.alchemYingredientsPile.filter { it != cardA }
+                        .isEmpty()) cardA.copy() else usePlayerData.alchemYingredientsPile.filter { it != cardA }.random()
 
                 usePlayerData.addCard(
-                    when (setOf(cardA.name, cardB.name)) {
-                        setOf("물, 물") -> {
+                    when (listOf(cardA.name, cardB.name).sorted()) {
+                        listOf("물", "물") -> {
                             river
                         }
-                        setOf("불, 불") -> {
+                        listOf("불", "불") -> {
                             sun
                         }
-                        setOf("흙, 흙") -> {
+                        listOf("흙", "흙") -> {
                             earth
                         }
-                        setOf("공기, 공기") -> {
+                        listOf("공기", "공기") -> {
                             wind
                         }
-                        setOf("물, 불") -> {
+                        listOf("물", "불") -> {
                             steam
                         }
-                        setOf("물, 흙") -> {
+                        listOf("물", "흙") -> {
                             mud
                         }
-                        setOf("물, 공기") -> {
+                        listOf("물", "공기") -> {
                             fog
                         }
-                        setOf("불, 흙") -> {
+                        listOf("불", "흙") -> {
                             lava
                         }
-                        setOf("불, 공기") -> {
+                        listOf("불", "공기") -> {
                             lightning
                         }
-                        setOf("흙, 공기") -> {
+                        listOf("흙", "공기") -> {
                             dust
                         }
 
@@ -345,6 +342,7 @@ class MasterOfAlchemyCardPack {
                         }
                     }
                 )
+                usePlayerData.alchemYingredientsPile.removeAll(listOf(cardA, cardB))
 
                 return@Card true
             }
@@ -409,41 +407,39 @@ class MasterOfAlchemyCardPack {
                 }
 
                 val cardA = usePlayerData.alchemYingredientsPile.random()
-                usePlayerData.alchemYingredientsPile.remove(cardA)
-
-                val cardB = usePlayerData.alchemYingredientsPile.random()
-                usePlayerData.alchemYingredientsPile.remove(cardB)
+                val cardB = if (usePlayerData.alchemYingredientsPile.filter { it != cardA }
+                        .isEmpty()) cardA.copy() else usePlayerData.alchemYingredientsPile.filter { it != cardA }.random()
 
                 usePlayerData.addCard(
-                    when (setOf(cardA.name, cardB.name)) {
-                        setOf("물, 물") -> {
+                    when (listOf(cardA.name, cardB.name).sorted()) {
+                        listOf("물", "물") -> {
                             river
                         }
-                        setOf("불, 불") -> {
+                        listOf("불", "불") -> {
                             sun
                         }
-                        setOf("흙, 흙") -> {
+                        listOf("흙", "흙") -> {
                             earth
                         }
-                        setOf("공기, 공기") -> {
+                        listOf("공기", "공기") -> {
                             wind
                         }
-                        setOf("물, 불") -> {
+                        listOf("물", "불") -> {
                             steam
                         }
-                        setOf("물, 흙") -> {
+                        listOf("물", "흙") -> {
                             mud
                         }
-                        setOf("물, 공기") -> {
+                        listOf("물", "공기") -> {
                             fog
                         }
-                        setOf("불, 흙") -> {
+                        listOf("불", "흙") -> {
                             lava
                         }
-                        setOf("불, 공기") -> {
+                        listOf("불", "공기") -> {
                             lightning
                         }
-                        setOf("흙, 공기") -> {
+                        listOf("흙", "공기") -> {
                             dust
                         }
 
@@ -452,6 +448,7 @@ class MasterOfAlchemyCardPack {
                         }
                     }
                 )
+                usePlayerData.alchemYingredientsPile.removeAll(listOf(cardA, cardB))
 
                 return@Card true
             }
@@ -636,43 +633,39 @@ class MasterOfAlchemyCardPack {
                 }
 
                 val cardA = usePlayerData.alchemYingredientsPile.random()
-                usePlayerData.alchemYingredientsPile.remove(cardA)
-                usePlayerData.cardBanish(cardA)
-
-                val cardB = usePlayerData.alchemYingredientsPile.random()
-                usePlayerData.alchemYingredientsPile.remove(cardB)
-                usePlayerData.cardBanish(cardB)
+                val cardB = if (usePlayerData.alchemYingredientsPile.filter { it != cardA }
+                        .isEmpty()) cardA.copy() else usePlayerData.alchemYingredientsPile.filter { it != cardA }.random()
 
                 usePlayerData.addCard(
-                    when (setOf(cardA.name, cardB.name)) {
-                        setOf("물, 물") -> {
+                    when (listOf(cardA.name, cardB.name).sorted()) {
+                        listOf("물", "물") -> {
                             river
                         }
-                        setOf("불, 불") -> {
+                        listOf("불", "불") -> {
                             sun
                         }
-                        setOf("흙, 흙") -> {
+                        listOf("흙", "흙") -> {
                             earth
                         }
-                        setOf("공기, 공기") -> {
+                        listOf("공기", "공기") -> {
                             wind
                         }
-                        setOf("물, 불") -> {
+                        listOf("물", "불") -> {
                             steam
                         }
-                        setOf("물, 흙") -> {
+                        listOf("물", "흙") -> {
                             mud
                         }
-                        setOf("물, 공기") -> {
+                        listOf("물", "공기") -> {
                             fog
                         }
-                        setOf("불, 흙") -> {
+                        listOf("불", "흙") -> {
                             lava
                         }
-                        setOf("불, 공기") -> {
+                        listOf("불", "공기") -> {
                             lightning
                         }
-                        setOf("흙, 공기") -> {
+                        listOf("흙", "공기") -> {
                             dust
                         }
 
@@ -681,6 +674,8 @@ class MasterOfAlchemyCardPack {
                         }
                     }
                 )
+                usePlayerData.banish.addAll(listOf(cardA, cardB))
+                usePlayerData.alchemYingredientsPile.removeAll(listOf(cardA, cardB))
 
                 return@Card true
             }
