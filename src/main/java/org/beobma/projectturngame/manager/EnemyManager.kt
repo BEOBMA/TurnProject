@@ -3,7 +3,6 @@ package org.beobma.projectturngame.manager
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
 import org.beobma.projectturngame.ProjectTurnGame
-import org.beobma.projectturngame.entity.Entity
 import org.beobma.projectturngame.entity.enemy.Enemy
 import org.beobma.projectturngame.entity.player.Player
 import org.beobma.projectturngame.event.EntityDamageEvent
@@ -71,7 +70,6 @@ class DefaultEnemyManager : EnemyHandler{
     }
 
     override fun Enemy.damage(damage: Int, attacker: Player?, damageType: DamageType) {
-        if (attacker !is Entity) return
         // 대상이 이미 사망한 경우
         if (this.isDead) return
 
