@@ -17,9 +17,10 @@ class OnDamageEvent : Listener {
         val entity = event.entity
         val attacker = event.attacker
 
-        weaknessHandler(attacker, event)
-        blindnessHandler(attacker, event)
-
+        if (attacker is Entity) {
+            weaknessHandler(attacker, event)
+            blindnessHandler(attacker, event)
+        }
     }
 
     private fun weaknessHandler(attacker: Entity, event: EntityDamageEvent) {

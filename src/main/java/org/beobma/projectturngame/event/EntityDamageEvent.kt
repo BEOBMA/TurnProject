@@ -6,7 +6,7 @@ import org.bukkit.event.Cancellable
 import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
 
-class EntityDamageEvent(var damage: Int, val damageType: DamageType, val entity: Entity, val attacker: Entity) : Event(), Cancellable {
+class EntityDamageEvent(var damage: Int, val damageType: DamageType, val entity: Entity, val attacker: Entity?) : Event(), Cancellable {
     private var isCancelled = false
 
     override fun isCancelled(): Boolean {
