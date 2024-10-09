@@ -23,6 +23,7 @@ interface InventoryHandler {
     fun Player.openDeckInfoInventory(page: Int = 0)
     fun Player.openGraveyardInfoInventory(page: Int = 0)
     fun Player.openBanishInfoInventory(page: Int = 0)
+    fun Player.openAlchemYingredientsPileInfoInventory(page: Int = 0)
 }
 
 class DefaultInventoryManager : InventoryHandler {
@@ -144,6 +145,36 @@ class DefaultInventoryManager : InventoryHandler {
         }
 
         this.scoreboardTags.add("inventory_BanishInfo")
+        this.openInventory(inventory)
+    }
+
+    override fun Player.openAlchemYingredientsPileInfoInventory(page: Int) {
+        val game = Info.game ?: return
+        val playerData = game.playerDatas.find { it.player == this } ?: return
+        val cardList = playerData.alchemYingredientsPile
+        val totalPages = (cardList.size + 18 - 1) / 18
+        val localization = Localization()
+        val nextPage = localization.nextPage
+        val previousPage = localization.previousPage
+
+        if (page < 0 || page >= totalPages) return
+        val inventory = createEmptyInfoInventory(Component.text("연금술 재료 더미 (페이지 ${page + 1}/$totalPages)"))
+
+        val startIdx = page * 18
+        val endIdx = minOf(startIdx + 18, cardList.size)
+        for (i in startIdx until endIdx) {
+            inventory.setItem(i - startIdx, cardList[i].toItem())
+        }
+
+        if (page > 0) {
+            inventory.setItem(18, previousPage)
+        }
+
+        if (page < totalPages - 1) {
+            inventory.setItem(26, nextPage)
+        }
+
+        this.scoreboardTags.add("inventory_AlchemYingredientsPileInfo")
         this.openInventory(inventory)
     }
 
@@ -299,6 +330,10 @@ object InventoryManager {
 
     fun Player.openBanishInfoInventory(page: Int = 0) {
         converter.run { openBanishInfoInventory(page) }
+    }
+
+    fun Player.openAlchemYingredientsPileInfoInventory(page: Int = 0) {
+        converter.run { openAlchemYingredientsPileInfoInventory(page) }
     }
 
     fun Player.openEventInventory(event: Event) {
