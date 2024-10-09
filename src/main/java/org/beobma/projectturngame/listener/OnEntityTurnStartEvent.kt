@@ -23,6 +23,7 @@ class OnEntityTurnStartEvent : Listener {
 
     private fun burnHandler(entity: Entity) {
         val burn = entity.abnormalityStatus.find { it.keywordType == KeywordType.Burn }
+
         if (burn !is AbnormalityStatus) return
 
         if (entity is Enemy) {
@@ -33,6 +34,10 @@ class OnEntityTurnStartEvent : Listener {
             entity.damage(burn.power, null, DamageType.AbnormalStatus)
         }
 
-        burn.power /= 2
+        burn.power = (burn.power / 2).toInt()
+
+        if (burn.power <= 1) {
+            entity.abnormalityStatus.remove(burn)
+        }
     }
 }
