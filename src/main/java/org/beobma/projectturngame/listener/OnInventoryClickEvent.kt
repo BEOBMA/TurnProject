@@ -59,6 +59,7 @@ class OnInventoryClickEvent : Listener {
             }
 
             compensationCardChoiceHandler(game, clickItem, player)
+            player.scoreboardTags.remove("inventory_CardChoice")
             event.isCancelled = true
             return
         }
