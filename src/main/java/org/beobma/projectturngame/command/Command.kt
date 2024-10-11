@@ -16,6 +16,8 @@ import org.beobma.projectturngame.manager.InventoryManager.openAlchemYingredient
 import org.beobma.projectturngame.manager.InventoryManager.openBanishInfoInventory
 import org.beobma.projectturngame.manager.InventoryManager.openDeckInfoInventory
 import org.beobma.projectturngame.manager.InventoryManager.openGraveyardInfoInventory
+import org.beobma.projectturngame.manager.InventoryManager.openMyInfoInventory
+import org.beobma.projectturngame.manager.InventoryManager.openTurnOtherInfoInventory
 import org.beobma.projectturngame.text.TextColorType
 import org.beobma.projectturngame.util.CardPosition
 import org.bukkit.Bukkit
@@ -165,6 +167,14 @@ class Command : Listener, CommandExecutor, TabCompleter {
                             sender.openAlchemYingredientsPileInfoInventory()
                         }
 
+                        "자신 정보" -> {
+                            sender.openMyInfoInventory()
+                        }
+
+                        "턴 순서" -> {
+                            sender.openTurnOtherInfoInventory()
+                        }
+
 
                         else -> {
                             sender.sendMessage(
@@ -245,7 +255,7 @@ class Command : Listener, CommandExecutor, TabCompleter {
                 2 -> when (args[0].lowercase(Locale.getDefault())) {
                     "start" -> GameType.entries.map { it.name }
                     "dictionary", "사전" -> Dictionary().dictionaryList.keys.toList()
-                    "info", "정보" -> listOf("덱", "묘지", "제외", "연금술 재료 더미")
+                    "info", "정보" -> listOf("덱", "묘지", "제외", "연금술 재료 더미", "턴 순서", "자신 정보")
                     else -> emptyList()
                 }
 
