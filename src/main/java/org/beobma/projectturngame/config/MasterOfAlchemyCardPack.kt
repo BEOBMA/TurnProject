@@ -466,56 +466,15 @@ class MasterOfAlchemyCardPack {
             { usePlayerData, _ ->
                 val player = usePlayerData.player
 
-                if (usePlayerData.alchemYingredientsPile.size < 2) {
+                if (usePlayerData.alchemYingredientsPile.isEmpty()) {
                     player.sendMessage(cardUseFailText())
                     player.playTargetingFailSound()
                     return@Card false
                 }
 
-                val cardA = usePlayerData.alchemYingredientsPile.random()
-                usePlayerData.alchemYingredientsPile.remove(cardA)
-
-                val cardB = usePlayerData.alchemYingredientsPile.random()
-                usePlayerData.alchemYingredientsPile.remove(cardB)
-
-                usePlayerData.addCard(
-                    when (setOf(cardA.name, cardB.name)) {
-                        setOf("물, 물") -> {
-                            river
-                        }
-                        setOf("불, 불") -> {
-                            sun
-                        }
-                        setOf("흙, 흙") -> {
-                            earth
-                        }
-                        setOf("공기, 공기") -> {
-                            wind
-                        }
-                        setOf("물, 불") -> {
-                            steam
-                        }
-                        setOf("물, 흙") -> {
-                            mud
-                        }
-                        setOf("물, 공기") -> {
-                            fog
-                        }
-                        setOf("불, 흙") -> {
-                            lava
-                        }
-                        setOf("불, 공기") -> {
-                            lightning
-                        }
-                        setOf("흙, 공기") -> {
-                            dust
-                        }
-
-                        else -> {
-                            return@Card false
-                        }
-                    }
-                )
+                usePlayerData.alchemYingredientsPile.remove(usePlayerData.alchemYingredientsPile.random())
+                usePlayerData.addMana(1)
+                usePlayerData.drow(1)
 
                 return@Card true
             }
