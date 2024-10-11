@@ -21,8 +21,7 @@ interface Battlehandler {
     fun playerLocationRetake()
     fun enemyLocationRetake()
 }
-
-class DefaultBattleManager : Battlehandler {
+object BattleManager : Battlehandler {
     override fun spawnNormalEnemy(field: GameField) {
         val game = Info.game ?: return
         val difficultyWeight = when (game.gameDifficulty) {
@@ -214,28 +213,4 @@ class DefaultBattleManager : Battlehandler {
         }
     }
 
-}
-
-object BattleManager {
-    private val converter: Battlehandler = DefaultBattleManager()
-
-    fun spawnNormalEnemy(field: GameField) {
-        converter.run { spawnNormalEnemy(field) }
-    }
-
-    fun spawnHardEnemy(field: GameField) {
-        converter.run { spawnHardEnemy(field) }
-    }
-
-    fun spawnBossEnemy(field: GameField) {
-        converter.run { spawnBossEnemy(field) }
-    }
-
-    fun playerLocationRetake() {
-        converter.run { playerLocationRetake() }
-    }
-
-    fun enemyLocationRetake() {
-        converter.run { enemyLocationRetake() }
-    }
 }

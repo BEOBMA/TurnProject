@@ -14,7 +14,7 @@ interface EventHandler {
     fun ItemStack.toEventOption(): EventOption
 }
 
-class DefaultEventManager : EventHandler {
+object EventManager : EventHandler {
     override fun EventOption.toItem(): ItemStack {
         return ItemStack(itemMaterial, 1).apply {
             itemMeta = itemMeta?.apply {
@@ -38,17 +38,5 @@ class DefaultEventManager : EventHandler {
         }
 
         return eventOption
-    }
-}
-
-object EventManager {
-    private val convertor = DefaultEventManager()
-
-    fun EventOption.toItem(): ItemStack {
-        return convertor.run { toItem() }
-    }
-
-    fun ItemStack.toEventOption(): EventOption {
-        return convertor.run { toEventOption() }
     }
 }

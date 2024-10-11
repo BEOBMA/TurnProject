@@ -11,7 +11,7 @@ interface CompensationHandler {
     fun Player.relicsReward()
 }
 
-class DefaultCompensationManager : CompensationHandler {
+object CompensationManager : CompensationHandler {
     override fun Player.normalReward() {
         val game = Info.game ?: return
         val cardPacks = game.gameCardPack
@@ -30,21 +30,5 @@ class DefaultCompensationManager : CompensationHandler {
 
     override fun Player.relicsReward() {
         TODO("Not yet implemented")
-    }
-}
-
-object CompensationManager {
-    private val converter: CompensationHandler = DefaultCompensationManager()
-
-    fun Player.normalReward() {
-        converter.run { this@normalReward.normalReward() }
-    }
-
-    fun Player.eliteReward() {
-        converter.run { this@eliteReward.eliteReward() }
-    }
-
-    fun Player.relicsReward() {
-        converter.run { this@relicsReward.relicsReward() }
     }
 }

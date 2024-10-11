@@ -11,7 +11,10 @@ import org.beobma.projectturngame.manager.BattleManager.enemyLocationRetake
 import org.beobma.projectturngame.manager.GameManager.battleStop
 import org.beobma.projectturngame.text.TextColorType
 import org.beobma.projectturngame.util.DamageType
+import org.bukkit.Material
 import org.bukkit.attribute.Attribute
+import org.bukkit.inventory.ItemFlag
+import org.bukkit.inventory.ItemStack
 
 interface EnemyHandler {
     fun Enemy.set()
@@ -21,9 +24,11 @@ interface EnemyHandler {
     fun Enemy.death()
 
     fun Enemy.damage(damage: Int, attacker: Player?, damageType: DamageType = DamageType.Normal)
+
+    fun Enemy.toItem(): ItemStack
 }
 
-class DefaultEnemyManager : EnemyHandler{
+object EnemyManager : EnemyHandler {
     override fun Enemy.set() {
         val game = Info.game ?: return
 
@@ -118,28 +123,28 @@ class DefaultEnemyManager : EnemyHandler{
             this.isCustomNameVisible = true
         }
     }
-}
 
-object EnemyManager {
-    private val converter: EnemyHandler = DefaultEnemyManager()
+    override fun Enemy.toItem(): ItemStack {
+        val name = this.name
+        val abnormalityStatusList = mutableListOf<Component>()
 
-    fun Enemy.set() {
-        converter.run { this@set.set() }
-    }
+        this.abnormalityStatus.forEach {
+            abnormalityStatusList.add(it.keywordType.component.append(Component.text(": ${it.power}", it.keywordType.component.color())))
+        }
+        val lore = mutableListOf<Component>(
+            Component.text("체력 / 최대 체력 : ${this.health} / ${this.maxHealth}", TextColorType.Gray.textColor),
+            Component.text("속도 : ${this.speed}", TextColorType.Gray.textColor),
+            Component.text("상태이상 목록:", TextColorType.Gray.textColor),
+        )
 
-    fun Enemy.setMaxHealth(int: Int) {
-        converter.run { this@setMaxHealth.setMaxHealth(int) }
-    }
-
-    fun Enemy.setHealth(int: Int) {
-        converter.run { this@setHealth.setHealth(int) }
-    }
-
-    fun Enemy.damage(damage: Int, attacker: Player?, damageType: DamageType = DamageType.Normal) {
-        converter.run { this@damage.damage(damage, attacker, damageType) }
-    }
-
-    fun Enemy.death() {
-        converter.run { death() }
+        lore.addAll(abnormalityStatusList)
+        val item = ItemStack(Material.ZOMBIE_HEAD, 1).apply {
+            itemMeta = itemMeta?.apply {
+                displayName(Component.text(name))
+                lore(lore)
+                addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
+            }
+        }
+        return item
     }
 }

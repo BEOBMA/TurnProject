@@ -37,6 +37,7 @@ import org.bukkit.Location
 import org.bukkit.Sound
 import org.bukkit.scheduler.BukkitRunnable
 
+
 interface GameHandler {
     fun Game.start()
     fun Game.stop()
@@ -57,8 +58,7 @@ interface GameHandler {
     fun Entity.turnEnd()
 }
 
-
-class DefaultGameManager : GameHandler {
+object GameManager : GameHandler {
 
     override fun Game.start() {
         Info.game = this@start
@@ -393,69 +393,5 @@ class DefaultGameManager : GameHandler {
         this.banish.clear()
 
         this.applyHotbar()
-    }
-}
-
-object GameManager {
-    private val converter: GameHandler = DefaultGameManager()
-
-    fun Game.start() {
-        converter.run { this@start.start() }
-    }
-
-    fun Game.stop() {
-        converter.run { this@stop.stop() }
-    }
-
-    fun Game.battleStart() {
-        converter.run { this@battleStart.battleStart() }
-    }
-
-    fun Game.battleStop() {
-        converter.run { this@battleStop.battleStop() }
-    }
-
-    fun Game.hardBattleStart() {
-        converter.run { this@hardBattleStart.hardBattleStart() }
-    }
-
-    fun Game.hardBattleStop() {
-        converter.run { this@hardBattleStop.hardBattleStop() }
-    }
-
-    fun Game.bossStart() {
-        converter.run { this@bossStart.bossStart() }
-    }
-
-    fun Game.bossStop() {
-        converter.run { this@bossStop.bossStop() }
-    }
-
-    fun Game.restStart() {
-        converter.run { this@restStart.restStart() }
-    }
-
-    fun Game.eventStart() {
-        converter.run { this@eventStart.eventStart() }
-    }
-
-    fun Game.nextSector() {
-        converter.run { this@nextSector.nextSector() }
-    }
-
-    fun gameOver() {
-        converter.run { gameOver() }
-    }
-
-    fun Entity.turnStart() {
-        converter.run { this@turnStart.turnStart() }
-    }
-
-    fun Entity.turnEnd() {
-        converter.run { this@turnEnd.turnEnd() }
-    }
-
-    fun Game.moveTile() {
-        converter.run { moveTile() }
     }
 }

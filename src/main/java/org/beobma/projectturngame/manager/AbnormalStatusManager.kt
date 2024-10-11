@@ -12,8 +12,7 @@ interface HealthHandler {
     fun Player.addHealth(int: Int)
     fun Player.setHealth(int: Int)
 }
-
-class DefaultHealthHandler : HealthHandler {
+object HealthManager : HealthHandler {
     override fun Player.addHealth(int: Int) {
         if (this.health + int <= 0) {
             death()
@@ -47,25 +46,12 @@ class DefaultHealthHandler : HealthHandler {
     }
 }
 
-object HealthManager {
-    private val converter: HealthHandler = DefaultHealthHandler()
-
-    fun Player.addHealth(int: Int) {
-        converter.run { addHealth(int) }
-    }
-    fun Player.setHealth(int: Int) {
-        converter.run { setHealth(int) }
-    }
-}
-
-
 
 interface MaxHealthHandler {
     fun Player.addMaxHealth(int: Int)
     fun Player.setMaxHealth(int: Int)
 }
-
-class DefaultMaxHealthHandler : MaxHealthHandler {
+object MaxHealthManager: MaxHealthHandler {
     override fun Player.addMaxHealth(int: Int) {
         if (this.maxMana + int <= 0) {
             death()
@@ -86,18 +72,6 @@ class DefaultMaxHealthHandler : MaxHealthHandler {
     }
 }
 
-object MaxHealthManager {
-    private val converter: MaxHealthHandler = DefaultMaxHealthHandler()
-
-    fun Player.addMaxHealth(int: Int) {
-        converter.run { this@addMaxHealth.addMaxHealth(int) }
-    }
-
-    fun Player.setMaxHealth(int: Int) {
-        converter.run { this@setMaxHealth.setMaxHealth(int) }
-    }
-}
-
 
 interface BurnHandler {
     fun Entity.increaseBurn(int: Int, caster: Entity)
@@ -105,8 +79,7 @@ interface BurnHandler {
     fun Entity.setBurn(int: Int, caster: Entity)
     fun Entity.decreaseBurn(int: Int, caster: Entity)
 }
-
-class DefaultBurnHandler : BurnHandler {
+object BurnManager : BurnHandler {
     override fun Entity.increaseBurn(int: Int, caster: Entity) {
         val burn = this.getBurn()
 
@@ -156,26 +129,6 @@ class DefaultBurnHandler : BurnHandler {
     }
 }
 
-object BurnManager {
-    private val converter: BurnHandler = DefaultBurnHandler()
-
-    fun Entity.increaseBurn(int: Int, caster: Entity) {
-        converter.run { increaseBurn(int, caster) }
-    }
-
-    fun Entity.getBurn(): AbnormalityStatus? {
-        return converter.run { getBurn() }
-    }
-
-    fun Entity.setBurn(int: Int, caster: Entity) {
-        return converter.run { setBurn(int, caster) }
-    }
-
-    fun Entity.decreaseBurn(int: Int, caster: Entity){
-        converter.run { decreaseBurn(int, caster) }
-    }
-}
-
 
 interface WeaknessHandler {
     fun Entity.increaseWeakness(int: Int, caster: Entity)
@@ -183,8 +136,7 @@ interface WeaknessHandler {
     fun Entity.setWeakness(int: Int, caster: Entity)
     fun Entity.decreaseWeakness(int: Int, caster: Entity)
 }
-
-class DefaultWeaknessHandler : WeaknessHandler {
+object WeaknessManager : WeaknessHandler {
     override fun Entity.increaseWeakness(int: Int, caster: Entity) {
         val weakness = this.getWeakness()
 
@@ -233,26 +185,6 @@ class DefaultWeaknessHandler : WeaknessHandler {
     }
 }
 
-object WeaknessManager {
-    private val converter: WeaknessHandler = DefaultWeaknessHandler()
-
-    fun Entity.increaseWeakness(int: Int, caster: Entity) {
-        converter.run { increaseWeakness(int, caster) }
-    }
-
-    fun Entity.getWeakness(): AbnormalityStatus? {
-        return converter.run { getWeakness() }
-    }
-
-    fun Entity.setWeakness(int: Int, caster: Entity) {
-        return converter.run { setWeakness(int, caster) }
-    }
-
-    fun Entity.decreaseWeakness(int: Int, caster: Entity){
-        converter.run { decreaseWeakness(int, caster) }
-    }
-}
-
 
 interface BlindnessHandler {
     fun Entity.increaseBlindness(int: Int, caster: Entity)
@@ -260,8 +192,7 @@ interface BlindnessHandler {
     fun Entity.setBlindness(int: Int, caster: Entity)
     fun Entity.decreaseBlindness(int: Int, caster: Entity)
 }
-
-class DefaultBlindnessHandler : BlindnessHandler {
+object BlindnessManager : BlindnessHandler {
     override fun Entity.increaseBlindness(int: Int, caster: Entity) {
         val blindness = this.getBlindness()
 
@@ -307,25 +238,5 @@ class DefaultBlindnessHandler : BlindnessHandler {
             }
             blindness.power -= int
         }
-    }
-}
-
-object BlindnessManager {
-    private val converter: BlindnessHandler = DefaultBlindnessHandler()
-
-    fun Entity.increaseBlindness(int: Int, caster: Entity) {
-        converter.run { increaseBlindness(int, caster) }
-    }
-
-    fun Entity.getBlindness(): AbnormalityStatus? {
-        return converter.run { getBlindness() }
-    }
-
-    fun Entity.setBlindness(int: Int, caster: Entity) {
-        return converter.run { setBlindness(int, caster) }
-    }
-
-    fun Entity.decreaseBlindness(int: Int, caster: Entity){
-        converter.run { decreaseBlindness(int, caster) }
     }
 }

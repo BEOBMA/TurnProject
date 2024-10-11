@@ -13,6 +13,9 @@ import org.beobma.projectturngame.text.TextColorType
 import org.beobma.projectturngame.util.DamageType
 import org.beobma.projectturngame.util.ResetType
 import org.beobma.projectturngame.util.ResetType.*
+import org.bukkit.Material
+import org.bukkit.inventory.ItemFlag
+import org.bukkit.inventory.ItemStack
 import kotlin.random.Random
 
 // 미래를 위한 용어 변경 예정
@@ -39,9 +42,11 @@ interface PlayerHandler {
     fun Player.isTurn(): Boolean
     fun Player.addTag(tag: String, resetType: ResetType)
     fun Player.removeTag(tag: String)
+
+    fun Player.toItem(): ItemStack
 }
 
-class DefaultPlayerManager : PlayerHandler {
+object PlayerManager : PlayerHandler {
     override fun Player.deckShuffle() {
         this.deck.shuffle()
     }
@@ -235,69 +240,37 @@ class DefaultPlayerManager : PlayerHandler {
         this.player.scoreboardTags.remove(tag)
     }
 
+    override fun Player.toItem(): ItemStack {
+        val game = Info.game ?: return ItemStack(Material.BARRIER)
+        val playerData = game.playerDatas.find { it.player == this } ?: return ItemStack(Material.BARRIER)
+        val name = playerData.name
+        val abnormalityStatusList: MutableList<Component> = mutableListOf()
+
+        playerData.abnormalityStatus.forEach {
+            abnormalityStatusList.add(it.keywordType.component.append(Component.text(": ${it.power}", it.keywordType.component.color())))
+        }
+        val lore = mutableListOf<Component>(
+            Component.text("체력 / 최대 체력 : ${playerData.health} / ${playerData.maxHealth}", TextColorType.Gray.textColor),
+            Component.text("마나 / 최대 마나 : ${playerData.mana} / ${playerData.maxMana}", TextColorType.Gray.textColor),
+            Component.text("속도 : ${playerData.speed}", TextColorType.Gray.textColor),
+            Component.text("상태이상 목록:", TextColorType.Gray.textColor),
+        )
+
+        lore.addAll(abnormalityStatusList)
+        val item = ItemStack(Material.PLAYER_HEAD, 1).apply {
+            itemMeta = itemMeta?.apply {
+                displayName(Component.text(name))
+                lore(lore)
+                addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
+            }
+        }
+
+        return item
+    }
+
 
     private fun Player.applyScoreboard() {
             player.getScore("mana").score = this@applyScoreboard.mana
             player.getScore("maxMana").score = this@applyScoreboard.maxMana
         }
-}
-
-object PlayerManager {
-    private val converter: PlayerHandler = DefaultPlayerManager()
-
-    fun Player.deckShuffle() {
-        converter.run { this@deckShuffle.deckShuffle() }
-    }
-
-    fun Player.graveyardReset() {
-        converter.run { this@graveyardReset.graveyardReset() }
-    }
-
-    fun Player.setMaxMana(int: Int) {
-        converter.run { this@setMaxMana.setMaxMana(int) }
-    }
-
-    fun Player.addMaxMana(int: Int) {
-        converter.run { this@addMaxMana.addMaxMana(int) }
-    }
-
-    fun Player.setMana(int: Int) {
-        converter.run { this@setMana.setMana(int) }
-    }
-
-    fun Player.addMana(int: Int) {
-        converter.run { this@addMana.addMana(int) }
-    }
-
-    fun Player.isTurn(): Boolean {
-        return converter.run { this@isTurn.isTurn() }
-    }
-
-    fun Player.heal(damage: Int, healer: Player) {
-        converter.run { this@heal.heal(damage, healer) }
-    }
-
-    fun Player.addTag(tag: String, resetType: ResetType) {
-        converter.run { this@addTag.addTag(tag, resetType) }
-    }
-
-    fun Player.removeTag(tag: String) {
-        converter.run { this@removeTag.removeTag(tag) }
-    }
-
-    fun Player.death() {
-        converter.run { this@death.death() }
-    }
-
-    fun Player.damage(damage: Int, attacker: Enemy?, damageType: DamageType = DamageType.Normal) {
-        converter.run { damage(damage, attacker, damageType) }
-    }
-
-    fun Player.addShield(int: Int) {
-        converter.run { addShield(int) }
-    }
-
-    fun Player.diceRoll(min: Int, max: Int): Int {
-        return  converter.run { diceRoll(min, max) }
-    }
 }

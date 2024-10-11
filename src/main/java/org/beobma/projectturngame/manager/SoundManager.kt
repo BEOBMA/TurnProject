@@ -7,16 +7,8 @@ interface SoundHandler {
     fun Player.playTargetingFailSound()
 }
 
-class DefaultSoundManager : SoundHandler {
+object SoundManager : SoundHandler {
     override fun Player.playTargetingFailSound() {
         this.playSound(this.location, Sound.BLOCK_NOTE_BLOCK_BASS, 1.0F, 0.5F)
-    }
-}
-
-object SoundManager {
-    private val converter: SoundHandler = DefaultSoundManager()
-
-    fun Player.playTargetingFailSound() {
-        converter.run { this@playTargetingFailSound.playTargetingFailSound() }
     }
 }

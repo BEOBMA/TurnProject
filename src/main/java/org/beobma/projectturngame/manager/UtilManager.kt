@@ -10,19 +10,11 @@ interface UtilHandler {
     fun Player.getScore(objective: String): Score
 }
 
-class DefaultUtilManager : UtilHandler {
+object UtilManager : UtilHandler {
     override fun Player.getScore(objective: String): Score {
         if (this.scoreboard.getObjective(objective) !is Objective) {
             scoreboard.registerNewObjective(objective, Criteria.DUMMY, Component.text(objective))
         }
         return this.scoreboard.getObjective(objective)!!.getScore(this.name)
-    }
-}
-
-object UtilManager {
-    private val converter: UtilHandler = DefaultUtilManager()
-
-    fun Player.getScore(objective: String): Score {
-        return converter.run { getScore(objective) }
     }
 }

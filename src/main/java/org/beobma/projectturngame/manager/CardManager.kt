@@ -40,7 +40,7 @@ interface CardHandler {
     fun Card.isFix(): Boolean
 }
 
-class DefaultCardManager : CardHandler {
+object CardManager : CardHandler {
     override fun Player.use(card: Card) {
         // 사용 불가
         if (card.description.contains(KeywordType.NotAvailable.component)) {
@@ -261,69 +261,5 @@ class DefaultCardManager : CardHandler {
 
     override fun Card.isFix(): Boolean {
         return this.description.contains(KeywordType.Fix.component)
-    }
-}
-
-object CardManager {
-    private val converter: CardHandler = DefaultCardManager()
-
-    fun Player.use(card: Card) {
-        converter.run { use(card) }
-    }
-
-    fun Player.drow(int: Int) {
-        converter.run { drow(int) }
-    }
-
-    fun Player.addCard(card: Card, cardPosition: CardPosition = CardPosition.Hand) {
-        converter.run { addCard(card, cardPosition) }
-    }
-
-    fun Card.toItem(): ItemStack {
-        return converter.run { toItem() }
-    }
-
-    fun ItemStack.toCard(): Card {
-        return converter.run { toCard() }
-    }
-
-    fun Player.cardThrow(card: Card) {
-        converter.run { cardThrow(card) }
-    }
-
-    fun Player.applyHotbar() {
-        return converter.run { applyHotbar() }
-    }
-
-    fun Player.clearHand() {
-        converter.run { clearHand() }
-    }
-
-    fun Player.clearGraveyard() {
-        converter.run { clearGraveyard() }
-    }
-
-    fun Player.clearBanish() {
-        converter.run { clearBanish() }
-    }
-
-    fun Player.clearDeck() {
-        converter.run { clearDeck() }
-    }
-
-    fun Player.extinction(card: Card) {
-        converter.run { extinction(card) }
-    }
-
-    fun findCard(name: String): Card? {
-        return converter.run { findCard(name) }
-    }
-
-    fun Player.cardBanish(card: Card) {
-        converter.run { cardBanish(card) }
-    }
-
-    fun Card.isFix(): Boolean {
-        return converter.run { isFix() }
     }
 }

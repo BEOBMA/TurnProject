@@ -2,6 +2,7 @@ package org.beobma.projectturngame.manager
 
 import net.kyori.adventure.text.Component
 import org.beobma.projectturngame.card.Card
+import org.beobma.projectturngame.entity.enemy.Enemy
 import org.beobma.projectturngame.game.GameField
 import org.beobma.projectturngame.gameevent.Event
 import org.beobma.projectturngame.info.Info
@@ -12,6 +13,7 @@ import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import kotlin.random.Random
+
 
 interface InventoryHandler {
     fun Player.openMapInventory(inventoryOpenType: InventoryOpenType)
@@ -24,9 +26,11 @@ interface InventoryHandler {
     fun Player.openGraveyardInfoInventory(page: Int = 0)
     fun Player.openBanishInfoInventory(page: Int = 0)
     fun Player.openAlchemYingredientsPileInfoInventory(page: Int = 0)
+    fun Player.openTurnOtherInfoInventory()
+    fun Player.openMyInfoInventory()
 }
 
-class DefaultInventoryManager : InventoryHandler {
+object InventoryManager : InventoryHandler {
     override fun Player.openMapInventory(inventoryOpenType: InventoryOpenType) {
         val game = Info.game ?: return
 
@@ -178,6 +182,33 @@ class DefaultInventoryManager : InventoryHandler {
         this.openInventory(inventory)
     }
 
+    override fun Player.openTurnOtherInfoInventory() {
+        val game = Info.game ?: return
+        val inventory = createEmptyInfoInventory(Component.text("턴 순서"))
+        val turnOther = game.gameTurnOrder
+
+        for (i in 0 until minOf(turnOther.size, 27)) {
+            val entity = turnOther[i]
+            val item = when (entity) {
+                is Enemy -> EnemyManager.run { entity.toItem() }
+                is org.beobma.projectturngame.entity.player.Player -> PlayerManager.run { entity.toItem() }
+                else -> continue
+            }
+            inventory.setItem(i, item)
+        }
+
+        this.openInventory(inventory)
+    }
+
+    override fun Player.openMyInfoInventory() {
+        val game = Info.game ?: return
+        val inventory = createEmptyInfoInventory(Component.text("자신 정보"))
+        val playerData = game.playerDatas.find { it.player == this }
+
+        inventory.setItem(13, PlayerManager.run { playerData?.toItem() })
+        this.openInventory(inventory)
+    }
+
     private fun Player.loadDeckToInventory() {
         val game = Info.game ?: return
         val playerData = game.playerDatas.find { it.player == this } ?: return
@@ -295,6 +326,7 @@ class DefaultInventoryManager : InventoryHandler {
             1 -> {
                 inventory.setItem(13, eventManager.run { event.options[0].toItem() })
             }
+
             2 -> {
                 inventory.setItem(11, eventManager.run { event.options[0].toItem() })
                 inventory.setItem(15, eventManager.run { event.options[1].toItem() })
@@ -305,41 +337,6 @@ class DefaultInventoryManager : InventoryHandler {
     }
 }
 
-object InventoryManager {
-    private val converter: InventoryHandler = DefaultInventoryManager()
-
-    fun Player.openMapInventory(inventoryOpenType: InventoryOpenType) {
-        converter.run { this@openMapInventory.openMapInventory(inventoryOpenType) }
-    }
-
-    fun Player.openSectorInventory() {
-        converter.run { this@openSectorInventory.openSectorInventory() }
-    }
-
-    fun Player.openCompensationInventory(cardList: List<Card>) {
-        converter.run { this@openCompensationInventory.openCompensationInventory(cardList) }
-    }
-
-    fun Player.openDeckInfoInventory(page: Int = 0) {
-        converter.run { openDeckInfoInventory(page) }
-    }
-
-    fun Player.openGraveyardInfoInventory(page: Int = 0) {
-        converter.run { openGraveyardInfoInventory(page) }
-    }
-
-    fun Player.openBanishInfoInventory(page: Int = 0) {
-        converter.run { openBanishInfoInventory(page) }
-    }
-
-    fun Player.openAlchemYingredientsPileInfoInventory(page: Int = 0) {
-        converter.run { openAlchemYingredientsPileInfoInventory(page) }
-    }
-
-    fun Player.openEventInventory(event: Event) {
-        converter.run { openEventInventory(event) }
-    }
-}
 
 enum class InventoryOpenType {
     OnlyView, Choice

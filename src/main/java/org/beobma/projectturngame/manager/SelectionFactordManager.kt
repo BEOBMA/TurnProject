@@ -12,7 +12,7 @@ interface SelectionFactordHandler {
     fun Player.allEnemyMembers(): List<Enemy>
 }
 
-class DefaultSelectionFactordManager : SelectionFactordHandler {
+object SelectionFactordManager : SelectionFactordHandler {
     override fun Player.focusOn(): Entity? {
         val game = Info.game ?: return null
         val world = this.player.world
@@ -56,22 +56,5 @@ class DefaultSelectionFactordManager : SelectionFactordHandler {
         val enemyList = game.gameEnemys.toMutableList()
 
         return enemyList.toList()
-    }
-}
-
-
-object SelectionFactordManager {
-    private val converter: SelectionFactordHandler = DefaultSelectionFactordManager()
-
-    fun Player.focusOn(): Entity? {
-        return converter.run { this@focusOn.focusOn() }
-    }
-
-    fun Player.allTeamMembers(excludeSelf: Boolean, includeDeceased: Boolean): List<Player> {
-        return converter.run { this@allTeamMembers.allTeamMembers(excludeSelf, includeDeceased) }
-    }
-
-    fun Player.allEnemyMembers(): List<Enemy> {
-        return converter.run { this@allEnemyMembers.allEnemyMembers() }
     }
 }
