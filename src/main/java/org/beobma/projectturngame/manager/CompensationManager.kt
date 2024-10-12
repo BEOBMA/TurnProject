@@ -3,7 +3,8 @@ package org.beobma.projectturngame.manager
 import org.beobma.projectturngame.card.CardRarity
 import org.beobma.projectturngame.entity.player.Player
 import org.beobma.projectturngame.info.Info
-import org.beobma.projectturngame.manager.InventoryManager.openCompensationInventory
+import org.beobma.projectturngame.manager.InventoryManager.openCardCompensationInventory
+import org.beobma.projectturngame.manager.InventoryManager.openRelicsCompensationInventory
 
 interface CompensationHandler {
     fun Player.normalReward()
@@ -17,7 +18,7 @@ object CompensationManager : CompensationHandler {
         val cardPacks = game.gameCardPack
         val cardList = cardPacks.random().cardList.filter { it.rarity != CardRarity.Legend }
 
-        player.openCompensationInventory(cardList)
+        player.openCardCompensationInventory(cardList)
     }
 
     override fun Player.eliteReward() {
@@ -25,10 +26,10 @@ object CompensationManager : CompensationHandler {
         val cardPacks = game.gameCardPack
         val cardList = cardPacks.random().cardList.filter { it.rarity == CardRarity.Legend }
 
-        player.openCompensationInventory(cardList)
+        player.openCardCompensationInventory(cardList)
     }
 
     override fun Player.relicsReward() {
-        TODO("Not yet implemented")
+        player.openRelicsCompensationInventory()
     }
 }
