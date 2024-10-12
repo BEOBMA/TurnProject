@@ -2,6 +2,7 @@ package org.beobma.projectturngame.entity.player
 
 import org.beobma.projectturngame.card.Card
 import org.beobma.projectturngame.entity.Entity
+import org.beobma.projectturngame.relics.Relics
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
 
@@ -13,6 +14,7 @@ class Player(
     val deck: MutableList<Card>,
     val graveyard: MutableList<Card>,
     val banish: MutableList<Card>,
+    val relics: MutableList<Relics> = mutableListOf(),
     val turnStartUnit: MutableList<() -> Unit> = mutableListOf(),
     val turnEndUnit: MutableList<() -> Unit> = mutableListOf(),
     var diceWeight: Int = 0,
