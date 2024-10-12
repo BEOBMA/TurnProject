@@ -19,5 +19,6 @@ class EventConfig {
 
     private fun eventConfig() {
         ChaosEvent()
+        BackgammonEvent()
     }
 }
