@@ -20,5 +20,6 @@ enum class KeywordType(val component: Component) {
     Ductility(Component.text("연성", TextColorType.Gold.textColor).decorate(TextDecoration.BOLD)),
     Burn(Component.text("화상", TextColorType.Red.textColor).decorate(TextDecoration.BOLD)),
     Weakness(Component.text("나약함", TextColorType.Gray.textColor).decorate(TextDecoration.BOLD)),
-    Blindness(Component.text("실명", TextColorType.Gray.textColor).decorate(TextDecoration.BOLD))
+    Blindness(Component.text("실명", TextColorType.Gray.textColor).decorate(TextDecoration.BOLD)),
+    Emerald(Component.text("에메랄드", TextColorType.Green.textColor).decorate(TextDecoration.BOLD))
 }
