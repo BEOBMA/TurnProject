@@ -1,4 +1,4 @@
-package org.beobma.projectturngame.config
+package org.beobma.projectturngame.config.cardpack
 
 import net.kyori.adventure.text.Component
 import org.beobma.projectturngame.abnormalityStatus.AbnormalityStatus

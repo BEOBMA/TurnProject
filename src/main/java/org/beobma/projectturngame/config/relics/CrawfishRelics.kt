@@ -1,9 +1,10 @@
-package org.beobma.projectturngame.config
+package org.beobma.projectturngame.config.relics
 
 import net.kyori.adventure.text.Component
 import org.beobma.projectturngame.config.RelicsConfig.Companion.relicsList
 import org.beobma.projectturngame.entity.Entity
 import org.beobma.projectturngame.relics.Relics
+import org.beobma.projectturngame.text.TextColorType
 import org.beobma.projectturngame.util.DamageType
 import org.beobma.projectturngame.util.EffectTime
 
@@ -14,7 +15,7 @@ class CrawfishRelics {
 
     private fun relicsConfig() {
         val relics = Relics("가재",listOf(
-            Component.text("")
+            Component.text("피격 시 받는 피해가 1 감소한다.", TextColorType.Gray.textColor)
         ), EffectTime.WhenHit)
         { player, inputList ->
             val attacker = inputList[0]
