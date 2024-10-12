@@ -2,6 +2,7 @@ package org.beobma.projectturngame.manager
 
 import net.kyori.adventure.text.Component
 import org.beobma.projectturngame.card.Card
+import org.beobma.projectturngame.config.RelicsConfig.Companion.relicsList
 import org.beobma.projectturngame.entity.enemy.Enemy
 import org.beobma.projectturngame.game.GameField
 import org.beobma.projectturngame.gameevent.Event
@@ -18,7 +19,8 @@ import kotlin.random.Random
 interface InventoryHandler {
     fun Player.openMapInventory(inventoryOpenType: InventoryOpenType)
     fun Player.openSectorInventory()
-    fun Player.openCompensationInventory(cardList: List<Card>)
+    fun Player.openCardCompensationInventory(cardList: List<Card>)
+    fun Player.openRelicsCompensationInventory()
 
     fun Player.openEventInventory(event: Event)
 
@@ -48,10 +50,17 @@ object InventoryManager : InventoryHandler {
         this.scoreboardTags.add("inventory_SectorChoice")
     }
 
-    override fun Player.openCompensationInventory(cardList: List<Card>) {
-        val inventory = createCompensationInventory(cardList)
+    override fun Player.openCardCompensationInventory(cardList: List<Card>) {
+        val inventory = createCardCompensationInventory(cardList)
         this.loadDeckToInventory()
         this.scoreboardTags.add("inventory_CardChoice")
+        this.openInventory(inventory)
+    }
+
+    override fun Player.openRelicsCompensationInventory() {
+        val inventory = createRelicsCompensationInventory()
+        this.loadDeckToInventory()
+        this.scoreboardTags.add("inventory_RelicsChoice")
         this.openInventory(inventory)
     }
 
@@ -288,7 +297,7 @@ object InventoryManager : InventoryHandler {
         game.gameMapInventory = inventory
     }
 
-    private fun createCompensationInventory(cardList: List<Card>): Inventory {
+    private fun createCardCompensationInventory(cardList: List<Card>): Inventory {
         val localization = Localization()
         val emptySlot = localization.emptySlot
         val randomCardList = cardList.shuffled()
@@ -304,6 +313,30 @@ object InventoryManager : InventoryHandler {
             inventory.setItem(11, randomCardList[0].toItem())
             inventory.setItem(13, randomCardList[1].toItem())
             inventory.setItem(15, randomCardList[2].toItem())
+        }
+        return inventory
+    }
+
+    private fun createRelicsCompensationInventory(): Inventory {
+        val localization = Localization()
+        val emptySlot = localization.emptySlot
+        val inventory: Inventory = Bukkit.createInventory(null, 27, Component.text("유물 보상"))
+
+        for (i in 0 until inventory.size) {
+            inventory.setItem(i, emptySlot)
+        }
+
+
+        if (relicsList.size > 3) {
+            val relics1 = relicsList.random()
+            val relics2 = relicsList.filter { it != relics1 }.random()
+            val relics3 = relicsList.filter { it != relics1 && it != relics2 }.random()
+
+            RelicsManager.run {
+                inventory.setItem(11, relics1.toItem())
+                inventory.setItem(13, relics2.toItem())
+                inventory.setItem(15, relics3.toItem())
+            }
         }
         return inventory
     }

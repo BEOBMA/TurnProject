@@ -348,10 +348,10 @@ object GameManager : GameHandler {
     }
 
     override fun Game.moveTile() {
-        val game = Info.game ?: return
+        if (!this.playerDatas.filter { it.player.scoreboardTags.contains("inventory_MapChoice") }.isEmpty()) return
 
-        game.tileStep++
-        game.players.forEach { player ->
+        tileStep++
+        players.forEach { player ->
             player.openMapInventory(InventoryOpenType.Choice)
         }
     }
