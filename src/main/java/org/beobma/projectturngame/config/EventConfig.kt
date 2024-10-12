@@ -2,6 +2,7 @@ package org.beobma.projectturngame.config
 
 import org.beobma.projectturngame.config.gameevent.BackgammonEvent
 import org.beobma.projectturngame.config.gameevent.ChaosEvent
+import org.beobma.projectturngame.config.gameevent.DrawGameEvent
 import org.beobma.projectturngame.gameevent.Event
 import org.beobma.projectturngame.gameevent.EventOption
 
@@ -22,5 +23,6 @@ class EventConfig {
     private fun eventConfig() {
         ChaosEvent()
         BackgammonEvent()
+        DrawGameEvent()
     }
 }
