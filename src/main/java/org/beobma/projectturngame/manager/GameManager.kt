@@ -6,11 +6,12 @@ import org.beobma.projectturngame.ProjectTurnGame
 import org.beobma.projectturngame.config.CardConfig
 import org.beobma.projectturngame.config.CardConfig.Companion.cardPackList
 import org.beobma.projectturngame.config.EventConfig.Companion.eventList
-import org.beobma.projectturngame.config.StartCardPack.Companion.startCardList
+import org.beobma.projectturngame.config.cardpack.StartCardPack.Companion.startCardList
 import org.beobma.projectturngame.entity.Entity
 import org.beobma.projectturngame.entity.enemy.Enemy
 import org.beobma.projectturngame.entity.player.Player
 import org.beobma.projectturngame.event.EntityTurnStartEvent
+import org.beobma.projectturngame.event.GameBattleStartEvent
 import org.beobma.projectturngame.game.Game
 import org.beobma.projectturngame.game.GameDifficulty
 import org.beobma.projectturngame.game.GameField
@@ -30,6 +31,7 @@ import org.beobma.projectturngame.manager.MaxHealthManager.setMaxHealth
 import org.beobma.projectturngame.manager.PlayerManager.addMana
 import org.beobma.projectturngame.manager.PlayerManager.setMana
 import org.beobma.projectturngame.manager.PlayerManager.setMaxMana
+import org.beobma.projectturngame.util.BattleType
 import org.beobma.projectturngame.util.ResetType
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
@@ -113,15 +115,22 @@ object GameManager : GameHandler {
     }
 
     override fun Game.battleStart() {
+        playerDatas.forEach { player ->
+            player.battleStartReset()
+        }
+
+        val event = GameBattleStartEvent(BattleType.Normal)
+        ProjectTurnGame.instance.server.pluginManager.callEvent(event)
+        if (event.isCancelled) {
+            moveTile()
+            return
+        }
+
         val field = gameField
 
         spawnNormalEnemy(field)
         playerLocationRetake()
         enemyLocationRetake()
-
-        playerDatas.forEach { player ->
-            player.battleStartReset()
-        }
         allTurnStart()
     }
 
@@ -133,16 +142,23 @@ object GameManager : GameHandler {
     }
 
     override fun Game.hardBattleStart() {
-        val game = Info.game ?: return
-        val field = game.gameField
+        playerDatas.forEach { player ->
+            player.battleStartReset()
+        }
+
+        val event = GameBattleStartEvent(BattleType.Hard)
+        ProjectTurnGame.instance.server.pluginManager.callEvent(event)
+        if (event.isCancelled) {
+            moveTile()
+            return
+        }
+
+        val field = gameField
 
         spawnNormalEnemy(field)
         playerLocationRetake()
         enemyLocationRetake()
 
-        game.playerDatas.forEach { player ->
-            player.battleStartReset()
-        }
         allTurnStart()
     }
 
@@ -154,16 +170,23 @@ object GameManager : GameHandler {
     }
 
     override fun Game.bossStart() {
-        val game = Info.game ?: return
-        val field = game.gameField
+        playerDatas.forEach { player ->
+            player.battleStartReset()
+        }
+
+        val event = GameBattleStartEvent(BattleType.Boss)
+        ProjectTurnGame.instance.server.pluginManager.callEvent(event)
+        if (event.isCancelled) {
+            moveTile()
+            return
+        }
+
+        val field = gameField
 
         spawnNormalEnemy(field)
         playerLocationRetake()
         enemyLocationRetake()
 
-        game.playerDatas.forEach { player ->
-            player.battleStartReset()
-        }
         allTurnStart()
     }
 

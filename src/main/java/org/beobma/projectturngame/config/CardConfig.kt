@@ -2,6 +2,12 @@ package org.beobma.projectturngame.config
 
 import org.beobma.projectturngame.card.Card
 import org.beobma.projectturngame.card.CardPack
+import org.beobma.projectturngame.config.cardpack.CirculationCardPack
+import org.beobma.projectturngame.config.cardpack.DebugCardPack
+import org.beobma.projectturngame.config.cardpack.IcosahedronCardPack
+import org.beobma.projectturngame.config.cardpack.MasterOfAlchemyCardPack
+import org.beobma.projectturngame.config.cardpack.SelectionAndFocusCardPack
+import org.beobma.projectturngame.config.cardpack.StartCardPack
 
 
 class CardConfig {

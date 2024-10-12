@@ -23,6 +23,19 @@ class OnDamageEvent : Listener {
             weaknessHandler(attacker, event)
             blindnessHandler(attacker, event)
 
+            if (attacker is Player) {
+                val attackerRelicsList = attacker.relics.filter { it.effectTime == EffectTime.OnHit }
+
+                if (attackerRelicsList.isNotEmpty()) {
+                    attackerRelicsList.forEach {
+                        val finalDamage = it.effect?.invoke(attacker, listOf(entity, damage, damageType))
+
+                        if (finalDamage is Int) {
+                            event.damage += finalDamage
+                        }
+                    }
+                }
+            }
             if (entity is Player) {
                 val entityRelicsList = entity.relics.filter { it.effectTime == EffectTime.WhenHit }
 

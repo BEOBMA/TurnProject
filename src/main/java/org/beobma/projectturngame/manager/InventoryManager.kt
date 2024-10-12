@@ -364,6 +364,12 @@ object InventoryManager : InventoryHandler {
                 inventory.setItem(11, eventManager.run { event.options[0].toItem() })
                 inventory.setItem(15, eventManager.run { event.options[1].toItem() })
             }
+
+            27 -> {
+                for (i in 0..26) {
+                    inventory.setItem(i, eventManager.run { event.options[i].toItem() })
+                }
+            }
             // 이벤트 선택지가 늘어날 경우 추가해야함.
         }
         return inventory

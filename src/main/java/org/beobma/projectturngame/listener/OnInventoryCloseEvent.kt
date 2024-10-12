@@ -1,9 +1,7 @@
 package org.beobma.projectturngame.listener
 
 import org.beobma.projectturngame.ProjectTurnGame
-import org.beobma.projectturngame.game.Game
 import org.beobma.projectturngame.info.Info
-import org.beobma.projectturngame.manager.GameManager.nextSector
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -39,8 +37,6 @@ class OnInventoryCloseEvent : Listener {
                 "inventory_SectorChoice"
             )
 
-            player.scoreboardTags.contains("inventory_MapChoice") -> handleRewardChoice(player, game)
-
             player.scoreboardTags.contains("inventory_RelicsChoice") -> player.scoreboardTags.remove("inventory_RelicsInfo")
 
             player.scoreboardTags.contains("inventory_CardChoice") -> player.scoreboardTags.remove("inventory_CardInfo")
@@ -63,14 +59,5 @@ class OnInventoryCloseEvent : Listener {
                 }
             }
         }.runTaskLater(ProjectTurnGame.instance, 10L)
-    }
-
-    private fun handleRewardChoice(player: Player, game: Game) {
-        player.scoreboardTags.remove("inventory_MapChoice")
-        player.inventory.clear()
-
-        if (game.players.none { it.scoreboardTags.contains("inventory_MapChoice") }) {
-            game.nextSector()
-        }
     }
 }
