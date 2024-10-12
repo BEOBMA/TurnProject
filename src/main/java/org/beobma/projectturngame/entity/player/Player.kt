@@ -15,6 +15,7 @@ class Player(
     val graveyard: MutableList<Card>,
     val banish: MutableList<Card>,
     val relics: MutableList<Relics> = mutableListOf(),
+    var emerald: Int = 0,
     val turnStartUnit: MutableList<() -> Unit> = mutableListOf(),
     val turnEndUnit: MutableList<() -> Unit> = mutableListOf(),
     var diceWeight: Int = 0,
