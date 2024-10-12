@@ -41,6 +41,10 @@ class OnInventoryCloseEvent : Listener {
 
             player.scoreboardTags.contains("inventory_MapChoice") -> handleRewardChoice(player, game)
 
+            player.scoreboardTags.contains("inventory_RelicsChoice") -> player.scoreboardTags.remove("inventory_RelicsInfo")
+
+            player.scoreboardTags.contains("inventory_CardChoice") -> player.scoreboardTags.remove("inventory_CardInfo")
+
             player.scoreboardTags.contains("inventory_DeckInfo") -> player.scoreboardTags.remove("inventory_DeckInfo")
 
             player.scoreboardTags.contains("inventory_GraveyardInfo") -> player.scoreboardTags.remove("inventory_GraveyardInfo")

@@ -3,6 +3,7 @@ package org.beobma.projectturngame.listener
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
 import org.beobma.projectturngame.config.CardConfig.Companion.cardList
+import org.beobma.projectturngame.config.RelicsConfig.Companion.relicsList
 import org.beobma.projectturngame.game.Game
 import org.beobma.projectturngame.game.GameField
 import org.beobma.projectturngame.info.Info
@@ -21,6 +22,7 @@ import org.beobma.projectturngame.manager.InventoryManager.openBanishInfoInvento
 import org.beobma.projectturngame.manager.InventoryManager.openDeckInfoInventory
 import org.beobma.projectturngame.manager.InventoryManager.openGraveyardInfoInventory
 import org.beobma.projectturngame.manager.InventoryManager.openSectorInventory
+import org.beobma.projectturngame.manager.RelicsManager
 import org.beobma.projectturngame.text.TextColorType
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -60,6 +62,18 @@ class OnInventoryClickEvent : Listener {
 
             compensationCardChoiceHandler(game, clickItem, player)
             player.scoreboardTags.remove("inventory_CardChoice")
+            event.isCancelled = true
+            return
+        }
+
+        if (player.scoreboardTags.contains("inventory_RelicsChoice")) {
+            if (event.clickedInventory == player.inventory) {
+                event.isCancelled = true
+                return
+            }
+
+            compensationRelicsChoiceHandler(game, clickItem, player)
+            player.scoreboardTags.remove("inventory_RelicsChoice")
             event.isCancelled = true
             return
         }
@@ -213,10 +227,23 @@ class OnInventoryClickEvent : Listener {
         val playerData = game.playerDatas.find { it.player == player } ?: return
 
         playerData.deck.add(card)
-        player.scoreboardTags.remove("inventory_MapChoice")
+        player.scoreboardTags.remove("inventory_CardChoice")
         player.inventory.clear()
         player.closeInventory()
-        if (game.players.none { it.scoreboardTags.contains("inventory_MapChoice") }) {
+        if (game.players.none { it.scoreboardTags.contains("inventory_CardChoice") && it.scoreboardTags.contains("inventory_EventChoice") }) {
+            game.moveTile()
+        }
+    }
+
+    private fun compensationRelicsChoiceHandler(game: Game, clickItem: ItemStack, player: Player) {
+        val relics = relicsList.find { RelicsManager.run { it.toItem() } == clickItem } ?: return
+        val playerData = game.playerDatas.find { it.player == player } ?: return
+
+        playerData.relics.add(relics)
+        player.scoreboardTags.remove("inventory_RelicsChoice")
+        player.inventory.clear()
+        player.closeInventory()
+        if (game.players.none { it.scoreboardTags.contains("inventory_RelicsChoice") && it.scoreboardTags.contains("inventory_EventChoice") }) {
             game.moveTile()
         }
     }
