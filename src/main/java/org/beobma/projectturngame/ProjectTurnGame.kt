@@ -3,6 +3,7 @@ package org.beobma.projectturngame
 import org.beobma.projectturngame.command.Command
 import org.beobma.projectturngame.config.CardConfig
 import org.beobma.projectturngame.config.EventConfig
+import org.beobma.projectturngame.config.RelicsConfig
 import org.beobma.projectturngame.listener.*
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -17,6 +18,7 @@ class ProjectTurnGame : JavaPlugin() {
         eventRegister()
         CardConfig()
         EventConfig()
+        RelicsConfig()
         loggerInfo("Enabling ProjectTurn")
     }
 
