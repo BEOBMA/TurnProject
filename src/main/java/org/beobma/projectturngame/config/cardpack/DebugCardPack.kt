@@ -9,7 +9,7 @@ import org.beobma.projectturngame.entity.enemy.Enemy
 import org.beobma.projectturngame.localization.Dictionary
 import org.beobma.projectturngame.manager.EnemyManager.death
 import org.beobma.projectturngame.manager.SelectionFactordManager.focusOn
-import org.beobma.projectturngame.manager.SoundManager.playTargetingFailSound
+import org.beobma.projectturngame.manager.SoundManager.playCardUsingFailSound
 import org.beobma.projectturngame.manager.TextManager.targetingFailText
 import org.beobma.projectturngame.text.KeywordType
 import org.beobma.projectturngame.text.TextColorType
@@ -43,7 +43,7 @@ class DebugCardPack {
 
                 if (target !is Enemy) {
                     player.sendMessage(targetingFailText())
-                    player.playTargetingFailSound()
+                    player.playCardUsingFailSound()
                     return@Card false
                 }
 

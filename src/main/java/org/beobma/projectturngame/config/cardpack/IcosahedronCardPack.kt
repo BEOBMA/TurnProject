@@ -19,7 +19,7 @@ import org.beobma.projectturngame.manager.PlayerManager.diceRoll
 import org.beobma.projectturngame.manager.PlayerManager.heal
 import org.beobma.projectturngame.manager.PlayerManager.setMana
 import org.beobma.projectturngame.manager.SelectionFactordManager.focusOn
-import org.beobma.projectturngame.manager.SoundManager.playTargetingFailSound
+import org.beobma.projectturngame.manager.SoundManager.playCardUsingFailSound
 import org.beobma.projectturngame.manager.TextManager.targetingFailText
 import org.beobma.projectturngame.text.KeywordType
 import org.beobma.projectturngame.text.TextColorType
@@ -50,7 +50,7 @@ class IcosahedronCardPack {
 
                 if (target !is Enemy) {
                     player.sendMessage(targetingFailText())
-                    player.playTargetingFailSound()
+                    player.playCardUsingFailSound()
                     return@Card false
                 }
 
@@ -121,7 +121,7 @@ class IcosahedronCardPack {
 
                 if (target !is Enemy) {
                     player.sendMessage(targetingFailText())
-                    player.playTargetingFailSound()
+                    player.playCardUsingFailSound()
                     return@Card false
                 }
 

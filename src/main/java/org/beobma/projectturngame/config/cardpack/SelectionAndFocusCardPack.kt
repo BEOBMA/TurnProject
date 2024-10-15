@@ -17,7 +17,7 @@ import org.beobma.projectturngame.manager.PlayerManager.heal
 import org.beobma.projectturngame.manager.SelectionFactordManager.allEnemyMembers
 import org.beobma.projectturngame.manager.SelectionFactordManager.allTeamMembers
 import org.beobma.projectturngame.manager.SelectionFactordManager.focusOn
-import org.beobma.projectturngame.manager.SoundManager.playTargetingFailSound
+import org.beobma.projectturngame.manager.SoundManager.playCardUsingFailSound
 import org.beobma.projectturngame.manager.TextManager.cardUseFailText
 import org.beobma.projectturngame.manager.TextManager.targetingFailText
 import org.beobma.projectturngame.text.KeywordType
@@ -97,7 +97,7 @@ class SelectionAndFocusCardPack {
 
                 if (target !is Enemy) {
                     player.sendMessage(targetingFailText())
-                    player.playTargetingFailSound()
+                    player.playCardUsingFailSound()
                     return@Card false
                 }
 
@@ -159,7 +159,7 @@ class SelectionAndFocusCardPack {
 
                 if (target !is Enemy) {
                     player.sendMessage(targetingFailText())
-                    player.playTargetingFailSound()
+                    player.playCardUsingFailSound()
                     return@Card false
                 }
                 val cardList = usePlayerData.hand.filter { it !== card }

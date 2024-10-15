@@ -19,7 +19,7 @@ import org.beobma.projectturngame.manager.PlayerManager.addMana
 import org.beobma.projectturngame.manager.PlayerManager.addShield
 import org.beobma.projectturngame.manager.SelectionFactordManager.allEnemyMembers
 import org.beobma.projectturngame.manager.SelectionFactordManager.focusOn
-import org.beobma.projectturngame.manager.SoundManager.playTargetingFailSound
+import org.beobma.projectturngame.manager.SoundManager.playCardUsingFailSound
 import org.beobma.projectturngame.manager.TextManager.cardUseFailText
 import org.beobma.projectturngame.manager.TextManager.targetingFailText
 import org.beobma.projectturngame.manager.WeaknessManager.increaseWeakness
@@ -164,7 +164,7 @@ class MasterOfAlchemyCardPack {
 
                 if (target !is Enemy) {
                     player.sendMessage(targetingFailText())
-                    player.playTargetingFailSound()
+                    player.playCardUsingFailSound()
                     return@Card false
                 }
                 target.increaseWeakness(3, usePlayerData)
@@ -271,7 +271,7 @@ class MasterOfAlchemyCardPack {
 
                 if (target !is Enemy) {
                     player.sendMessage(targetingFailText())
-                    player.playTargetingFailSound()
+                    player.playCardUsingFailSound()
                     return@Card false
                 }
 
@@ -296,7 +296,7 @@ class MasterOfAlchemyCardPack {
 
                 if (usePlayerData.alchemYingredientsPile.size < 2) {
                     player.sendMessage(cardUseFailText())
-                    player.playTargetingFailSound()
+                    player.playCardUsingFailSound()
                     return@Card false
                 }
 
@@ -378,7 +378,7 @@ class MasterOfAlchemyCardPack {
 
                 if (cards.isEmpty()) {
                     player.sendMessage(cardUseFailText())
-                    player.playTargetingFailSound()
+                    player.playCardUsingFailSound()
                     return@Card false
                 }
 
@@ -402,7 +402,7 @@ class MasterOfAlchemyCardPack {
 
                 if (usePlayerData.alchemYingredientsPile.size < 2) {
                     player.sendMessage(cardUseFailText())
-                    player.playTargetingFailSound()
+                    player.playCardUsingFailSound()
                     return@Card false
                 }
 
@@ -468,7 +468,7 @@ class MasterOfAlchemyCardPack {
 
                 if (usePlayerData.alchemYingredientsPile.isEmpty()) {
                     player.sendMessage(cardUseFailText())
-                    player.playTargetingFailSound()
+                    player.playCardUsingFailSound()
                     return@Card false
                 }
 
@@ -496,7 +496,7 @@ class MasterOfAlchemyCardPack {
 
                 if (!usePlayerData.hand.containsAll(cards)) {
                     player.sendMessage(cardUseFailText())
-                    player.playTargetingFailSound()
+                    player.playCardUsingFailSound()
                     return@Card false
                 }
                 val cardList = usePlayerData.hand.filter { cards.contains(it) }
@@ -587,7 +587,7 @@ class MasterOfAlchemyCardPack {
 
                 if (usePlayerData.alchemYingredientsPile.size < 2) {
                     player.sendMessage(cardUseFailText())
-                    player.playTargetingFailSound()
+                    player.playCardUsingFailSound()
                     return@Card false
                 }
 

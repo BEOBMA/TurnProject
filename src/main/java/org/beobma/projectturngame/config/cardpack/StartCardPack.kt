@@ -9,7 +9,7 @@ import org.beobma.projectturngame.manager.EnemyManager.damage
 import org.beobma.projectturngame.manager.PlayerManager.addMana
 import org.beobma.projectturngame.manager.PlayerManager.heal
 import org.beobma.projectturngame.manager.SelectionFactordManager.focusOn
-import org.beobma.projectturngame.manager.SoundManager.playTargetingFailSound
+import org.beobma.projectturngame.manager.SoundManager.playCardUsingFailSound
 import org.beobma.projectturngame.manager.TextManager.targetingFailText
 import org.beobma.projectturngame.text.KeywordType
 import org.beobma.projectturngame.text.TextColorType
@@ -35,7 +35,7 @@ class StartCardPack {
 
                 if (target !is Enemy) {
                     player.sendMessage(targetingFailText())
-                    player.playTargetingFailSound()
+                    player.playCardUsingFailSound()
                     return@Card false
                 }
 
@@ -68,7 +68,7 @@ class StartCardPack {
 
                 if (target !is Enemy) {
                     player.sendMessage(targetingFailText())
-                    player.playTargetingFailSound()
+                    player.playCardUsingFailSound()
                     return@Card false
                 }
 
@@ -102,7 +102,7 @@ class StartCardPack {
 
                 if (target !is Enemy) {
                     player.sendMessage(targetingFailText())
-                    player.playTargetingFailSound()
+                    player.playCardUsingFailSound()
                     return@Card false
                 }
                 target.damage(20, usePlayerData)
