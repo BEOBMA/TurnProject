@@ -167,7 +167,7 @@ class Command : Listener, CommandExecutor, TabCompleter {
                             sender.openAlchemYingredientsPileInfoInventory()
                         }
 
-                        "자신 정보" -> {
+                        "자신" -> {
                             sender.openMyInfoInventory()
                         }
 
@@ -255,7 +255,7 @@ class Command : Listener, CommandExecutor, TabCompleter {
                 2 -> when (args[0].lowercase(Locale.getDefault())) {
                     "start" -> GameType.entries.map { it.name }
                     "dictionary", "사전" -> Dictionary().dictionaryList.keys.toList()
-                    "info", "정보" -> listOf("덱", "묘지", "제외", "연금술 재료 더미", "턴 순서", "자신 정보")
+                    "info", "정보" -> listOf("덱", "묘지", "제외", "연금술 재료 더미", "턴 순서", "자신")
                     else -> emptyList()
                 }
 
