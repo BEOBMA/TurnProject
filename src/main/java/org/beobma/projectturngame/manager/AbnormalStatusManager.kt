@@ -240,3 +240,59 @@ object BlindnessManager : BlindnessHandler {
         }
     }
 }
+
+
+interface TimeHandler {
+    fun Entity.increaseTime(int: Int, caster: Entity)
+    fun Entity.getTime(): AbnormalityStatus?
+    fun Entity.setTime(int: Int, caster: Entity)
+    fun Entity.decreaseTime(int: Int, caster: Entity)
+}
+object TimeManager : TimeHandler {
+    override fun Entity.increaseTime(int: Int, caster: Entity) {
+        val blindness = this.getTime()
+
+        if (blindness is AbnormalityStatus) {
+            blindness.caster.add(caster)
+            blindness.power += int
+        }
+        else {
+            this.abnormalityStatus.add(AbnormalityStatus(KeywordType.Time, mutableListOf(caster), int))
+        }
+    }
+
+    override fun Entity.getTime(): AbnormalityStatus? {
+        val abnormalityStatus = this.abnormalityStatus.find { it.keywordType == KeywordType.Time}
+
+        return if (abnormalityStatus !is AbnormalityStatus) {
+            return null
+        } else {
+            abnormalityStatus
+        }
+    }
+
+    override fun Entity.setTime(int: Int, caster: Entity) {
+        val blindness = this.getTime()
+
+        if (blindness is AbnormalityStatus) {
+            blindness.caster.add(caster)
+            blindness.power = int
+        }
+        else {
+            this.abnormalityStatus.add(AbnormalityStatus(KeywordType.Time, mutableListOf(caster), int))
+        }
+    }
+
+    override fun Entity.decreaseTime(int: Int, caster: Entity) {
+        val blindness = this.getTime()
+
+        if (blindness is AbnormalityStatus) {
+            blindness.caster.add(caster)
+
+            if (blindness.power - int <= 0) {
+                this.abnormalityStatus.remove(blindness)
+            }
+            blindness.power -= int
+        }
+    }
+}
