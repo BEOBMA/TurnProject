@@ -42,6 +42,10 @@ class Dictionary {
             "실명", KeywordType.Blindness.component.append(Component.text(": 공격 적중 시 (수치 x 5)%로 공격이 빗나간다. 이 효과가 발동한 후, 실명을 제거한다.", TextColorType.Gray.textColor))
         ), Pair(
             "에메랄드", KeywordType.Emerald.component.append(Component.text(": 게임 중 재화로서 사용된다.", TextColorType.Gray.textColor))
+        ), Pair(
+            "지속", KeywordType.Continue.component.append(Component.text(": 카드의 효과가 카드 효과에 명시된 시점까지 지속된다.", TextColorType.Gray.textColor))
+        ), Pair(
+            "시간", KeywordType.Time.component.append(Component.text(": 특정 카드의 효과로 소모된다.", TextColorType.Gray.textColor))
         )
     )
 }
