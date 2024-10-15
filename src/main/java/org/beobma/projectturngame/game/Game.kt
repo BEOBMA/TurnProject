@@ -1,6 +1,7 @@
 package org.beobma.projectturngame.game
 
 import org.beobma.projectturngame.card.CardPack
+import org.beobma.projectturngame.continueeffect.ContinueEffect
 import org.beobma.projectturngame.entity.Entity
 import org.beobma.projectturngame.entity.enemy.Enemy
 import org.beobma.projectturngame.entity.player.Player
@@ -22,5 +23,6 @@ class Game(
     var sectorStep: Int = 0,
     var drowCardInt: Int = 0,
     val turnEndUnit: MutableList<() -> Unit> = mutableListOf(),
-    val battleEndUnit: MutableList<() -> Unit> = mutableListOf()
+    val battleEndUnit: MutableList<() -> Unit> = mutableListOf(),
+    val continueEffects: MutableList<ContinueEffect> = mutableListOf()
 )
