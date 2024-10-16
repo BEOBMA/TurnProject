@@ -21,7 +21,7 @@ class Dictionary {
         ), Pair(
             "동일 카드 소멸", KeywordType.SameCardDisappears.component.append(Component.text(": 사용 시 패, 덱, 묘지에 있는 카드명이 같은 카드를 모두 제외한다.", TextColorType.Gray.textColor))
         ), Pair(
-            "고정", KeywordType.Fix.component.append(Component.text(": 이 카드를 제외한 다른 카드의 효과로 카드가 이동되지 않는다. (만약, 다른 카드 사용의 조건으로 카드를 이동시켜야 할 경우 이동되지 않으며 조건을 만족한 것으로 간주한다.)", TextColorType.Gray.textColor))
+            "고정", KeywordType.Fix.component.append(Component.text(": 이 카드를 제외한 다른 카드의 효과로 카드가 이동되지 않는다. (만약, 다른 카드 사용의 조건으로 이 카드를 이동시켜야 할 경우 이동되지 않으며 조건을 만족한 것으로 간주한다.)", TextColorType.Gray.textColor))
         ), Pair(
             "사용 불가", KeywordType.NotAvailable.component.append(Component.text(": 사용할 수 없다.", TextColorType.Gray.textColor))
         ), Pair(
