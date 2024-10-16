@@ -242,7 +242,7 @@ object PlayerManager : PlayerHandler {
 
     override fun Player.toItem(): ItemStack {
         val game = Info.game ?: return ItemStack(Material.BARRIER)
-        val playerData = game.playerDatas.find { it.player == this } ?: return ItemStack(Material.BARRIER)
+        val playerData = game.playerDatas.find { it == this } ?: return ItemStack(Material.BARRIER)
         val name = playerData.name
         val abnormalityStatusList: MutableList<Component> = mutableListOf()
 
