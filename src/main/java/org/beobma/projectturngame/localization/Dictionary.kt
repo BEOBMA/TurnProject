@@ -46,6 +46,8 @@ class Dictionary {
             "지속", KeywordType.Continue.component.append(Component.text(": 카드의 효과가 카드 효과에 명시된 시점까지 지속된다.", TextColorType.Gray.textColor))
         ), Pair(
             "시간", KeywordType.Time.component.append(Component.text(": 특정 카드의 효과로 소모된다.", TextColorType.Gray.textColor))
+        ), Pair(
+            "기절", KeywordType.Stun.component.append(Component.text(": 턴 시작 시 강제로 턴이 종료된다. 이 효과가 발동한 후, 기절을 제거한다.", TextColorType.Gray.textColor))
         )
     )
 }

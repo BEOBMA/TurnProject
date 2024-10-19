@@ -23,5 +23,6 @@ enum class KeywordType(val component: Component) {
     Blindness(Component.text("실명", TextColorType.Gray.textColor).decorate(TextDecoration.BOLD).append(Component.text())),
     Emerald(Component.text("에메랄드", TextColorType.Green.textColor).decorate(TextDecoration.BOLD).append(Component.text())),
     Continue(Component.text("지속", TextColorType.Gray.textColor).decorate(TextDecoration.BOLD).append(Component.text())),
-    Time(Component.text("시간", TextColorType.Gold.textColor).decorate(TextDecoration.BOLD).append(Component.text()))
+    Time(Component.text("시간", TextColorType.Gold.textColor).decorate(TextDecoration.BOLD).append(Component.text())),
+    Stun(Component.text("기절", TextColorType.Yellow.textColor).decorate(TextDecoration.BOLD).append(Component.text()))
 }
