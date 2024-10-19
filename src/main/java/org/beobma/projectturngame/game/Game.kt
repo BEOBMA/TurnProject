@@ -13,6 +13,7 @@ class Game(
     val gameDifficulty: GameDifficulty,
     val gameCardPack: MutableList<CardPack>,
     var gameField: GameField,
+    var battleType: GameDifficulty?,
     val playerDatas: MutableList<Player> = mutableListOf(),
     var gameDetailsField: GameDetailsField = GameDetailsField.None,
     var gameEnemys: MutableList<Enemy> = mutableListOf(),

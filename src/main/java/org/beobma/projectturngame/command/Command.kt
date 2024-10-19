@@ -87,7 +87,8 @@ class Command : Listener, CommandExecutor, TabCompleter {
                         gameType,
                         gameDifficulty,
                         mutableListOf(),
-                        GameField.Forest
+                        GameField.Forest,
+                        null
                     ).start()
                 }
 
@@ -149,8 +150,8 @@ class Command : Listener, CommandExecutor, TabCompleter {
                     }
 
                     val key1 = args.getOrNull(1)?.trim()
-                    val key2 = args.getOrNull(2)
-                    val key3 = args.getOrNull(3)
+                    val key2 = args.getOrNull(2)?.trim()
+                    val key3 = args.getOrNull(3)?.trim() ?: ""
 
                     when (key1) {
                         "덱" -> {
