@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
 import org.beobma.projectturngame.ProjectTurnGame
 import org.beobma.projectturngame.entity.enemy.Enemy
+import org.beobma.projectturngame.entity.enemy.EnemyAction
 import org.beobma.projectturngame.entity.player.Player
 import org.beobma.projectturngame.event.EntityDamageEvent
 import org.beobma.projectturngame.info.Info
@@ -24,8 +25,11 @@ interface EnemyHandler {
     fun Enemy.death()
 
     fun Enemy.damage(damage: Int, attacker: Player?, damageType: DamageType = DamageType.Normal)
+    fun Enemy.heal(damage: Int, healer: Enemy)
+    fun Enemy.addShield(int: Int)
 
     fun Enemy.toItem(): ItemStack
+    fun EnemyAction.toItem(): ItemStack
 }
 
 object EnemyManager : EnemyHandler {
@@ -124,6 +128,42 @@ object EnemyManager : EnemyHandler {
         }
     }
 
+    override fun Enemy.heal(damage: Int, healer: Enemy) {
+        // 대상이 이미 사망한 경우
+        if (this.isDead) return
+
+        var finalHealDamage = damage
+
+        // 회복량 계산
+
+        // 최종 회복량이 0 이하인 경우
+        if (finalHealDamage <= 0) return
+
+        // 초과 회복
+        if (this.health + finalHealDamage > this.maxHealth) {
+            this.health = this.maxHealth
+            this.entity.health = this.maxHealth.toDouble()
+            return
+        }
+
+        // 일반 회복
+        this.health += finalHealDamage
+        this.entity.health += finalHealDamage
+        entity.apply {
+            this.customName(Component.text("${this.health}",TextColorType.DarkRed.textColor).decorate(TextDecoration.BOLD))
+            this.isCustomNameVisible = true
+        }
+    }
+
+    override fun Enemy.addShield(int: Int) {
+        this.shield += int
+
+        // 보호막 수치가 0 미만인 경우
+        if (this.shield < 0) {
+            this.shield = 0
+        }
+    }
+
     override fun Enemy.toItem(): ItemStack {
         val name = this.name
         val abnormalityStatusList = mutableListOf<Component>()
@@ -139,6 +179,20 @@ object EnemyManager : EnemyHandler {
 
         lore.addAll(abnormalityStatusList)
         val item = ItemStack(Material.ZOMBIE_HEAD, 1).apply {
+            itemMeta = itemMeta?.apply {
+                displayName(Component.text(name))
+                lore(lore)
+                addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
+            }
+        }
+        return item
+    }
+
+    override fun EnemyAction.toItem(): ItemStack {
+        val name = this.actionName
+        val lore = this.actionDescription
+
+        val item = ItemStack(Material.SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE, 1).apply {
             itemMeta = itemMeta?.apply {
                 displayName(Component.text(name))
                 lore(lore)

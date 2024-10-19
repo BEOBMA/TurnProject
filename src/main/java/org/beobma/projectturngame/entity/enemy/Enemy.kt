@@ -6,5 +6,6 @@ import org.bukkit.entity.LivingEntity
 
 class Enemy(
     val enemyName: String,
-    val entity: LivingEntity
+    val entity: LivingEntity,
+    val actionList: List<EnemyAction>
 ) : Entity(enemyName, (entity.getAttribute(Attribute.GENERIC_MAX_HEALTH)!!.baseValue).toInt(),(entity.health).toInt(), 1)
