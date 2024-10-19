@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component
 import org.beobma.projectturngame.card.Card
 import org.beobma.projectturngame.config.RelicsConfig.Companion.relicsList
 import org.beobma.projectturngame.entity.enemy.Enemy
+import org.beobma.projectturngame.game.GameDifficulty
 import org.beobma.projectturngame.game.GameField
 import org.beobma.projectturngame.gameevent.Event
 import org.beobma.projectturngame.info.Info
@@ -30,6 +31,7 @@ interface InventoryHandler {
     fun Player.openAlchemYingredientsPileInfoInventory(page: Int = 0)
     fun Player.openTurnOtherInfoInventory()
     fun Player.openMyInfoInventory()
+    fun Player.openEnemyInfoInventory(enemy: Enemy)
 }
 
 object InventoryManager : InventoryHandler {
@@ -215,6 +217,27 @@ object InventoryManager : InventoryHandler {
         val playerData = game.playerDatas.find { it.player == this }
 
         inventory.setItem(13, PlayerManager.run { playerData?.toItem() })
+        this.openInventory(inventory)
+    }
+
+    override fun Player.openEnemyInfoInventory(enemy: Enemy) {
+        val game = Info.game ?: return
+        val inventory = createEmptyInfoInventory(Component.text("${enemy.name} 정보"))
+        val enemyActions = enemy.actionList.filter {
+            when (game.gameDifficulty) {
+                GameDifficulty.Easy -> it.difficulty == GameDifficulty.Easy
+
+                GameDifficulty.Normal -> it.difficulty == GameDifficulty.Easy || it.difficulty == GameDifficulty.Normal
+
+                GameDifficulty.Hard -> it.difficulty == GameDifficulty.Easy || it.difficulty == GameDifficulty.Normal || it.difficulty == GameDifficulty.Hard
+            }
+        }
+
+        inventory.setItem(0, EnemyManager.run { enemy.toItem() })
+        for (i in 9..26) {
+            if (enemyActions.getOrNull(i - 9) == null) break
+            inventory.setItem(i, EnemyManager.run { enemyActions[i - 9].toItem() })
+        }
         this.openInventory(inventory)
     }
 
