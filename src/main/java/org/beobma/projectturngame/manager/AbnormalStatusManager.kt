@@ -1,11 +1,17 @@
 package org.beobma.projectturngame.manager
 
+import net.kyori.adventure.text.Component
 import org.beobma.projectturngame.abnormalityStatus.AbnormalityStatus
 import org.beobma.projectturngame.entity.Entity
+import org.beobma.projectturngame.entity.enemy.Enemy
 import org.beobma.projectturngame.entity.player.Player
 import org.beobma.projectturngame.manager.PlayerManager.death
 import org.beobma.projectturngame.text.KeywordType
+import org.bukkit.Bukkit
 import org.bukkit.attribute.Attribute
+import org.bukkit.scoreboard.Criteria
+import org.bukkit.scoreboard.Objective
+import org.bukkit.scoreboard.Score
 
 
 interface HealthHandler {
@@ -294,5 +300,77 @@ object TimeManager : TimeHandler {
             }
             blindness.power -= int
         }
+    }
+}
+
+
+interface StunHandler {
+    fun Entity.addStun()
+    fun Entity.isStun(): Boolean
+    fun Entity.removeStun()
+}
+object StunManager : StunHandler {
+    override fun Entity.addStun() {
+        if (this is Player) {
+            this.player.scoreboardTags.add("Stun")
+        }
+        if (this is Enemy) {
+            this.entity.scoreboardTags.add("Stun")
+        }
+    }
+
+    override fun Entity.isStun(): Boolean {
+        if (this is Player) {
+            return this.player.scoreboardTags.contains("Stun")
+        }
+        if (this is Enemy) {
+            return this.entity.scoreboardTags.contains("Stun")
+        }
+        return false
+    }
+
+    override fun Entity.removeStun() {
+        if (this is Player) {
+            this.player.scoreboardTags.remove("Stun")
+        }
+        if (this is Enemy) {
+            this.entity.scoreboardTags.remove("Stun")
+        }
+    }
+}
+
+
+interface CustomStackHandler {
+    fun Entity.increaseStack(stackName: String, int: Int)
+    fun Entity.getStack(stackName: String): Score
+    fun Entity.setStack(stackName: String, int: Int)
+    fun Entity.decreaseStack(stackName: String, int: Int)
+}
+object CustomStackManager : CustomStackHandler {
+    override fun Entity.increaseStack(stackName: String, int: Int) {
+        val stack = this.getStack(stackName)
+
+        stack.score += int
+    }
+
+    override fun Entity.getStack(stackName: String): Score {
+        val scoreboard = Bukkit.getScoreboardManager().mainScoreboard
+
+        if (scoreboard.getObjective(stackName) !is Objective) {
+            scoreboard.registerNewObjective(stackName, Criteria.DUMMY, Component.text(stackName))
+        }
+        return scoreboard.getObjective(stackName)!!.getScore(this.name)
+    }
+
+    override fun Entity.setStack(stackName: String,int: Int) {
+        val stack = this.getStack(stackName)
+
+        stack.score = int
+    }
+
+    override fun Entity.decreaseStack(stackName: String,int: Int) {
+        val stack = this.getStack(stackName)
+
+        stack.score -= int
     }
 }
