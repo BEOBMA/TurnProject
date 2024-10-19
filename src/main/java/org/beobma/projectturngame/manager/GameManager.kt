@@ -31,6 +31,7 @@ import org.beobma.projectturngame.manager.InventoryManager.openEventInventory
 import org.beobma.projectturngame.manager.InventoryManager.openMapInventory
 import org.beobma.projectturngame.manager.MaxHealthManager.setMaxHealth
 import org.beobma.projectturngame.manager.PlayerManager.addMana
+import org.beobma.projectturngame.manager.PlayerManager.heal
 import org.beobma.projectturngame.manager.PlayerManager.setMana
 import org.beobma.projectturngame.manager.PlayerManager.setMaxMana
 import org.beobma.projectturngame.manager.StunManager.isStun
@@ -131,6 +132,7 @@ object GameManager : GameHandler {
             return
         }
 
+        this.battleType = Easy
         val field = gameField
 
         spawnNormalEnemy(field)
@@ -142,8 +144,14 @@ object GameManager : GameHandler {
     override fun Game.battleStop() {
         this.playerDatas.forEach { playerData ->
             playerData.battleEndReset()
-            playerData.normalReward()
+            when (this.battleType) {
+                Easy ->  playerData.normalReward()
+                Normal ->  playerData.eliteReward()
+                Hard -> playerData.relicsReward()
+                null -> playerData.normalReward()
+            }
         }
+        this.battleType = null
     }
 
     override fun Game.hardBattleStart() {
@@ -158,6 +166,7 @@ object GameManager : GameHandler {
             return
         }
 
+        this.battleType = Normal
         val field = gameField
 
         spawnHardEnemy(field)
@@ -186,6 +195,7 @@ object GameManager : GameHandler {
             return
         }
 
+        this.battleType = Hard
         val field = gameField
 
         spawnBossEnemy(field)
@@ -216,7 +226,13 @@ object GameManager : GameHandler {
     }
 
     override fun Game.restStart() {
-        TODO("Not yet implemented")
+        this.playerDatas.forEach {
+            if (!it.isDead) {
+                it.heal(20, it)
+            }
+        }
+
+        moveTile()
     }
 
     override fun Game.nextSector() {
@@ -406,6 +422,11 @@ object GameManager : GameHandler {
         if (!this.playerDatas.filter { it.player.scoreboardTags.contains("inventory_MapChoice") }.isEmpty()) return
 
         tileStep++
+
+        if (tileStep > 8) {
+            nextSector()
+            return
+        }
         players.forEach { player ->
             player.openMapInventory(InventoryOpenType.Choice)
         }
@@ -446,6 +467,8 @@ object GameManager : GameHandler {
         this.hand.clear()
         this.graveyard.clear()
         this.banish.clear()
+        this.player.scoreboardTags.remove("this_Turn")
+        this.player.isGlowing = false
 
         this.applyHotbar()
     }
