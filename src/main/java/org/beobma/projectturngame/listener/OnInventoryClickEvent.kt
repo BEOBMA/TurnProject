@@ -162,21 +162,7 @@ class OnInventoryClickEvent : Listener {
                 }
             }
         }
-        when (clickItem) {
-            battleSlot -> game.battleStart()
-            eventSlot -> game.eventStart()
-            hardBattleSlot -> game.hardBattleStart()
-            restSlot -> game.restStart()
-            bossSlot -> game.bossStart()
-            endSlot -> game.players.forEach { player -> player.openSectorInventory() }
-            else -> {
-                return
-            }
-        }
-        game.players.forEach { player ->
-            player.scoreboardTags.remove("inventory_MapChoice")
-            player.closeInventory()
-        }
+
         when (game.tileStep) {
             1 -> {
                 game.gameMapInventory?.setItem(1, null)
@@ -194,18 +180,39 @@ class OnInventoryClickEvent : Listener {
                 game.gameMapInventory?.setItem(21, null)
             }
             4 -> {
-                game.gameMapInventory?.setItem(13, null)
-            }
-            5 -> {
                 game.gameMapInventory?.setItem(4, null)
                 game.gameMapInventory?.setItem(13, null)
                 game.gameMapInventory?.setItem(22, null)
+            }
+            5 -> {
+                game.gameMapInventory?.setItem(5, null)
+                game.gameMapInventory?.setItem(14, null)
+                game.gameMapInventory?.setItem(23, null)
             }
             6 -> {
                 game.gameMapInventory?.setItem(15, null)
             }
             7 -> {
                 game.gameMapInventory?.setItem(16, null)
+            }
+        }
+
+
+
+        game.players.forEach { player ->
+            player.scoreboardTags.remove("inventory_MapChoice")
+            player.closeInventory()
+        }
+
+        when (clickItem) {
+            battleSlot -> game.battleStart()
+            eventSlot -> game.eventStart()
+            hardBattleSlot -> game.hardBattleStart()
+            restSlot -> game.restStart()
+            bossSlot -> game.bossStart()
+            endSlot -> game.players.forEach { player -> player.openSectorInventory() }
+            else -> {
+                return
             }
         }
     }

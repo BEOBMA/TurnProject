@@ -2,6 +2,7 @@ package org.beobma.projectturngame.listener
 
 import org.beobma.projectturngame.ProjectTurnGame
 import org.beobma.projectturngame.info.Info
+import org.beobma.projectturngame.manager.GameManager.moveTile
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -37,9 +38,33 @@ class OnInventoryCloseEvent : Listener {
                 "inventory_SectorChoice"
             )
 
-            player.scoreboardTags.contains("inventory_RelicsChoice") -> player.scoreboardTags.remove("inventory_RelicsInfo")
+            player.scoreboardTags.contains("inventory_RelicsChoice") -> {
+                player.inventory.clear()
+                player.scoreboardTags.remove("inventory_RelicsChoice")
 
-            player.scoreboardTags.contains("inventory_CardChoice") -> player.scoreboardTags.remove("inventory_CardInfo")
+                if (game.players.none { it.scoreboardTags.contains("inventory_RelicsChoice") && it.scoreboardTags.contains("inventory_EventChoice") }) {
+                    game.moveTile()
+                    reopenInventoryLater(
+                        player,
+                        game.gameMapInventory,
+                        "inventory_MapChoice"
+                    )
+                }
+            }
+
+            player.scoreboardTags.contains("inventory_CardChoice") -> {
+                player.inventory.clear()
+                player.scoreboardTags.remove("inventory_CardChoice")
+
+                if (game.players.none { it.scoreboardTags.contains("inventory_CardChoice") && it.scoreboardTags.contains("inventory_EventChoice") }) {
+                    game.moveTile()
+                    reopenInventoryLater(
+                        player,
+                        game.gameMapInventory,
+                        "inventory_MapChoice"
+                    )
+                }
+            }
 
             player.scoreboardTags.contains("inventory_DeckInfo") -> player.scoreboardTags.remove("inventory_DeckInfo")
 
