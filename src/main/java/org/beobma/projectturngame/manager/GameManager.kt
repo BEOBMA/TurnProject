@@ -13,11 +13,13 @@ import org.beobma.projectturngame.entity.player.Player
 import org.beobma.projectturngame.event.EntityTurnStartEvent
 import org.beobma.projectturngame.event.GameBattleStartEvent
 import org.beobma.projectturngame.game.Game
-import org.beobma.projectturngame.game.GameDifficulty
+import org.beobma.projectturngame.game.GameDifficulty.*
 import org.beobma.projectturngame.game.GameField
 import org.beobma.projectturngame.info.Info
 import org.beobma.projectturngame.manager.BattleManager.enemyLocationRetake
 import org.beobma.projectturngame.manager.BattleManager.playerLocationRetake
+import org.beobma.projectturngame.manager.BattleManager.spawnBossEnemy
+import org.beobma.projectturngame.manager.BattleManager.spawnHardEnemy
 import org.beobma.projectturngame.manager.BattleManager.spawnNormalEnemy
 import org.beobma.projectturngame.manager.CardManager.applyHotbar
 import org.beobma.projectturngame.manager.CardManager.drow
@@ -31,6 +33,8 @@ import org.beobma.projectturngame.manager.MaxHealthManager.setMaxHealth
 import org.beobma.projectturngame.manager.PlayerManager.addMana
 import org.beobma.projectturngame.manager.PlayerManager.setMana
 import org.beobma.projectturngame.manager.PlayerManager.setMaxMana
+import org.beobma.projectturngame.manager.StunManager.isStun
+import org.beobma.projectturngame.manager.StunManager.removeStun
 import org.beobma.projectturngame.util.BattleType
 import org.beobma.projectturngame.util.ResetType
 import org.bukkit.Bukkit
@@ -94,6 +98,13 @@ object GameManager : GameHandler {
     override fun Game.stop() {
         ProjectTurnGame.instance.server.scheduler.cancelTasks(ProjectTurnGame.instance)
 
+        val players = this.players
+
+        gameEnemys.forEach {
+            it.entity.remove()
+        }
+
+        Info.game = null
         players.forEach { player ->
             player.isGlowing = false
             player.gameMode = GameMode.ADVENTURE
@@ -106,12 +117,6 @@ object GameManager : GameHandler {
             player.teleport(Location(player.world, 0.5, -60.0, 0.5))
             player.inventory.clear()
         }
-
-        gameEnemys.forEach {
-            it.entity.remove()
-        }
-
-        Info.game = null
     }
 
     override fun Game.battleStart() {
@@ -155,7 +160,7 @@ object GameManager : GameHandler {
 
         val field = gameField
 
-        spawnNormalEnemy(field)
+        spawnHardEnemy(field)
         playerLocationRetake()
         enemyLocationRetake()
 
@@ -183,7 +188,7 @@ object GameManager : GameHandler {
 
         val field = gameField
 
-        spawnNormalEnemy(field)
+        spawnBossEnemy(field)
         playerLocationRetake()
         enemyLocationRetake()
 
@@ -245,8 +250,6 @@ object GameManager : GameHandler {
             this@turnStart.addMana(1)
 
             this.player.run {
-                sendMessage(Component.text("당신의 턴입니다.").decorate(TextDecoration.BOLD))
-                sendMessage(Component.text("점프하면 턴을 종료합니다.").decorate(TextDecoration.BOLD))
                 isGlowing = true
                 playSound(location, Sound.BLOCK_NOTE_BLOCK_GUITAR, 1.0F, 1.0F)
                 drow(1)
@@ -256,15 +259,44 @@ object GameManager : GameHandler {
                 }
                 turnStartUnit.clear()
             }
+            if (this.isStun()) {
+                this.removeStun()
+                this.turnEnd()
+            }
         }
 
         if (this is Enemy) {
             this.entity.run {
                 isGlowing = true
                 scoreboardTags.add("this_Turn")
-                // 적 행동 정리
-                this@turnStart.turnEnd()
             }
+
+            if (this.isStun()) {
+                this.removeStun()
+                this.turnEnd()
+            }
+
+            this@turnStart.actionList.forEach {
+                when (game.gameDifficulty) {
+                    Easy -> if (it.difficulty != Easy) {
+                        return@forEach
+                    }
+
+                    Normal -> if (it.difficulty != Easy && it.difficulty != Normal) {
+                        return@forEach
+                    }
+
+                    Hard -> if (it.difficulty != Easy && it.difficulty != Normal && it.difficulty != Hard) {
+                        return@forEach
+                    }
+                }
+                if (it.actionCondition.invoke(this@turnStart) == true) {
+                    it.action.invoke(this@turnStart)
+                    this@turnStart.turnEnd()
+                    return
+                }
+            }
+            this@turnStart.turnEnd()
         }
     }
 
@@ -360,9 +392,9 @@ object GameManager : GameHandler {
 
         game.gameSector.addAll(GameField.entries)
         game.gameField = when (game.gameDifficulty) {
-            GameDifficulty.Easy -> GameField.Forest
-            GameDifficulty.Normal -> GameField.Cave
-            GameDifficulty.Hard -> GameField.Sea
+            Easy -> GameField.Forest
+            Normal -> GameField.Cave
+            Hard -> GameField.Sea
         }
         game.gameSector.remove(game.gameField)
         playerLocationRetake()
