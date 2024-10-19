@@ -15,13 +15,13 @@ import org.beobma.projectturngame.manager.GameManager.stop
 import org.beobma.projectturngame.manager.InventoryManager.openAlchemYingredientsPileInfoInventory
 import org.beobma.projectturngame.manager.InventoryManager.openBanishInfoInventory
 import org.beobma.projectturngame.manager.InventoryManager.openDeckInfoInventory
+import org.beobma.projectturngame.manager.InventoryManager.openEnemyInfoInventory
 import org.beobma.projectturngame.manager.InventoryManager.openGraveyardInfoInventory
 import org.beobma.projectturngame.manager.InventoryManager.openMyInfoInventory
 import org.beobma.projectturngame.manager.InventoryManager.openTurnOtherInfoInventory
 import org.beobma.projectturngame.text.TextColorType
 import org.beobma.projectturngame.util.CardPosition
 import org.bukkit.Bukkit
-import org.bukkit.Difficulty
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
@@ -148,9 +148,11 @@ class Command : Listener, CommandExecutor, TabCompleter {
                         return false
                     }
 
-                    val key = args.drop(1).joinToString(" ").trim()
+                    val key1 = args.getOrNull(1)?.trim()
+                    val key2 = args.getOrNull(2)
+                    val key3 = args.getOrNull(3)
 
-                    when (key) {
+                    when (key1) {
                         "덱" -> {
                             sender.openDeckInfoInventory()
                         }
@@ -163,7 +165,7 @@ class Command : Listener, CommandExecutor, TabCompleter {
                             sender.openBanishInfoInventory()
                         }
 
-                        "연금술 재료 더미" -> {
+                        "연금술" -> {
                             sender.openAlchemYingredientsPileInfoInventory()
                         }
 
@@ -171,7 +173,22 @@ class Command : Listener, CommandExecutor, TabCompleter {
                             sender.openMyInfoInventory()
                         }
 
-                        "턴 순서" -> {
+                        "적" -> {
+                            val game = Info.game ?: return false
+
+                            if (key2 == null) {
+                                sender.sendMessage(
+                                    Component.text("[!] 후속 인수가 누락되었습니다.", TextColorType.Red.textColor)
+                                        .decorate(TextDecoration.BOLD)
+                                )
+                                return false
+                            }
+                            val enemy = game.gameEnemys.find { it.name.replace(" ", "") == "$key2$key3" } ?: return false
+
+                            sender.openEnemyInfoInventory(enemy)
+                        }
+
+                        "턴" -> {
                             sender.openTurnOtherInfoInventory()
                         }
 
@@ -255,14 +272,31 @@ class Command : Listener, CommandExecutor, TabCompleter {
                 2 -> when (args[0].lowercase(Locale.getDefault())) {
                     "start" -> GameType.entries.map { it.name }
                     "dictionary", "사전" -> Dictionary().dictionaryList.keys.toList()
-                    "info", "정보" -> listOf("덱", "묘지", "제외", "연금술 재료 더미", "턴 순서", "자신")
+                    "info", "정보" -> listOf("덱", "묘지", "제외", "연금술 재료 더미", "턴 순서", "자신", "적")
                     else -> emptyList()
                 }
 
-                3 -> if (args[0].equals(
-                        "start", ignoreCase = true
-                    )
-                ) Difficulty.entries.map { it.name } else emptyList()
+                3 -> {
+                    if (args[0].equals(
+                            "start", ignoreCase = true
+                        )
+                    ) {
+                        return GameDifficulty.entries.map { it.name }
+                    }
+
+                    if (args[1].equals(
+                            "적", ignoreCase = true
+                        )
+                    ) {
+                        val game = Info.game
+
+                        if (game is Game) {
+                            return game.gameEnemys.map { it.name }
+                        }
+                    }
+
+                    emptyList()
+                }
 
                 else -> emptyList()
             }
