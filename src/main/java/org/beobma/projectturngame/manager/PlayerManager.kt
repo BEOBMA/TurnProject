@@ -159,7 +159,8 @@ object PlayerManager : PlayerHandler {
 
         // 일반 피해
         this.health -= finalDamage
-        this.player.damage(finalDamage.toDouble(), attacker?.entity)
+        this.player.damage(0.1, attacker?.entity)
+        this.player.health = this.health.toDouble()
     }
 
     override fun Player.heal(damage: Int, healer: Player) {
