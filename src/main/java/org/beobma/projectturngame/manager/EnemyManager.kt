@@ -47,15 +47,23 @@ object EnemyManager : EnemyHandler {
     override fun Enemy.setMaxHealth(int: Int) {
         this.maxHealth = int
         this@setMaxHealth.entity.getAttribute(Attribute.GENERIC_MAX_HEALTH)!!.baseValue = int.toDouble()
+        entity.apply {
+            this.customName(Component.text("${this.health}",TextColorType.DarkRed.textColor).decorate(TextDecoration.BOLD))
+            this.isCustomNameVisible = true
+        }
     }
 
     override fun Enemy.setHealth(int: Int) {
         if (int <= 0) {
             this.death()
         }
-        if (this.maxHealth < int) {
+        if (this.maxHealth <= int) {
             this.health = int
             this.entity.health = int.toDouble()
+            entity.apply {
+                this.customName(Component.text("${this.health}",TextColorType.DarkRed.textColor).decorate(TextDecoration.BOLD))
+                this.isCustomNameVisible = true
+            }
             return
         }
     }
