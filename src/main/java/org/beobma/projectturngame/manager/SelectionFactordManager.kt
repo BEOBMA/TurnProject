@@ -10,6 +10,9 @@ interface SelectionFactordHandler {
     fun Player.focusOn(): Entity?
     fun Player.allTeamMembers(excludeSelf: Boolean, includeDeceased: Boolean): List<Player>
     fun Player.allEnemyMembers(): List<Enemy>
+
+    fun Enemy.allTeamMembers(excludeSelf: Boolean): List<Enemy>
+    fun Enemy.allEnemyMembers(): List<Player>
 }
 
 object SelectionFactordManager : SelectionFactordHandler {
@@ -54,6 +57,24 @@ object SelectionFactordManager : SelectionFactordHandler {
     override fun Player.allEnemyMembers(): List<Enemy> {
         val game = Info.game ?: return listOf()
         val enemyList = game.gameEnemys.toMutableList()
+
+        return enemyList.toList()
+    }
+
+    override fun Enemy.allTeamMembers(excludeSelf: Boolean): List<Enemy> {
+        val game = Info.game ?: return listOf()
+        val teamList = game.gameEnemys.toMutableList()
+
+        if (excludeSelf) {
+            teamList.remove(this)
+        }
+
+        return teamList.toList()
+    }
+
+    override fun Enemy.allEnemyMembers(): List<Player> {
+        val game = Info.game ?: return listOf()
+        val enemyList = game.playerDatas.toMutableList()
 
         return enemyList.toList()
     }
