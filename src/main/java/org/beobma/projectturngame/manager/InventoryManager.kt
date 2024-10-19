@@ -324,7 +324,7 @@ object InventoryManager : InventoryHandler {
         val localization = Localization()
         val emptySlot = localization.emptySlot
         val randomCardList = cardList.shuffled()
-        val inventory: Inventory = Bukkit.createInventory(null, 27, Component.text("일반 보상"))
+        val inventory: Inventory = Bukkit.createInventory(null, 27, Component.text("카드 보상"))
 
         for (i in 0 until inventory.size) {
             inventory.setItem(i, emptySlot)
