@@ -61,7 +61,7 @@ object BattleManager : Battlehandler {
 
             enemy.set()
             enemy.setMaxHealth(health)
-            enemy.setHealth(health)
+            enemy.setHealth(enemy.maxHealth)
         }
 
         when (field) {
@@ -868,7 +868,7 @@ object BattleManager : Battlehandler {
 
             enemy.set()
             enemy.setMaxHealth(health)
-            enemy.setHealth(health)
+            enemy.setHealth(enemy.maxHealth)
         }
 
         when (field) {
@@ -909,23 +909,6 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "경계 - 공격",
-                                listOf(Component.text("자신이 경계 상태라면, 모든 적에게 5의 피해를 입힌다. 이후 경계 상태를 해제한다.", TextColorType.Gray.textColor)),
-                                ActionType.Attack,
-                                { enemy ->
-                                    return@EnemyAction enemy.entity.scoreboardTags.contains("boundary")
-                                },
-                                { enemy ->
-                                    val targets = enemy.allEnemyMembers()
-
-                                    targets.forEach {
-                                        it.damage(5, enemy, DamageType.Normal)
-                                    }
-                                    enemy.entity.scoreboardTags.remove("boundary")
-                                },
-                                difficulty = GameDifficulty.Easy
-                            ),
-                            EnemyAction(
-                                "경계 - 공격",
                                 listOf(Component.text("자신이 경계 상태라면, 모든 적에게 7의 피해를 입힌다.", TextColorType.Gray.textColor)),
                                 ActionType.Attack,
                                 { enemy ->
@@ -940,6 +923,23 @@ object BattleManager : Battlehandler {
                                     enemy.entity.scoreboardTags.remove("boundary")
                                 },
                                 difficulty = GameDifficulty.Normal
+                            ),
+                            EnemyAction(
+                                "경계 - 공격",
+                                listOf(Component.text("자신이 경계 상태라면, 모든 적에게 5의 피해를 입힌다. 이후 경계 상태를 해제한다.", TextColorType.Gray.textColor)),
+                                ActionType.Attack,
+                                { enemy ->
+                                    return@EnemyAction enemy.entity.scoreboardTags.contains("boundary")
+                                },
+                                { enemy ->
+                                    val targets = enemy.allEnemyMembers()
+
+                                    targets.forEach {
+                                        it.damage(5, enemy, DamageType.Normal)
+                                    }
+                                    enemy.entity.scoreboardTags.remove("boundary")
+                                },
+                                difficulty = GameDifficulty.Easy
                             ),
                             EnemyAction(
                                 "저항",
@@ -1255,7 +1255,7 @@ object BattleManager : Battlehandler {
 
             enemy.set()
             enemy.setMaxHealth(health)
-            enemy.setHealth(health)
+            enemy.setHealth(enemy.maxHealth)
         }
 
         when (field) {
