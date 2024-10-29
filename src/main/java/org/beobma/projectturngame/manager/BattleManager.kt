@@ -194,7 +194,7 @@ object BattleManager : Battlehandler {
                                 { enemy ->
                                     val game = Info.game ?: return@EnemyAction false
 
-                                    return@EnemyAction game.gameEnemys.size <= 6
+                                    return@EnemyAction game.gameEnemys.size <= 5
                                 },
                                 { enemy ->
                                     spawnEnemy(
