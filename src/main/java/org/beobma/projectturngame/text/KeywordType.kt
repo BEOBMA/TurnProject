@@ -24,5 +24,8 @@ enum class KeywordType(val component: Component) {
     Emerald(Component.text("에메랄드", TextColorType.Green.textColor).decorate(TextDecoration.BOLD).append(Component.text())),
     Continue(Component.text("지속", TextColorType.Gray.textColor).decorate(TextDecoration.BOLD).append(Component.text())),
     Time(Component.text("시간", TextColorType.Gold.textColor).decorate(TextDecoration.BOLD).append(Component.text())),
-    Stun(Component.text("기절", TextColorType.Yellow.textColor).decorate(TextDecoration.BOLD).append(Component.text()))
+    Stun(Component.text("기절", TextColorType.Yellow.textColor).decorate(TextDecoration.BOLD).append(Component.text())),
+    Reforge(Component.text("재련", TextColorType.Gold.textColor).decorate(TextDecoration.BOLD).append(Component.text())),
+    Reforged(Component.text("재련됨", TextColorType.Gold.textColor).decorate(TextDecoration.BOLD).append(Component.text())),
+    Protect(Component.text("보호", TextColorType.Blue.textColor).decorate(TextDecoration.BOLD).append(Component.text()))
 }
