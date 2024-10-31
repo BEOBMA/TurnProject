@@ -6,13 +6,18 @@ import org.beobma.projectturngame.card.CardRarity
 import org.beobma.projectturngame.config.CardConfig.Companion.cardList
 import org.beobma.projectturngame.entity.enemy.Enemy
 import org.beobma.projectturngame.manager.EnemyManager.damage
+import org.beobma.projectturngame.manager.ParticleAnimationManager.play
 import org.beobma.projectturngame.manager.PlayerManager.addMana
 import org.beobma.projectturngame.manager.PlayerManager.heal
 import org.beobma.projectturngame.manager.SelectionFactordManager.focusOn
 import org.beobma.projectturngame.manager.SoundManager.playCardUsingFailSound
+import org.beobma.projectturngame.manager.SoundManager.playSweepSound
 import org.beobma.projectturngame.manager.TextManager.targetingFailText
+import org.beobma.projectturngame.particle.ParticleAnimation
 import org.beobma.projectturngame.text.KeywordType
 import org.beobma.projectturngame.text.TextColorType
+import org.bukkit.Particle
+import org.bukkit.Sound
 
 class StartCardPack {
     companion object {
@@ -39,6 +44,8 @@ class StartCardPack {
                     return@Card false
                 }
 
+                player.playSound(player.location, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1.0F, 0.5F)
+                player.spawnParticle(Particle.SWEEP_ATTACK, target.entity.location, 1, 0.0, 0.0, 0.0, 1.0)
                 target.damage(5, usePlayerData)
                 return@Card true
             }
@@ -51,6 +58,9 @@ class StartCardPack {
                 Component.text("체력을 5 회복한다.", TextColorType.Gray.textColor)
             ), CardRarity.Common, 1,
             { usePlayerData, _ ->
+                val player = usePlayerData.player
+
+                player.spawnParticle(Particle.HEART, player.location, 10, 0.5, 0.5, 0.5, 1.0)
                 usePlayerData.heal(5, usePlayerData)
                 return@Card true
             }
@@ -72,6 +82,8 @@ class StartCardPack {
                     return@Card false
                 }
 
+                player.playSound(player.location, Sound.ENTITY_PLAYER_ATTACK_CRIT, 1.0F, 0.5F)
+                player.spawnParticle(Particle.CRIT, target.entity.location, 10, 0.5, 0.5, 0.5, 0.0)
                 target.damage(12, usePlayerData)
 
                 return@Card true
@@ -85,6 +97,9 @@ class StartCardPack {
                 KeywordType.Mana.component.append(Component.text("를 1 회복한다.", TextColorType.Gray.textColor))
             ), CardRarity.Common, 0,
             { usePlayerData, _ ->
+                val player = usePlayerData.player
+                player.playSound(player.location, Sound.BLOCK_RESPAWN_ANCHOR_CHARGE, 1.0F, 2.0F)
+                player.spawnParticle(Particle.WAX_OFF, player.location, 10, 0.5, 0.5, 0.5, 1.0)
                 usePlayerData.addMana(1)
                 return@Card true
             }
@@ -94,7 +109,7 @@ class StartCardPack {
         //region continuousAttack Initialization
         val continuousAttack = Card(
             "연공", listOf(
-                Component.text("바라보는 적에게 20의 피해를 입힌다.", TextColorType.Gray.textColor)
+                Component.text("바라보는 적에게 7의 피해를 3번 입힌다.", TextColorType.Gray.textColor)
             ), CardRarity.Common, 3,
             { usePlayerData, _ ->
                 val player = usePlayerData.player
@@ -105,8 +120,31 @@ class StartCardPack {
                     player.playCardUsingFailSound()
                     return@Card false
                 }
-                target.damage(20, usePlayerData)
-
+                ParticleAnimation(
+                    listOf(
+                        {
+                            player.playSound(player.location, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1.0F, 0.5F)
+                            player.spawnParticle(Particle.SWEEP_ATTACK, target.entity.location, 1, 0.0, 0.0, 0.0, 1.0)
+                            target.damage(7, usePlayerData)
+                        },
+                        {},
+                        {},
+                        {},
+                        {
+                            player.playSound(player.location, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1.0F, 0.5F)
+                            player.spawnParticle(Particle.SWEEP_ATTACK, target.entity.location, 1, 0.0, 0.0, 0.0, 1.0)
+                            target.damage(7, usePlayerData)
+                        },
+                        {},
+                        {},
+                        {},
+                        {
+                            player.playSound(player.location, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1.0F, 0.5F)
+                            player.spawnParticle(Particle.SWEEP_ATTACK, target.entity.location, 1, 0.0, 0.0, 0.0, 1.0)
+                            target.damage(7, usePlayerData)
+                        }
+                    )
+                ).play()
                 return@Card true
             }
         )

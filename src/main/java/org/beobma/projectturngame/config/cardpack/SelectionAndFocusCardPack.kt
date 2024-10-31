@@ -23,6 +23,8 @@ import org.beobma.projectturngame.manager.TextManager.targetingFailText
 import org.beobma.projectturngame.text.KeywordType
 import org.beobma.projectturngame.text.TextColorType
 import org.beobma.projectturngame.util.DamageType
+import org.bukkit.Particle
+import org.bukkit.Sound
 
 class SelectionAndFocusCardPack {
     private val dictionary = Dictionary()
@@ -48,6 +50,8 @@ class SelectionAndFocusCardPack {
                 dictionary.dictionaryList["사용 불가"]!!
             ), CardRarity.Common, 0, null, null,
             { usePlayerData, _ ->
+                val player = usePlayerData.player
+                player.playSound(player.location, Sound.ITEM_BOOK_PAGE_TURN, 1.0F, 1.5F)
                 usePlayerData.drow(1)
             }
         )
@@ -63,6 +67,9 @@ class SelectionAndFocusCardPack {
                 dictionary.dictionaryList["사용 불가"]!!
             ), CardRarity.Common, 0, null, null,
             { usePlayerData, _ ->
+                val player = usePlayerData.player
+                player.playSound(player.location, Sound.BLOCK_RESPAWN_ANCHOR_CHARGE, 1.0F, 2.0F)
+                player.spawnParticle(Particle.WAX_OFF, player.location, 10, 0.5, 0.5, 0.5, 1.0)
                 usePlayerData.addMana(1)
             }
         )

@@ -10,6 +10,7 @@ interface SelectionFactordHandler {
     fun Player.focusOn(): Entity?
     fun Player.allTeamMembers(excludeSelf: Boolean, includeDeceased: Boolean): List<Player>
     fun Player.allEnemyMembers(): List<Enemy>
+    fun Player.enemyDiffusion(target: Enemy): List<Enemy>
 
     fun Enemy.allTeamMembers(excludeSelf: Boolean): List<Enemy>
     fun Enemy.allEnemyMembers(): List<Player>
@@ -59,6 +60,27 @@ object SelectionFactordManager : SelectionFactordHandler {
         val enemyList = game.gameEnemys.toMutableList()
 
         return enemyList.toList()
+    }
+
+    override fun Player.enemyDiffusion(target: Enemy): List<Enemy> {
+        val game = Info.game ?: return emptyList()
+        val allEnemyList = game.gameEnemys
+        val index = allEnemyList.indexOf(target)
+
+        if (index != -1) {
+            val finalTargets = mutableListOf<Enemy>()
+            val left = if (index > 0) allEnemyList[index - 1] else null
+            val right = if (index < allEnemyList.size - 1) allEnemyList[index + 1] else null
+
+            if (left is Enemy) finalTargets.add(left)
+            finalTargets.add(target)
+            if (right is Enemy) finalTargets.add(right)
+
+
+            return finalTargets
+        } else {
+            return emptyList()
+        }
     }
 
     override fun Enemy.allTeamMembers(excludeSelf: Boolean): List<Enemy> {
