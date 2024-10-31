@@ -234,6 +234,7 @@ object PlayerManager : PlayerHandler {
             BattleEnd -> game.battleEndUnit.add { this.player.scoreboardTags.remove(tag) }
             CardUseEnd -> TODO()
             SectorEnd -> TODO()
+            TurnStart -> TODO()
         }
     }
 
