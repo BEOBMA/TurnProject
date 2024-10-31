@@ -19,6 +19,7 @@ class OnEntityTurnStartEvent : Listener {
         val entity = event.entity
 
         burnHandler(entity)
+        protectHandler(entity)
     }
 
     private fun burnHandler(entity: Entity) {
@@ -38,6 +39,12 @@ class OnEntityTurnStartEvent : Listener {
 
         if (burn.power <= 1) {
             entity.abnormalityStatus.remove(burn)
+        }
+    }
+    private fun protectHandler(entity: Entity) {
+        val protect = entity.abnormalityStatus.find { it.keywordType == KeywordType.Protect }
+        if (protect is AbnormalityStatus) {
+            entity.abnormalityStatus.remove(protect)
         }
     }
 }

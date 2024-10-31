@@ -339,6 +339,61 @@ object StunManager : StunHandler {
     }
 }
 
+interface ProtectHandler {
+    fun Entity.increaseProtect(int: Int, caster: Entity)
+    fun Entity.getProtect(): AbnormalityStatus?
+    fun Entity.setProtect(int: Int, caster: Entity)
+    fun Entity.decreaseProtect(int: Int, caster: Entity)
+}
+object ProtectManager : ProtectHandler {
+    override fun Entity.increaseProtect(int: Int, caster: Entity) {
+        val protect = this.getProtect()
+
+        if (protect is AbnormalityStatus) {
+            protect.caster.add(caster)
+            protect.power += int
+        }
+        else {
+            this.abnormalityStatus.add(AbnormalityStatus(KeywordType.Protect, mutableListOf(caster), int))
+        }
+    }
+
+    override fun Entity.getProtect(): AbnormalityStatus? {
+        val abnormalityStatus = this.abnormalityStatus.find { it.keywordType == KeywordType.Protect}
+
+        return if (abnormalityStatus !is AbnormalityStatus) {
+            return null
+        } else {
+            abnormalityStatus
+        }
+    }
+
+    override fun Entity.setProtect(int: Int, caster: Entity) {
+        val protect = this.getProtect()
+
+        if (protect is AbnormalityStatus) {
+            protect.caster.add(caster)
+            protect.power = int
+        }
+        else {
+            this.abnormalityStatus.add(AbnormalityStatus(KeywordType.Protect, mutableListOf(caster), int))
+        }
+    }
+
+    override fun Entity.decreaseProtect(int: Int, caster: Entity) {
+        val protect = this.getProtect()
+
+        if (protect is AbnormalityStatus) {
+            protect.caster.add(caster)
+
+            if (protect.power - int <= 0) {
+                this.abnormalityStatus.remove(protect)
+            }
+            protect.power -= int
+        }
+    }
+}
+
 
 interface CustomStackHandler {
     fun Entity.increaseStack(stackName: String, int: Int)
