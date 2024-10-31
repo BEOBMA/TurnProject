@@ -3,8 +3,10 @@ package org.beobma.projectturngame.manager
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
 import org.beobma.projectturngame.ProjectTurnGame
+import org.beobma.projectturngame.card.Card
 import org.beobma.projectturngame.config.CardConfig
 import org.beobma.projectturngame.config.CardConfig.Companion.cardPackList
+import org.beobma.projectturngame.config.CardConfig.Companion.reforgeCardPair
 import org.beobma.projectturngame.config.EventConfig.Companion.eventList
 import org.beobma.projectturngame.config.cardpack.StartCardPack.Companion.startCardList
 import org.beobma.projectturngame.entity.Entity
@@ -30,12 +32,14 @@ import org.beobma.projectturngame.manager.HealthManager.setHealth
 import org.beobma.projectturngame.manager.InventoryManager.openEventInventory
 import org.beobma.projectturngame.manager.InventoryManager.openMapInventory
 import org.beobma.projectturngame.manager.MaxHealthManager.setMaxHealth
+import org.beobma.projectturngame.manager.ParticleAnimationManager.isPlay
 import org.beobma.projectturngame.manager.PlayerManager.addMana
 import org.beobma.projectturngame.manager.PlayerManager.heal
 import org.beobma.projectturngame.manager.PlayerManager.setMana
 import org.beobma.projectturngame.manager.PlayerManager.setMaxMana
 import org.beobma.projectturngame.manager.StunManager.isStun
 import org.beobma.projectturngame.manager.StunManager.removeStun
+import org.beobma.projectturngame.text.KeywordType
 import org.beobma.projectturngame.util.BattleType
 import org.beobma.projectturngame.util.ResetType
 import org.bukkit.Bukkit
@@ -97,6 +101,7 @@ object GameManager : GameHandler {
     }
 
     override fun Game.stop() {
+        isPlay = false
         ProjectTurnGame.instance.server.scheduler.cancelTasks(ProjectTurnGame.instance)
 
         val players = this.players
@@ -287,32 +292,40 @@ object GameManager : GameHandler {
                 scoreboardTags.add("this_Turn")
             }
 
-            if (this.isStun()) {
-                this.removeStun()
-                this.turnEnd()
-            }
-
-            this@turnStart.actionList.forEach {
-                when (game.gameDifficulty) {
-                    Easy -> if (it.difficulty != Easy) {
-                        return@forEach
+            object : BukkitRunnable() {
+                override fun run() {
+                    if (isStun()) {
+                        removeStun()
+                        turnEnd()
                     }
 
-                    Normal -> if (it.difficulty != Easy && it.difficulty != Normal) {
-                        return@forEach
-                    }
+                    this@turnStart.actionList.forEach {
+                        when (game.gameDifficulty) {
+                            Easy -> if (it.difficulty != Easy) {
+                                return@forEach
+                            }
 
-                    Hard -> if (it.difficulty != Easy && it.difficulty != Normal && it.difficulty != Hard) {
-                        return@forEach
+                            Normal -> if (it.difficulty != Easy && it.difficulty != Normal) {
+                                return@forEach
+                            }
+
+                            Hard -> if (it.difficulty != Easy && it.difficulty != Normal && it.difficulty != Hard) {
+                                return@forEach
+                            }
+                        }
+                        if (it.actionCondition.invoke(this@turnStart) == true) {
+                            it.action.invoke(this@turnStart)
+                            object : BukkitRunnable() {
+                                override fun run() {
+                                    this@turnStart.turnEnd()
+                                    return
+                                }
+                            }.runTaskLater(ProjectTurnGame.instance, 60L)
+                        }
                     }
-                }
-                if (it.actionCondition.invoke(this@turnStart) == true) {
-                    it.action.invoke(this@turnStart)
                     this@turnStart.turnEnd()
-                    return
                 }
-            }
-            this@turnStart.turnEnd()
+            }.runTaskLater(ProjectTurnGame.instance, 60L)
         }
     }
 
@@ -469,6 +482,19 @@ object GameManager : GameHandler {
         this.banish.clear()
         this.player.scoreboardTags.remove("this_Turn")
         this.player.isGlowing = false
+
+        // 재련된 카드 되돌리기
+        if (this.deck.any { it.description.contains(KeywordType.Reforged.component) }) {
+            val playerDeckList = this.deck.toMutableList()
+
+            playerDeckList.forEachIndexed { index, card ->
+                val newCard = reforgeCardPair.entries.find { it.value.description == card.description }?.key
+                if (newCard is Card) {
+                    playerDeckList[index] = newCard
+                }
+            }
+            this.deck = playerDeckList
+        }
 
         this.applyHotbar()
     }
