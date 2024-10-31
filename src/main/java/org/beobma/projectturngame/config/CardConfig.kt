@@ -16,6 +16,7 @@ class CardConfig {
         val cardPackList: MutableSet<CardPack> = mutableSetOf()
 
         val cardList: MutableSet<Card> = mutableSetOf()
+        val reforgeCardPair: HashMap<Card, Card> = hashMapOf()
     }
 
     init {
