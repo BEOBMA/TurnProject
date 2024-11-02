@@ -10,6 +10,7 @@ import org.beobma.projectturngame.game.GameType
 import org.beobma.projectturngame.info.Info
 import org.beobma.projectturngame.localization.Dictionary
 import org.beobma.projectturngame.manager.CardManager.addCard
+import org.beobma.projectturngame.manager.CardManager.toItem
 import org.beobma.projectturngame.manager.GameManager.start
 import org.beobma.projectturngame.manager.GameManager.stop
 import org.beobma.projectturngame.manager.InventoryManager.openAlchemYingredientsPileInfoInventory
@@ -226,8 +227,8 @@ class Command : Listener, CommandExecutor, TabCompleter {
                     val cardName = args[1].trim().replace(" ", "")
                     val cardPosition = args[2].trim()
 
-                    val definition = cardList.find { it.name.trim().replace(" ", "") == cardName }
-                    if (definition == null) {
+                    val definition = cardList.filter { it.name.trim().replace(" ", "") == cardName }
+                    if (definition.isEmpty()) {
                         sender.sendMessage(
                             Component.text("[!] '$cardName' 이름을 가진 카드가 존재하지 않습니다.", TextColorType.Red.textColor)
                                 .decorate(TextDecoration.BOLD)
@@ -245,9 +246,18 @@ class Command : Listener, CommandExecutor, TabCompleter {
                     }
 
 
-                    val playerData = Info.game?.playerDatas?.find { it.player == sender } ?: return false
+                    val playerData = Info.game?.playerDatas?.find { it.player == sender }
 
-                    playerData.addCard(definition, position)
+                    if (playerData == null) {
+                        definition.forEach {
+                            sender.inventory.addItem(it.toItem())
+                        }
+                        return true
+                    }
+
+                    definition.forEach {
+                        playerData.addCard(it, position)
+                    }
                     return true
                 }
 
