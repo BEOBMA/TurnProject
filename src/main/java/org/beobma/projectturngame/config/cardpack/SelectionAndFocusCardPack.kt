@@ -1,6 +1,7 @@
 package org.beobma.projectturngame.config.cardpack
 
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.minimessage.MiniMessage
 import org.beobma.projectturngame.card.Card
 import org.beobma.projectturngame.card.CardPack
 import org.beobma.projectturngame.card.CardRarity
@@ -45,7 +46,7 @@ class SelectionAndFocusCardPack {
             "희생", listOf(
                 KeywordType.NotAvailable.component,
                 Component.text(""),
-                Component.text("이 카드가 버려지면 카드를 1장 뽑는다.", TextColorType.Gray.textColor),
+                MiniMessage.miniMessage().deserialize("<gray>이 카드가 버려지면 카드를 1장 뽑는다."),
                 Component.text(""),
                 dictionary.dictionaryList["사용 불가"]!!
             ), CardRarity.Common, 0, null, null,
@@ -62,7 +63,7 @@ class SelectionAndFocusCardPack {
             "등가교환", listOf(
                 KeywordType.NotAvailable.component,
                 Component.text(""),
-                Component.text("이 카드가 버려지면 ", TextColorType.Gray.textColor).append(KeywordType.Mana.component.append(Component.text("를 1 회복한다.", TextColorType.Gray.textColor))),
+                MiniMessage.miniMessage().deserialize("<gray>이 카드가 버려지면 <blue><bold>마나</bold><gray>를 1 회복한다."),
                 Component.text(""),
                 dictionary.dictionaryList["사용 불가"]!!
             ), CardRarity.Common, 0, null, null,
@@ -80,7 +81,7 @@ class SelectionAndFocusCardPack {
             "보호적 매도", listOf(
                 KeywordType.NotAvailable.component,
                 Component.text(""),
-                Component.text("이 카드가 버려지면 5의 피해를 막는 ", TextColorType.Gray.textColor).append(KeywordType.Shield.component.append(Component.text("을 얻는다.", TextColorType.Gray.textColor))),
+                MiniMessage.miniMessage().deserialize("<gray>이 카드가 버려지면 5의 피해를 막는 <aqua><bold>보호막</bold><gray>을 얻는다."),
                 Component.text(""),
                 dictionary.dictionaryList["사용 불가"]!!,
                 dictionary.dictionaryList["보호막"]!!
@@ -94,10 +95,10 @@ class SelectionAndFocusCardPack {
         //region sacrificialChoice Uncommon Initialization
         val sacrificialChoice = Card(
             "희생적 선택", listOf(
-                Component.text("패에서 '희생적 선택'을 제외한 무작위 카드 1장을 버리고 발동할 수 있다.", TextColorType.Gray.textColor),
-                Component.text("바라보는 적에게 20의 피해를 입힌다.", TextColorType.Gray.textColor),
+                MiniMessage.miniMessage().deserialize("<gray>패에서 '희생적 선택'을 제외한 무작위 카드 1장을 버리고 발동할 수 있다."),
+                MiniMessage.miniMessage().deserialize("<gray>바라보는 적에게 20의 피해를 입힌다."),
                 Component.text(""),
-                Component.text("단, 버려졌을 때 효과가 있는 카드를 우선하여 버린다.", TextColorType.DarkGray.textColor),
+                MiniMessage.miniMessage().deserialize("<dark_gray>단, 버려졌을 때 효과가 있는 카드를 우선하여 버린다.")
             ), CardRarity.Uncommon, 1, { usePlayerData, _ ->
                 val player = usePlayerData.player
                 val target = usePlayerData.focusOn()
@@ -129,8 +130,8 @@ class SelectionAndFocusCardPack {
         //region totalLoss Uncommon Initialization
         val totalLoss = Card(
             "총체적 손실", listOf(
-                Component.text("패에서 '총체적 손실'을 제외한 무작위 카드 3장을 버리고 발동할 수 있다.", TextColorType.Gray.textColor),
-                Component.text("모든 적에게 10의 피해를 입힌다.", TextColorType.Gray.textColor)
+                MiniMessage.miniMessage().deserialize("<gray>패에서 '총체적 손실'을 제외한 무작위 카드 3장을 버리고 발동할 수 있다."),
+                MiniMessage.miniMessage().deserialize("<gray>모든 적에게 10의 피해를 입힌다.")
             ), CardRarity.Uncommon, 1, { usePlayerData, _ ->
                 val player = usePlayerData.player
                 val target = usePlayerData.allEnemyMembers()
@@ -158,8 +159,8 @@ class SelectionAndFocusCardPack {
         //region liquidationOfTotalAssets Uncommon Initialization
         val liquidationOfTotalAssets = Card(
             "총자산 청산", listOf(
-                Component.text("패의 모든 카드를 버리고 발동할 수 있다.", TextColorType.Gray.textColor),
-                Component.text("바라보는 적에게 40의 피해를 입힌다.", TextColorType.Gray.textColor)
+                MiniMessage.miniMessage().deserialize("<gray>패의 모든 카드를 버리고 발동할 수 있다."),
+                MiniMessage.miniMessage().deserialize("<gray>바라보는 적에게 40의 피해를 입힌다.")
             ), CardRarity.Uncommon, 2, { usePlayerData, card ->
                 val player = usePlayerData.player
                 val target = usePlayerData.focusOn()
@@ -185,7 +186,7 @@ class SelectionAndFocusCardPack {
             "강제적 부담", listOf(
                 KeywordType.NotAvailable.component,
                 Component.text(""),
-                Component.text("이 카드가 버려지면 모든 적은 3의 ", TextColorType.Gray.textColor).append(KeywordType.TrueDamage.component.append(Component.text("를 입는다.", TextColorType.Gray.textColor))),
+                MiniMessage.miniMessage().deserialize("<gray>이 카드가 버려지면 모든 적은 3의 <white><bold>고정피해</bold><gray>를 입는다."),
                 Component.text(""),
                 dictionary.dictionaryList["사용 불가"]!!,
                 dictionary.dictionaryList["고정 피해"]!!,
@@ -205,7 +206,7 @@ class SelectionAndFocusCardPack {
             "복지 혜택", listOf(
                 KeywordType.NotAvailable.component,
                 Component.text(""),
-                Component.text("이 카드가 버려지면 모든 아군은 체력을 3 회복한다.", TextColorType.Gray.textColor),
+                MiniMessage.miniMessage().deserialize("<gray>이 카드가 버려지면 모든 아군은 체력을 3 회복한다."),
                 Component.text(""),
                 dictionary.dictionaryList["사용 불가"]!!
             ), CardRarity.Rare, 0, null, null,
@@ -224,7 +225,7 @@ class SelectionAndFocusCardPack {
             "안전 보장", listOf(
                 KeywordType.NotAvailable.component,
                 Component.text(""),
-                Component.text("이 카드가 버려지면 모든 아군은 3의 피해를 막는 ", TextColorType.Gray.textColor).append(KeywordType.Shield.component.append(Component.text("을 얻는다.", TextColorType.Gray.textColor))),
+                MiniMessage.miniMessage().deserialize("<gray>이 카드가 버려지면 모든 아군은 3의 피해를 막는 <aqua><bold>보호막</bold><gray>을 얻는다."),
                 Component.text(""),
                 dictionary.dictionaryList["사용 불가"]!!,
                 dictionary.dictionaryList["보호막"]!!,
@@ -241,8 +242,8 @@ class SelectionAndFocusCardPack {
         //region diversifiedInvestment Legend Initialization
         val diversifiedInvestment = Card(
             "분산 투자", listOf(
-                Component.text("패의 모든 카드를 버리고 발동할 수 있다.", TextColorType.Gray.textColor),
-                Component.text("모든 적에게 (버린 카드의 수 x 10)의 피해를 나누어 입힌다.", TextColorType.Gray.textColor)
+                MiniMessage.miniMessage().deserialize("<gray>패의 모든 카드를 버리고 발동할 수 있다."),
+                MiniMessage.miniMessage().deserialize("<gray>모든 적에게 (버린 카드의 수 x 10)의 피해를 나누어 입힌다.")
             ), CardRarity.Legend, 0,
             { usePlayerData, card ->
                 val target = usePlayerData.allEnemyMembers()

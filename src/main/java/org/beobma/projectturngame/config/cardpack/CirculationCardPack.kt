@@ -1,6 +1,7 @@
 package org.beobma.projectturngame.config.cardpack
 
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.minimessage.MiniMessage
 import org.beobma.projectturngame.card.Card
 import org.beobma.projectturngame.card.CardPack
 import org.beobma.projectturngame.card.CardRarity
@@ -38,8 +39,8 @@ class CirculationCardPack {
         //region handCirculation Common Initialization
         val handCirculation = Card(
             "패 순환", listOf(
-                Component.text("패에서 '패 순환'을 제외한 무작위 카드 1장을 버리고 발동할 수 있다.", TextColorType.Gray.textColor),
-                Component.text("덱에서 카드 2장을 뽑는다.", TextColorType.Gray.textColor)
+                MiniMessage.miniMessage().deserialize("<gray>패에서 '패 순환'을 제외한 무작위 카드 1장을 버리고 발동할 수 있다."),
+                MiniMessage.miniMessage().deserialize("<gray>덱에서 카드 2장을 뽑는다.")
             ), CardRarity.Common, 0,
             { usePlayerData, _ ->
                 val cardList = usePlayerData.hand.filter { it.name != "패 순환" }
@@ -61,8 +62,8 @@ class CirculationCardPack {
         //region deckCirculation Uncommon Initialization
         val deckCirculation = Card(
             "덱 순환", listOf(
-                Component.text("덱에서 '덱 순환'을 제외한 무작위 카드 1장을 제외하고 발동할 수 있다.", TextColorType.Gray.textColor),
-                Component.text("묘지에서 무작위 카드 2장을 덱에 넣는다.", TextColorType.Gray.textColor)
+                MiniMessage.miniMessage().deserialize("<gray>덱에서 '덱 순환'을 제외한 무작위 카드 1장을 제외하고 발동할 수 있다."),
+                MiniMessage.miniMessage().deserialize("<gray>묘지에서 무작위 카드 2장을 덱에 넣는다.")
             ), CardRarity.Uncommon, 0,
             { usePlayerData, _ ->
                 val cardList = usePlayerData.deck.filter { it.name != "덱 순환" }
@@ -91,7 +92,7 @@ class CirculationCardPack {
                 KeywordType.SameCardDisappears.component,
                 KeywordType.Fix.component,
                 Component.text(""),
-                Component.text("패, 묘지, 제외된 카드들을 모두 덱으로 되돌리고 덱에서 카드 5장을 뽑는다.", TextColorType.Gray.textColor),
+                MiniMessage.miniMessage().deserialize("<gray>패, 묘지, 제외된 카드들을 모두 덱으로 되돌리고 덱에서 카드 5장을 뽑는다."),
                 Component.text(""),
                 dictionary.dictionaryList["동일 카드 소멸"]!!,
                 dictionary.dictionaryList["고정"]!!
@@ -119,7 +120,7 @@ class CirculationCardPack {
         //region manaCirculation Common Initialization
         val manaCirculation = Card(
             "마나 순환", listOf(
-                KeywordType.Mana.component.append(Component.text("를 1 회복한다.", TextColorType.Gray.textColor))
+                MiniMessage.miniMessage().deserialize("<blue><bold>마나</bold><gray>를 1 회복한다.")
             ), CardRarity.Common, 0,
             { usePlayerData, _ ->
                 usePlayerData.addMana(1)
@@ -131,10 +132,8 @@ class CirculationCardPack {
         //region borrowedTime Common Initialization
         val borrowedTime = Card(
             "빌려온 시간", listOf(
-                KeywordType.Mana.component.append(Component.text("를 2 회복한다.", TextColorType.Gray.textColor)),
-                Component.text("다음 턴 시작 시 ", TextColorType.Gray.textColor).append(KeywordType.Mana.component.append(
-                    Component.text("를 0으로 만든다.", TextColorType.Gray.textColor)
-                ))
+                MiniMessage.miniMessage().deserialize("<blue><bold>마나</bold><gray>를 2 회복한다."),
+                MiniMessage.miniMessage().deserialize("<gray>다음 턴 시작 시 <blue><bold>마나</bold><gray>를 0으로 만든다.")
             ), CardRarity.Common, 0,
             { usePlayerData, _ ->
                     usePlayerData.addMana(2)
@@ -149,8 +148,8 @@ class CirculationCardPack {
         //region reverseCycle Uncommon Initialization
         val reverseCycle = Card(
             "역순환", listOf(
-                Component.text("덱에서 카드 3장을 뽑는다.", TextColorType.Gray.textColor),
-                Component.text("패에서 무작위 카드 1장을 버린다.", TextColorType.Gray.textColor),
+                MiniMessage.miniMessage().deserialize("<gray>덱에서 카드 3장을 뽑는다."),
+                MiniMessage.miniMessage().deserialize("<gray>패에서 무작위 카드 1장을 버린다.")
             ), CardRarity.Uncommon, 1,
             { usePlayerData, _ ->
                 usePlayerData.drow(3)
@@ -163,8 +162,8 @@ class CirculationCardPack {
         //region balance Uncommon Initialization
         val balance = Card(
             "균형", listOf(
-                Component.text("자신의 패가 비어있을 경우에 발동할 수 있다.", TextColorType.Gray.textColor),
-                Component.text("덱에서 카드 3장을 뽑는다.", TextColorType.Gray.textColor)
+                MiniMessage.miniMessage().deserialize("<gray>자신의 패가 비어있을 경우에 발동할 수 있다."),
+                MiniMessage.miniMessage().deserialize("<gray>덱에서 카드 3장을 뽑는다.")
             ), CardRarity.Uncommon, 1,
             { usePlayerData, _ ->
                 if (usePlayerData.hand.isNotEmpty()) {
@@ -180,7 +179,7 @@ class CirculationCardPack {
         //region imbalance Uncommon Initialization
         val imbalance = Card(
             "불균형", listOf(
-                Component.text("패의 카드를 모두 버린다.", TextColorType.Gray.textColor)
+                MiniMessage.miniMessage().deserialize("<gray>패의 카드를 모두 버린다.")
             ), CardRarity.Uncommon, 1,
             { usePlayerData, _ ->
                 val cardList = usePlayerData.hand.toList()
@@ -195,8 +194,8 @@ class CirculationCardPack {
         //region brokenBalance Rare Initialization
         val brokenBalance = Card(
             "깨진 균형", listOf(
-                Component.text("뽑을 수 있는 만큼 덱에서 카드를 뽑는다.", TextColorType.Gray.textColor),
-                Component.text("뽑은 후 덱에 남은 카드를 모두 제외한다.", TextColorType.Gray.textColor)
+                MiniMessage.miniMessage().deserialize("<gray>뽑을 수 있는 만큼 덱에서 카드를 뽑는다."),
+                MiniMessage.miniMessage().deserialize("<gray>뽑은 후 덱에 남은 카드를 모두 제외한다.")
             ), CardRarity.Rare, 1,
             { usePlayerData, _ ->
                 val handSize = (usePlayerData.hand.size - 8) * -1
@@ -214,8 +213,8 @@ class CirculationCardPack {
         //region rotation Rare Initialization
         val rotation = Card(
             "회전", listOf(
-                Component.text("패의 카드를 모두 덱으로 되돌리고 덱을 섞는다.", TextColorType.Gray.textColor),
-                Component.text("되돌린 카드의 수 만큼 덱에서 카드를 뽑는다.", TextColorType.Gray.textColor)
+                MiniMessage.miniMessage().deserialize("<gray>패의 카드를 모두 덱으로 되돌리고 덱을 섞는다."),
+                MiniMessage.miniMessage().deserialize("<gray>되돌린 카드의 수 만큼 덱에서 카드를 뽑는다.")
             ), CardRarity.Rare, 1,
             { usePlayerData, _ ->
                 val handSize = (usePlayerData.hand.size - 8) * -1
@@ -235,7 +234,7 @@ class CirculationCardPack {
         //region lifeCycle Rare Initialization
         val lifeCycle = Card(
             "생명의 순환", listOf(
-                Component.text("체력을 12 회복한다.", TextColorType.Gray.textColor)
+                MiniMessage.miniMessage().deserialize("<gray>체력을 12 회복한다.")
             ), CardRarity.Rare, 2,
             { usePlayerData, _ ->
                 usePlayerData.heal(12, usePlayerData)

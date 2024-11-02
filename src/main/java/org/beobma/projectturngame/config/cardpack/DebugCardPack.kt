@@ -1,6 +1,7 @@
 package org.beobma.projectturngame.config.cardpack
 
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.minimessage.MiniMessage
 import org.beobma.projectturngame.card.Card
 import org.beobma.projectturngame.card.CardPack
 import org.beobma.projectturngame.card.CardRarity
@@ -33,7 +34,7 @@ class DebugCardPack {
             "개발자의 권능", listOf(
                 KeywordType.Remnant.component,
                 Component.text(""),
-                Component.text("바라보는 적을 제거한다.", TextColorType.Gray.textColor),
+                MiniMessage.miniMessage().deserialize("<gray>바라보는 적을 제거한다."),
                 Component.text(""),
                 dictionary.dictionaryList["잔존"]!!
             ), CardRarity.Legend, 0,

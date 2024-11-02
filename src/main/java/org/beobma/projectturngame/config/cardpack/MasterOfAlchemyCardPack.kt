@@ -1,6 +1,7 @@
 package org.beobma.projectturngame.config.cardpack
 
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.minimessage.MiniMessage
 import org.beobma.projectturngame.abnormalityStatus.AbnormalityStatus
 import org.beobma.projectturngame.card.Card
 import org.beobma.projectturngame.card.CardPack
@@ -46,7 +47,7 @@ class MasterOfAlchemyCardPack {
         KeywordType.NotAvailable.component,
         KeywordType.AlchemYingredients.component,
         Component.text(""),
-        Component.text("그 누구도 물 없이 살 수는 없었다.", TextColorType.Gray.textColor),
+        MiniMessage.miniMessage().deserialize("<dark_gray>그 누구도 물 없이 살 수는 없었다."),
         Component.text(""),
         dictionary.dictionaryList["사용 불가"]!!,
         dictionary.dictionaryList["연금술 재료"]!!
@@ -58,7 +59,7 @@ class MasterOfAlchemyCardPack {
                 KeywordType.NotAvailable.component,
                 KeywordType.AlchemYingredients.component,
                 Component.text(""),
-                Component.text("불을 발견한 사람은 인류를 창조했다.", TextColorType.Gray.textColor),
+                MiniMessage.miniMessage().deserialize("<dark_gray>불을 발견한 사람은 인류를 창조했다."),
                 Component.text(""),
                 dictionary.dictionaryList["사용 불가"]!!,
                 dictionary.dictionaryList["연금술 재료"]!!
@@ -70,7 +71,7 @@ class MasterOfAlchemyCardPack {
                 KeywordType.NotAvailable.component,
                 KeywordType.AlchemYingredients.component,
                 Component.text(""),
-                Component.text("흙은 모든 생명의 어머니이자 보호자다.", TextColorType.Gray.textColor),
+                MiniMessage.miniMessage().deserialize("<dark_gray>흙은 모든 생명의 어머니이자 보호자다."),
                 Component.text(""),
                 dictionary.dictionaryList["사용 불가"]!!,
                 dictionary.dictionaryList["연금술 재료"]!!
@@ -82,7 +83,7 @@ class MasterOfAlchemyCardPack {
                 KeywordType.NotAvailable.component,
                 KeywordType.AlchemYingredients.component,
                 Component.text(""),
-                Component.text("공기는 우리의 첫 번째 음식이다.", TextColorType.Gray.textColor),
+                MiniMessage.miniMessage().deserialize("<dark_gray>공기는 우리의 첫 번째 음식이다."),
                 Component.text(""),
                 dictionary.dictionaryList["사용 불가"]!!,
                 dictionary.dictionaryList["연금술 재료"]!!
@@ -94,7 +95,7 @@ class MasterOfAlchemyCardPack {
             "강", listOf(
                 KeywordType.Volatilization.component,
                 Component.text(""),
-                KeywordType.Mana.component.append(Component.text("를 2 회복한다.", TextColorType.Gray.textColor)),
+                MiniMessage.miniMessage().deserialize("<blue><bold>마나</bold><gray>를 2 회복한다."),
                 Component.text(""),
                 dictionary.dictionaryList["휘발"]!!
             ), CardRarity.Uncommon, 0, { usePlayerData, _ ->
@@ -107,7 +108,7 @@ class MasterOfAlchemyCardPack {
             "태양", listOf(
                 KeywordType.Volatilization.component,
                 Component.text(""),
-                Component.text("모든 적에게 ", TextColorType.Gray.textColor).append(KeywordType.Burn.component.append(Component.text(" 5를 부여한다.", TextColorType.Gray.textColor))),
+                MiniMessage.miniMessage().deserialize("<gray>모든 적에게 <red><bold>화상 </bold><gray>5를 부여한다."),
                 Component.text(""),
                 dictionary.dictionaryList["휘발"]!!,
                 dictionary.dictionaryList["화상"]!!
@@ -126,7 +127,7 @@ class MasterOfAlchemyCardPack {
             "대지", listOf(
                 KeywordType.Volatilization.component,
                 Component.text(""),
-                Component.text("10의 피해를 막는 ", TextColorType.Gray.textColor).append(KeywordType.Shield.component.append(Component.text("을 얻는다.", TextColorType.Gray.textColor))),
+                MiniMessage.miniMessage().deserialize("<gray>10의 피해를 막는 <aqua><bold>보호막</bold><gray>을 얻는다."),
                 Component.text(""),
                 dictionary.dictionaryList["휘발"]!!,
                 dictionary.dictionaryList["보호막"]!!
@@ -141,7 +142,7 @@ class MasterOfAlchemyCardPack {
             "바람", listOf(
                 KeywordType.Volatilization.component,
                 Component.text(""),
-                Component.text("덱에서 카드를 2장 뽑는다.", TextColorType.Gray.textColor),
+                MiniMessage.miniMessage().deserialize("<gray>덱에서 카드를 2장 뽑는다."),
                 Component.text(""),
                 dictionary.dictionaryList["휘발"]!!
             ), CardRarity.Uncommon, 0, { usePlayerData, _ ->
@@ -154,7 +155,7 @@ class MasterOfAlchemyCardPack {
             "증기", listOf(
                 KeywordType.Volatilization.component,
                 Component.text(""),
-                Component.text("바라보는 적에게 ", TextColorType.Gray.textColor).append(KeywordType.Weakness.component.append(Component.text(" 3을 부여한다.", TextColorType.Gray.textColor))),
+                MiniMessage.miniMessage().deserialize("<gray>바라보는 적에게 <gray><bold>나약함 </bold><gray> 3을 부여한다."),
                 Component.text(""),
                 dictionary.dictionaryList["휘발"]!!,
                 dictionary.dictionaryList["나약함"]!!
@@ -176,7 +177,7 @@ class MasterOfAlchemyCardPack {
             "진흙", listOf(
                 KeywordType.Volatilization.component,
                 Component.text(""),
-                Component.text("모든 적의 속도가 1 감소한다.", TextColorType.Gray.textColor),
+                MiniMessage.miniMessage().deserialize("<gray>모든 적의 속도가 1 감소한다."),
                 Component.text(""),
                 dictionary.dictionaryList["휘발"]!!
             ), CardRarity.Uncommon, 0, { usePlayerData, _ ->
@@ -194,7 +195,7 @@ class MasterOfAlchemyCardPack {
             "안개", listOf(
                 KeywordType.Volatilization.component,
                 Component.text(""),
-                Component.text("모든 적에게 ", TextColorType.Gray.textColor).append(KeywordType.Blindness.component.append(Component.text(" 1을 부여한다.", TextColorType.Gray.textColor))),
+                MiniMessage.miniMessage().deserialize("<gray>모든 적에게 <gray><bold>실명 </bold><gray>5를 부여한다."),
                 Component.text(""),
                 dictionary.dictionaryList["휘발"]!!,
                 dictionary.dictionaryList["실명"]!!
@@ -202,7 +203,7 @@ class MasterOfAlchemyCardPack {
                 val targets = usePlayerData.allEnemyMembers()
 
                 targets.forEach {
-                    it.increaseBlindness(1, usePlayerData)
+                    it.increaseBlindness(5, usePlayerData)
                 }
 
                 return@Card true
@@ -213,7 +214,7 @@ class MasterOfAlchemyCardPack {
             "용암", listOf(
                 KeywordType.Volatilization.component,
                 Component.text(""),
-                Component.text("모든 적에게 10의 피해를 입힌다. 대상에게 ", TextColorType.Gray.textColor).append(KeywordType.Burn.component.append(Component.text("이 있었다면 추가로 10의 피해를 입힌다.", TextColorType.Gray.textColor))),
+                MiniMessage.miniMessage().deserialize("<gray>모든 적에게 10의 피해를 입힌다. 대상에게 <red><bold>화상</bold><gray>이 있었다면 추가로 10의 피해를 입힌다."),
                 Component.text(""),
                 dictionary.dictionaryList["휘발"]!!,
                 dictionary.dictionaryList["화상"]!!
@@ -236,8 +237,8 @@ class MasterOfAlchemyCardPack {
             "번개", listOf(
                 KeywordType.Volatilization.component,
                 Component.text(""),
-                Component.text("무작위 적에게 3의 피해를 입힌다.", TextColorType.Gray.textColor),
-                Component.text("위 효과는 3번 사용하며, 첫번째 대상에게 여러번 적중할 때마다 추가로 3의 피해를 입힌다.", TextColorType.Gray.textColor),
+                MiniMessage.miniMessage().deserialize("<gray>무작위 적에게 3의 피해를 입힌다."),
+                MiniMessage.miniMessage().deserialize("<gray>위 효과는 3번 사용하며, 첫 번째 대상에게 여러번 적중할 때마다 추가로 3의 피해를 입힌다."),
                 Component.text(""),
                 dictionary.dictionaryList["휘발"]!!
             ), CardRarity.Uncommon, 0, { usePlayerData, _ ->
@@ -261,7 +262,7 @@ class MasterOfAlchemyCardPack {
             "먼지", listOf(
                 KeywordType.Volatilization.component,
                 Component.text(""),
-                Component.text("바라보는 적에게 ", TextColorType.Gray.textColor).append(KeywordType.Blindness.component.append(Component.text(" 10을 부여한다.", TextColorType.Gray.textColor))),
+                MiniMessage.miniMessage().deserialize("<gray>바라보는 적에게 <gray><bold>실명 </bold><gray>10을 부여한다."),
                 Component.text(""),
                 dictionary.dictionaryList["휘발"]!!,
                 dictionary.dictionaryList["실명"]!!
@@ -286,7 +287,7 @@ class MasterOfAlchemyCardPack {
         //region lesserConjugation Common Initialization
         val lesserConjugation = Card(
             "하급 연성", listOf(
-                KeywordType.AlchemYingredientsPile.component.append(Component.text("의 카드들 중, 무작위 카드 2장을 ", TextColorType.Gray.textColor).append(KeywordType.Ductility.component.append(Component.text("한다.", TextColorType.Gray.textColor)))),
+                MiniMessage.miniMessage().deserialize("<gold><bold>연금술 재료 더미</bold><gray>의 카드들 중, 무작위 카드 2장을 <gold><bold>연성</bold><gray>한다."),
                 Component.text(""),
                 dictionary.dictionaryList["연금술 재료 더미"]!!,
                 dictionary.dictionaryList["연성"]!!
@@ -352,7 +353,7 @@ class MasterOfAlchemyCardPack {
         //region kilnOfCreation Common Initialization
         val kilnOfCreation = Card(
             "창조의 가마", listOf(
-                Component.text("'연금술의 대가' 카드팩에 존재하는 ", TextColorType.Gray.textColor).append(KeywordType.AlchemYingredients.component.append(Component.text(" 카드들 중, 무작위 2장을 생성하고 패에 넣는다.", TextColorType.Gray.textColor))),
+                MiniMessage.miniMessage().deserialize("<gray>'연금술의 대가' 카드팩에 존재하는 <gold><bold>연금술 재료 </bold><gray>카드들 중, 무작위 2장을 생성하고 패에 넣는다."),
                 Component.text(""),
                 dictionary.dictionaryList["연금술 재료"]!!
             ), CardRarity.Common, 1,
@@ -368,7 +369,7 @@ class MasterOfAlchemyCardPack {
         //region materialReproduction Common Initialization
         val materialReproduction = Card(
             "재료 복제", listOf(
-                KeywordType.AlchemYingredientsPile.component.append(Component.text("의 무작위 카드 1장과 동일한 카드를 생성하고 ", TextColorType.Gray.textColor).append(KeywordType.AlchemYingredientsPile.component.append(Component.text("에 넣는다.", TextColorType.Gray.textColor)))),
+                MiniMessage.miniMessage().deserialize("<gold><bold>연금술 재료 더미</bold><gray>의 무작위 카드 1장과 동일한 카드를 생성하고 <gold><bold>연금술 재료 더미</bold><gray>에 넣는다."),
                 Component.text(""),
                 dictionary.dictionaryList["연금술 재료 더미"]!!
             ), CardRarity.Common, 0,
@@ -392,7 +393,7 @@ class MasterOfAlchemyCardPack {
         //region intermediateSoftness Uncommon Initialization
         val intermediateSoftness = Card(
             "중급 연성", listOf(
-                KeywordType.AlchemYingredientsPile.component.append(Component.text("의 카드들 중, 무작위 카드 2장을 ", TextColorType.Gray.textColor).append(KeywordType.Ductility.component.append(Component.text("한다.", TextColorType.Gray.textColor)))),
+                MiniMessage.miniMessage().deserialize("<gold><bold>연금술 재료 더미</bold><gray>의 카드들 중, 무작위 카드 2장을 <gold><bold>연성</bold><gray>한다."),
                 Component.text(""),
                 dictionary.dictionaryList["연금술 재료 더미"]!!,
                 dictionary.dictionaryList["연성"]!!
@@ -458,8 +459,8 @@ class MasterOfAlchemyCardPack {
         //region disappearanceOfMaterials Uncommon Initialization
         val disappearanceOfMaterials = Card(
             "재료의 소멸", listOf(
-                KeywordType.AlchemYingredientsPile.component.append(Component.text("의 카드들 중, 무작위 카드 1장을 소멸시키고 발동할 수 있다.", TextColorType.Gray.textColor)),
-                Component.text("덱에서 카드를 1장 뽑고 ", TextColorType.Gray.textColor).append(KeywordType.Mana.component.append(Component.text("를 1 회복한다.", TextColorType.Gray.textColor))),
+                MiniMessage.miniMessage().deserialize("<gold><bold>연금술 재료 더미</bold><gray>의 카드들 중, 무작위 카드 1장을 소멸시키고 발동할 수 있다."),
+                MiniMessage.miniMessage().deserialize("<gray>덱에서 카드를 1장 뽑고 <blue><bold>마나</bold><gray>를 1 회복한다."),
                 Component.text(""),
                 dictionary.dictionaryList["연금술 재료 더미"]!!
             ), CardRarity.Uncommon, 0,
@@ -484,8 +485,8 @@ class MasterOfAlchemyCardPack {
         //region deactivateConjugation Uncommon Initialization
         val deactivateConjugation = Card(
             "연성 해제", listOf(
-                Component.text("패에 ", TextColorType.Gray.textColor).append(KeywordType.Ductility.component.append(Component.text("을 통해 생성된 카드를 소멸시키고 발동할 수 있다.", TextColorType.Gray.textColor))),
-                Component.text("소멸시킨 카드의 재료가 되는 카드를 ", TextColorType.Gray.textColor).append(KeywordType.AlchemYingredientsPile.component.append(Component.text("에 넣는다.", TextColorType.Gray.textColor))),
+                MiniMessage.miniMessage().deserialize("<gray>패에 <gold><bold>연성</bold><gray>을 통해 생성된 카드를 소멸시키고 발동할 수 있다."),
+                MiniMessage.miniMessage().deserialize("<gray>소멸시킨 카드의 재료가 되는 카드를 생성하고 <gold><bold>연금술 재료 더미</bold><gray>에 넣는다."),
                 Component.text(""),
                 dictionary.dictionaryList["연성"]!!,
                 dictionary.dictionaryList["연금술 재료 더미"]!!
@@ -557,7 +558,7 @@ class MasterOfAlchemyCardPack {
         //region urgentDelivery Rare Initialization
         val urgentDelivery = Card(
             "긴급 배달", listOf(
-                Component.text("'연금술의 대가' 카드팩에 존재하는 ", TextColorType.Gray.textColor).append(KeywordType.AlchemYingredients.component.append(Component.text(" 카드들 중, 무작위 카드를 가능한 만큼 생성하고 패에 넣는다,", TextColorType.Gray.textColor))),
+                MiniMessage.miniMessage().deserialize("<gray>'연금술의 대가' 카드팩에 존재하는 <gold><bold>연금술 재료</bold><gray> 카드들 중, 무작위 카드를 가능한 만큼 생성하고 패에 넣는다."),
                 Component.text(""),
                 dictionary.dictionaryList["연금술 재료"]!!
             ), CardRarity.Rare, 1,
@@ -576,8 +577,8 @@ class MasterOfAlchemyCardPack {
         //region substitutionDuctility Legend Initialization
         val substitutionDuctility = Card(
             "치환 연성", listOf(
-                KeywordType.AlchemYingredientsPile.component.append(Component.text("의 카드들 중, 무작위 카드 2장을 제외하고 발동할 수 있다.", TextColorType.Gray.textColor)),
-                Component.text("제외한 카드를 ", TextColorType.Gray.textColor).append(KeywordType.Ductility.component.append(Component.text("한 것으로 간주하고 연성한 카드를 패에 넣는다.", TextColorType.Gray.textColor))),
+                MiniMessage.miniMessage().deserialize("<gold><bold>연금술 재료 더미</bold>의 카드들 중, 무작위 카드 2장을 제외하고 발동할 수 있다."),
+                MiniMessage.miniMessage().deserialize("<gray>제외한 카드를 <gold><bold>연성</bold>한 것으로 간주하고 연성한 카드를 패에 넣는다."),
                 Component.text(""),
                 dictionary.dictionaryList["연금술 재료 더미"]!!,
                 dictionary.dictionaryList["연성"]!!
