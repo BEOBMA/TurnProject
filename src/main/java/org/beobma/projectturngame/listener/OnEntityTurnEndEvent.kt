@@ -2,8 +2,10 @@ package org.beobma.projectturngame.listener
 
 import org.beobma.projectturngame.abnormalityStatus.AbnormalityStatus
 import org.beobma.projectturngame.entity.Entity
+import org.beobma.projectturngame.entity.player.Player
 import org.beobma.projectturngame.event.EntityTurnEndEvent
 import org.beobma.projectturngame.info.Info
+import org.beobma.projectturngame.manager.CustomStackManager.setStack
 import org.beobma.projectturngame.text.KeywordType
 import org.beobma.projectturngame.util.EffectTime
 import org.bukkit.event.EventHandler
@@ -17,6 +19,9 @@ class OnEntityTurnEndEvent : Listener {
         val entity = event.entity
         val continueEffects = game.continueEffects.filter { it.effectTime == EffectTime.TurnEnd }
 
+        if (entity is Player) {
+            entity.setStack("ReforgeStack", 0)
+        }
         continueEffects.forEach {
             it.effect.invoke(entity)
         }

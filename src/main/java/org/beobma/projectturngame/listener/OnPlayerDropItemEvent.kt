@@ -6,6 +6,7 @@ import org.beobma.projectturngame.card.Card
 import org.beobma.projectturngame.config.CardConfig.Companion.reforgeCardPair
 import org.beobma.projectturngame.info.Info
 import org.beobma.projectturngame.manager.CardManager.applyHotbar
+import org.beobma.projectturngame.manager.CustomStackManager.increaseStack
 import org.beobma.projectturngame.manager.ParticleAnimationManager.isPlay
 import org.beobma.projectturngame.manager.PlayerManager.isTurn
 import org.beobma.projectturngame.text.KeywordType
@@ -71,6 +72,7 @@ class OnPlayerDropItemEvent : Listener {
             playerData.graveyard = playerData.graveyard.toMutableList().apply { replaceCard(card, reforgedCard) }
             playerData.banish = playerData.banish.toMutableList().apply { replaceCard(card, reforgedCard) }
 
+            playerData.increaseStack("ReforgeStack", 1)
             playerData.applyHotbar()
             event.isCancelled = true
             return
