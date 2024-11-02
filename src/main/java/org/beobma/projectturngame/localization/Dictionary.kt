@@ -49,11 +49,13 @@ class Dictionary {
         ), Pair(
             "기절", KeywordType.Stun.component.append(Component.text(": 턴 시작 시 강제로 턴이 종료된다. 이 효과가 발동한 후, 기절을 제거한다.", TextColorType.Gray.textColor))
         ), Pair(
-            "재련", KeywordType.Reforge.component.append(Component.text(": Q를 누르면 마나를 추가로 1 소모하고 같은 카드명을 가진 카드들을 이번 전투동안 재련된 상태로 만든다.", TextColorType.Gray.textColor))
+            "재련", KeywordType.Reforge.component.append(Component.text(": Q를 누르면 마나를 1 소모하고 같은 카드명을 가진 카드들을 이번 전투동안 재련된 상태로 만든다.", TextColorType.Gray.textColor))
         ), Pair(
             "재련됨", KeywordType.Reforged.component.append(Component.text(": 재련되어 강화된 상태의 카드로서, 전투 종료 시 모든 카드는 재련되기 전으로 돌아간다.", TextColorType.Gray.textColor))
         ), Pair(
-            "보호", KeywordType.Reforged.component.append(Component.text(": 피격 시 받는 피해가 수치만큼 감소한다. 턴 시작 시 보호를 제거한다.", TextColorType.Gray.textColor))
+            "보호", KeywordType.Protect.component.append(Component.text(": 피격 시 받는 피해가 수치만큼 감소한다. 턴 시작 시 보호를 제거한다.", TextColorType.Gray.textColor))
+        ), Pair(
+            "출혈", KeywordType.Bleeding.component.append(Component.text(": 행동 시 수치만큼 피해를 입고 수치를 절반으로 만든다.", TextColorType.Gray.textColor))
         )
     )
 }

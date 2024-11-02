@@ -429,3 +429,60 @@ object CustomStackManager : CustomStackHandler {
         stack.score -= int
     }
 }
+
+
+interface BleedingHandler {
+    fun Entity.increaseBleeding(int: Int, caster: Entity)
+    fun Entity.getBleeding(): AbnormalityStatus?
+    fun Entity.setBleeding(int: Int, caster: Entity)
+    fun Entity.decreaseBleeding(int: Int, caster: Entity)
+}
+object BleedingManager : BleedingHandler {
+    override fun Entity.increaseBleeding(int: Int, caster: Entity) {
+        val bleeding = this.getBleeding()
+
+        if (bleeding is AbnormalityStatus) {
+            bleeding.caster.add(caster)
+            bleeding.power += int
+        }
+        else {
+            this.abnormalityStatus.add(AbnormalityStatus(KeywordType.Bleeding, mutableListOf(caster), int))
+        }
+
+    }
+
+    override fun Entity.getBleeding(): AbnormalityStatus? {
+        val abnormalityStatus = this.abnormalityStatus.find { it.keywordType == KeywordType.Bleeding}
+
+        return if (abnormalityStatus !is AbnormalityStatus) {
+            return null
+        } else {
+            abnormalityStatus
+        }
+    }
+
+    override fun Entity.setBleeding(int: Int, caster: Entity) {
+        val bleeding = this.getBleeding()
+
+        if (bleeding is AbnormalityStatus) {
+            bleeding.caster.add(caster)
+            bleeding.power = int
+        }
+        else {
+            this.abnormalityStatus.add(AbnormalityStatus(KeywordType.Bleeding, mutableListOf(caster), int))
+        }
+    }
+
+    override fun Entity.decreaseBleeding(int: Int, caster: Entity) {
+        val bleeding = this.getBleeding()
+
+        if (bleeding is AbnormalityStatus) {
+            bleeding.caster.add(caster)
+
+            if (bleeding.power - int <= 0) {
+                this.abnormalityStatus.remove(bleeding)
+            }
+            bleeding.power -= int
+        }
+    }
+}
