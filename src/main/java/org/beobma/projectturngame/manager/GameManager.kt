@@ -3,6 +3,7 @@ package org.beobma.projectturngame.manager
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
 import org.beobma.projectturngame.ProjectTurnGame
+import org.beobma.projectturngame.abnormalityStatus.AbnormalityStatus
 import org.beobma.projectturngame.card.Card
 import org.beobma.projectturngame.config.CardConfig
 import org.beobma.projectturngame.config.CardConfig.Companion.cardPackList
@@ -28,12 +29,14 @@ import org.beobma.projectturngame.manager.CardManager.drow
 import org.beobma.projectturngame.manager.CompensationManager.eliteReward
 import org.beobma.projectturngame.manager.CompensationManager.normalReward
 import org.beobma.projectturngame.manager.CompensationManager.relicsReward
+import org.beobma.projectturngame.manager.EnemyManager.damage
 import org.beobma.projectturngame.manager.HealthManager.setHealth
 import org.beobma.projectturngame.manager.InventoryManager.openEventInventory
 import org.beobma.projectturngame.manager.InventoryManager.openMapInventory
 import org.beobma.projectturngame.manager.MaxHealthManager.setMaxHealth
 import org.beobma.projectturngame.manager.ParticleAnimationManager.isPlay
 import org.beobma.projectturngame.manager.PlayerManager.addMana
+import org.beobma.projectturngame.manager.PlayerManager.damage
 import org.beobma.projectturngame.manager.PlayerManager.heal
 import org.beobma.projectturngame.manager.PlayerManager.setMana
 import org.beobma.projectturngame.manager.PlayerManager.setMaxMana
@@ -41,6 +44,7 @@ import org.beobma.projectturngame.manager.StunManager.isStun
 import org.beobma.projectturngame.manager.StunManager.removeStun
 import org.beobma.projectturngame.text.KeywordType
 import org.beobma.projectturngame.util.BattleType
+import org.beobma.projectturngame.util.DamageType
 import org.beobma.projectturngame.util.ResetType
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
@@ -314,6 +318,11 @@ object GameManager : GameHandler {
                             }
                         }
                         if (it.actionCondition.invoke(this@turnStart) == true) {
+                            bleedingHandler(this@turnStart)
+                            if (this@turnStart.isDead) {
+                                this@turnStart.turnEnd()
+                                return
+                            }
                             it.action.invoke(this@turnStart)
                             object : BukkitRunnable() {
                                 override fun run() {
@@ -497,5 +506,25 @@ object GameManager : GameHandler {
         }
 
         this.applyHotbar()
+    }
+
+    private fun bleedingHandler(entity: Entity) {
+        val bleeding = entity.abnormalityStatus.find { it.keywordType == KeywordType.Bleeding }
+
+        if (bleeding !is AbnormalityStatus) return
+
+        if (entity is Enemy) {
+            entity.damage(bleeding.power, null, DamageType.AbnormalStatus)
+        }
+
+        if (entity is Player) {
+            entity.damage(bleeding.power, null, DamageType.AbnormalStatus)
+        }
+
+        bleeding.power = (bleeding.power / 2).toInt()
+
+        if (bleeding.power <= 1) {
+            entity.abnormalityStatus.remove(bleeding)
+        }
     }
 }
