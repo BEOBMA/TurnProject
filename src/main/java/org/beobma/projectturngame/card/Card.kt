@@ -8,7 +8,6 @@ data class Card(
     val description: List<Component>,
     val rarity: CardRarity,
     val cost: Int,
-    val cardType: CardType
     val cardUseEffect: ((Player, Card) -> Boolean)? = null,
     val postCardUseEffect: ((Player, Card) -> Unit)? = null,
     val cardThrowEffect: ((Player, Card) -> Unit)? = null,
