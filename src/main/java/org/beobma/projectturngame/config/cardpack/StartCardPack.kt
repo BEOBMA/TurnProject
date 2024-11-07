@@ -1,6 +1,5 @@
 package org.beobma.projectturngame.config.cardpack
 
-import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.beobma.projectturngame.card.Card
 import org.beobma.projectturngame.card.CardRarity
@@ -12,14 +11,10 @@ import org.beobma.projectturngame.manager.PlayerManager.addMana
 import org.beobma.projectturngame.manager.PlayerManager.heal
 import org.beobma.projectturngame.manager.SelectionFactordManager.focusOn
 import org.beobma.projectturngame.manager.SoundManager.playCardUsingFailSound
-import org.beobma.projectturngame.manager.SoundManager.playSweepSound
 import org.beobma.projectturngame.manager.TextManager.targetingFailText
 import org.beobma.projectturngame.particle.ParticleAnimation
-import org.beobma.projectturngame.text.KeywordType
-import org.beobma.projectturngame.text.TextColorType
 import org.bukkit.Particle
 import org.bukkit.Sound
-import org.checkerframework.checker.units.qual.min
 
 class StartCardPack {
     companion object {
@@ -34,7 +29,7 @@ class StartCardPack {
         //region attack Initialization
         val attack = Card(
             "공격", listOf(
-                MiniMessage.miniMessage().deserialize("<gray>바라보는 적에게 5의 피해를 입힌다.</gray>")
+                MiniMessage.miniMessage().deserialize("<gray>바라보는 적에게 5의 피해를 입힌다.")
             ), CardRarity.Common, 1,
             { usePlayerData, _ ->
                 val player = usePlayerData.player
@@ -57,7 +52,7 @@ class StartCardPack {
         //region heal Initialization
         val heal = Card(
             "가벼운 치유", listOf(
-                MiniMessage.miniMessage().deserialize("<gray>체력을 5 회복한다.</gray>"),
+                MiniMessage.miniMessage().deserialize("<gray>체력을 5 회복한다."),
             ), CardRarity.Common, 1,
             { usePlayerData, _ ->
                 val player = usePlayerData.player
@@ -72,7 +67,7 @@ class StartCardPack {
         //region powerAttack Initialization
         val powerAttack = Card(
             "강공", listOf(
-                MiniMessage.miniMessage().deserialize("<gray>바라보는 적에게 12의 피해를 입힌다.</gray>"),
+                MiniMessage.miniMessage().deserialize("<gray>바라보는 적에게 12의 피해를 입힌다."),
             ), CardRarity.Common, 2,
             { usePlayerData, _ ->
                 val player = usePlayerData.player
@@ -96,7 +91,7 @@ class StartCardPack {
         //region rest Initialization
         val rest = Card(
             "휴식", listOf(
-                MiniMessage.miniMessage().deserialize("<blue><bold>마나</bold><gray>를 1 회복한다.</gray>")
+                MiniMessage.miniMessage().deserialize("<blue><bold>마나</bold><gray>를 1 회복한다.")
             ), CardRarity.Common, 0,
             { usePlayerData, _ ->
                 val player = usePlayerData.player
@@ -111,7 +106,7 @@ class StartCardPack {
         //region continuousAttack Initialization
         val continuousAttack = Card(
             "연공", listOf(
-                MiniMessage.miniMessage().deserialize("<gray>바라보는 적에게 7의 피해를 3번 입힌다.</gray>")
+                MiniMessage.miniMessage().deserialize("<gray>바라보는 적에게 7의 피해를 3번 입힌다.")
             ), CardRarity.Common, 3,
             { usePlayerData, _ ->
                 val player = usePlayerData.player
