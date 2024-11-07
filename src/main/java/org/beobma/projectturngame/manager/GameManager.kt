@@ -56,6 +56,7 @@ import org.bukkit.scheduler.BukkitRunnable
 interface GameHandler {
     fun Game.start()
     fun Game.stop()
+    fun Game.clear()
     fun Game.battleStart()
     fun Game.battleStop()
     fun Game.hardBattleStart()
@@ -67,7 +68,7 @@ interface GameHandler {
     fun Game.nextSector()
     fun Game.moveTile()
 
-    fun gameOver()
+    fun Game.gameOver()
 
     fun Entity.turnStart()
     fun Entity.turnEnd()
@@ -127,6 +128,10 @@ object GameManager : GameHandler {
             player.teleport(Location(player.world, 0.5, -60.0, 0.5))
             player.inventory.clear()
         }
+    }
+
+    override fun Game.clear() {
+        this.stop()
     }
 
     override fun Game.battleStart() {
@@ -245,20 +250,22 @@ object GameManager : GameHandler {
     }
 
     override fun Game.nextSector() {
-        this.tileStep = 0
+        // 베타 테스트의 경우 시작 지역을 클리어 시 종료함.
+        this.clear()
 
-        this.playerDatas.forEach { playerData ->
-            playerData.setHealth(playerData.maxHealth)
-        }
-        this.gameSector.remove(this.gameField)
-        this.gameMapInventory = null
-        moveTile()
+//        this.stop()
+//        this.tileStep = 0
+//
+//        this.playerDatas.forEach { playerData ->
+//            playerData.setHealth(playerData.maxHealth)
+//        }
+//        this.gameSector.remove(this.gameField)
+//        this.gameMapInventory = null
+//        moveTile()
     }
 
-    override fun gameOver() {
-        val game = Info.game ?: return
-
-        game.stop()
+    override fun Game.gameOver() {
+        this.stop()
     }
 
     override fun Entity.turnStart() {
@@ -429,11 +436,13 @@ object GameManager : GameHandler {
         }
 
         game.gameSector.addAll(GameField.entries)
-        game.gameField = when (game.gameDifficulty) {
-            Easy -> GameField.Forest
-            Normal -> GameField.Cave
-            Hard -> GameField.Sea
-        }
+        // 베타 테스트 버전에서는 숲에서만 시작할 수 있음.
+        game.gameField = GameField.Forest
+//        game.gameField = when (game.gameDifficulty) {
+//            Easy -> GameField.Forest
+//            Normal -> GameField.Cave
+//            Hard -> GameField.Sea
+//        }
         game.gameSector.remove(game.gameField)
         playerLocationRetake()
 
