@@ -23,7 +23,7 @@ object ParticleManager : ParticleHandler {
                 val y = radius * cos(phi)
                 val z = radius * sin(phi) * sin(theta)
                 val particleLocation = playerLocation.clone().add(x, y, z)
-                player.world.spawnParticle(particle, particleLocation, 1)
+                player.world.spawnParticle(particle, particleLocation, 1, 0.0, 0.0, 0.0, 0.0)
             }
         }
     }

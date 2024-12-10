@@ -51,7 +51,7 @@ class SelectionAndFocusCardPack {
             ), CardRarity.Common, 0, null, null,
             { usePlayerData, _ ->
                 val player = usePlayerData.player
-                player.playSound(player.location, Sound.ITEM_BOOK_PAGE_TURN, 1.0F, 1.5F)
+                player.world.playSound(player.location, Sound.ITEM_BOOK_PAGE_TURN, 1.0F, 1.5F)
                 usePlayerData.drow(1)
             }
         )
@@ -68,8 +68,8 @@ class SelectionAndFocusCardPack {
             ), CardRarity.Common, 0, null, null,
             { usePlayerData, _ ->
                 val player = usePlayerData.player
-                player.playSound(player.location, Sound.BLOCK_RESPAWN_ANCHOR_CHARGE, 1.0F, 2.0F)
-                player.spawnParticle(Particle.WAX_OFF, player.location, 10, 0.5, 0.5, 0.5, 1.0)
+                player.world.playSound(player.location, Sound.BLOCK_RESPAWN_ANCHOR_CHARGE, 1.0F, 2.0F)
+                player.world.spawnParticle(Particle.WAX_OFF, player.location, 10, 0.5, 0.5, 0.5, 1.0)
                 usePlayerData.addMana(1)
             }
         )
@@ -87,7 +87,7 @@ class SelectionAndFocusCardPack {
             ), CardRarity.Common, 0, null, null,
             { usePlayerData, _ ->
                 val player = usePlayerData.player
-                player.playSound(player.location, Sound.ITEM_SHIELD_BLOCK, 1.0F, 1.0F)
+                player.world.playSound(player.location, Sound.ITEM_SHIELD_BLOCK, 1.0F, 1.0F)
                 spawnSphereParticles(player, Particle.END_ROD, 2.0, 300)
                 usePlayerData.addShield(5)
             }
@@ -123,8 +123,8 @@ class SelectionAndFocusCardPack {
 
                 usePlayerData.cardThrow(cardToDiscard)
                 target.damage(20, usePlayerData)
-                player.playSound(player.location, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1.0F, 0.5F)
-                player.spawnParticle(Particle.SWEEP_ATTACK, target.entity.location, 1, 0.0, 0.0, 0.0, 1.0)
+                player.world.playSound(player.location, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1.0F, 0.5F)
+                player.world.spawnParticle(Particle.SWEEP_ATTACK, target.entity.location, 1, 0.0, 0.0, 0.0, 1.0)
 
                 return@Card true
             }
@@ -152,8 +152,10 @@ class SelectionAndFocusCardPack {
                 usePlayerData.cardThrow(finalCardList[1])
                 usePlayerData.cardThrow(finalCardList[2])
 
+                player.world.playSound(player.location, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1.0F, 0.5F)
                 target.forEach {
                     it.damage(10, usePlayerData)
+                    player.world.spawnParticle(Particle.SWEEP_ATTACK, it.entity.location, 1, 0.0, 0.0, 0.0, 1.0)
                 }
                 return@Card true
             }
@@ -179,6 +181,8 @@ class SelectionAndFocusCardPack {
                 cardList.forEach {
                     usePlayerData.cardThrow(it)
                 }
+                player.world.playSound(player.location, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1.0F, 0.5F)
+                player.world.spawnParticle(Particle.SWEEP_ATTACK, target.entity.location, 10, 0.0, 0.0, 0.0, 1.0)
                 target.damage(40, usePlayerData)
                 return@Card true
             }
@@ -196,10 +200,13 @@ class SelectionAndFocusCardPack {
                 dictionary.dictionaryList[KeywordType.TrueDamage]!!,
             ), CardRarity.Rare, 0, null, null,
             { usePlayerData, _ ->
+                val player = usePlayerData.player
                 val enemys = usePlayerData.allEnemyMembers()
 
                 enemys.forEach {
                     it.damage(3, usePlayerData, DamageType.True)
+                    player.world.playSound(player.location, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1.0F, 0.5F)
+                    player.world.spawnParticle(Particle.END_ROD, it.entity.location, 30, 0.0, 0.0, 0.0, 0.2)
                 }
             }
         )
@@ -215,9 +222,12 @@ class SelectionAndFocusCardPack {
                 dictionary.dictionaryList[KeywordType.NotAvailable]!!
             ), CardRarity.Rare, 0, null, null,
             { usePlayerData, _ ->
+                val player = usePlayerData.player
                 val targets = usePlayerData.allTeamMembers(excludeSelf = true, includeDeceased = false)
 
                 targets.forEach {
+                    player.world.playSound(player.location, Sound.BLOCK_BEACON_ACTIVATE, 1.0F, 2.0F)
+                    player.world.spawnParticle(Particle.HEART, it.player.location, 5, 0.1, 0.1, 0.1, 0.0)
                     it.heal(3, usePlayerData)
                 }
             }
@@ -235,8 +245,11 @@ class SelectionAndFocusCardPack {
                 dictionary.dictionaryList[KeywordType.Shield]!!,
             ), CardRarity.Rare, 0, null, null,
             { usePlayerData, _ ->
+                val player = usePlayerData.player
                 val targets = usePlayerData.allTeamMembers(excludeSelf = true, includeDeceased = false)
+                player.world.playSound(player.location, Sound.ITEM_SHIELD_BLOCK, 1.0F, 1.0F)
                 targets.forEach {
+                    spawnSphereParticles(it.player, Particle.END_ROD, 2.0, 300)
                     it.addShield(3)
                 }
             }
@@ -250,6 +263,7 @@ class SelectionAndFocusCardPack {
                 "<gray>모든 적에게 (버린 카드의 수 x 10)의 피해를 나누어 입힌다."
             ), CardRarity.Legend, 0,
             { usePlayerData, card ->
+                val player = usePlayerData.player
                 val target = usePlayerData.allEnemyMembers()
                 val cardList = usePlayerData.hand.filter { it !== card }
 
@@ -257,8 +271,9 @@ class SelectionAndFocusCardPack {
                     usePlayerData.cardThrow(it)
                 }
 
-
+                player.world.playSound(player.location, Sound.ITEM_MACE_SMASH_AIR, 1.0F, 2.0F)
                 target.forEach {
+                    player.world.spawnParticle(Particle.SWEEP_ATTACK, it.entity.location, 10, 0.0, 0.0, 0.0, 1.0)
                     it.damage(((cardList.size * 10) / target.size), usePlayerData)
                 }
                 return@Card true
