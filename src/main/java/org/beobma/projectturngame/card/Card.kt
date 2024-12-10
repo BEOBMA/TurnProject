@@ -5,7 +5,7 @@ import org.beobma.projectturngame.entity.player.Player
 
 data class Card(
     val name: String,
-    val description: List<Component>,
+    val description: List<String>,
     val rarity: CardRarity,
     val cost: Int,
     val cardUseEffect: ((Player, Card) -> Boolean)? = null,

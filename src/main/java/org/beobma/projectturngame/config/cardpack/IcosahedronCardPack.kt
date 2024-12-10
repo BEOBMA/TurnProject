@@ -1,9 +1,8 @@
 package org.beobma.projectturngame.config.cardpack
 
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.minimessage.MiniMessage
 import org.beobma.projectturngame.card.Card
 import org.beobma.projectturngame.card.CardPack
+import org.beobma.projectturngame.card.CardPackType
 import org.beobma.projectturngame.card.CardRarity
 import org.beobma.projectturngame.config.CardConfig.Companion.cardList
 import org.beobma.projectturngame.config.CardConfig.Companion.cardPackList
@@ -22,8 +21,6 @@ import org.beobma.projectturngame.manager.PlayerManager.setMana
 import org.beobma.projectturngame.manager.SelectionFactordManager.focusOn
 import org.beobma.projectturngame.manager.SoundManager.playCardUsingFailSound
 import org.beobma.projectturngame.manager.TextManager.targetingFailText
-import org.beobma.projectturngame.text.KeywordType
-import org.beobma.projectturngame.text.TextColorType
 import org.beobma.projectturngame.util.ResetType
 
 class IcosahedronCardPack {
@@ -34,16 +31,16 @@ class IcosahedronCardPack {
     }
 
     private fun cardConfig() {
-        val cardPack = CardPack("20면체",
+        val cardPack = CardPack("<gray>20면체",
             listOf(
-                Component.text("운에 따라, 효과가 달라진다.")
-            ), mutableListOf()
+                "<gray>운에 따라, 효과가 달라진다."
+            ), mutableListOf(), mutableListOf(), CardPackType.Limitation
         )
 
         //region variable Common Initialization
         val variable = Card(
             "변수", listOf(
-                MiniMessage.miniMessage().deserialize("<gray>바라보는 적에게 20면체 주사위를 굴려 나온 값만큼 피해를 입힌다.")
+                "<gray>바라보는 적에게 20면체 주사위를 굴려 나온 값만큼 피해를 입힌다.)"
             ), CardRarity.Common, 1,
             { usePlayerData, _ ->
                 val player = usePlayerData.player
@@ -66,9 +63,9 @@ class IcosahedronCardPack {
         //region gambling Common Initialization
         val gambling = Card(
             "도박수", listOf(
-                MiniMessage.miniMessage().deserialize("<gray>20면체 주사위를 굴린다."),
-                MiniMessage.miniMessage().deserialize("<gray>값이 10 이상이라면 덱에서 카드를 2장 뽑는다."),
-                MiniMessage.miniMessage().deserialize("<gray>이 외의 경우에는 패에서 무작위 카드 1장을 버린다.")
+                "<gray>20면체 주사위를 굴린다.",
+                "<gray>값이 10 이상이라면 덱에서 카드를 2장 뽑는다.",
+                "<gray>이 외의 경우에는 패에서 무작위 카드 1장을 버린다."
             ), CardRarity.Common, 1,
             { usePlayerData, _ ->
                 val dice = usePlayerData.diceRoll(1, 20)
@@ -88,9 +85,9 @@ class IcosahedronCardPack {
         //region scaleOfFate Common Initialization
         val scaleOfFate = Card(
             "운명의 눈금", listOf(
-                MiniMessage.miniMessage().deserialize("<gray>20면체 주사위를 굴린다."),
-                MiniMessage.miniMessage().deserialize("<gray>값이 20이라면 <blue><bold>마나</bold><gray>를 최대로 회복하고 덱에서 카드를 5장 뽑는다."),
-                MiniMessage.miniMessage().deserialize("<gray>이 외의 경우에는 <blue><bold>마나</bold><gray>를 0으로 만들고 패의 카드를 모두 버린다.")
+                "<gray>20면체 주사위를 굴린다.",
+                "<gray>값이 20이라면 <blue><bold>마나</bold><gray>를 최대로 회복하고 덱에서 카드를 5장 뽑는다.",
+                "<gray>이 외의 경우에는 <blue><bold>마나</bold><gray>를 0으로 만들고 패의 카드를 모두 버린다."
             ), CardRarity.Common, 3,
             { usePlayerData, _ ->
                 val dice = usePlayerData.diceRoll(1, 20)
@@ -112,9 +109,9 @@ class IcosahedronCardPack {
         //region zeroRisk Uncommon Initialization
         val zeroRisk = Card(
             "제로 리스크", listOf(
-                MiniMessage.miniMessage().deserialize("<gray>20면체 주사위를 굴린다."),
-                MiniMessage.miniMessage().deserialize("<gray>값이 1이라면 자신은 사망한다."),
-                MiniMessage.miniMessage().deserialize("<gray>이 외의 경우에는 바라보는 적에게 15의 피해를 입힌다.")
+                "<gray>20면체 주사위를 굴린다.",
+                "<gray>값이 1이라면 자신은 사망한다.",
+                "<gray>이 외의 경우에는 바라보는 적에게 15의 피해를 입힌다."
             ), CardRarity.Uncommon, 0,
             { usePlayerData, _ ->
                 val player = usePlayerData.player
@@ -142,9 +139,9 @@ class IcosahedronCardPack {
         //region sniffling Uncommon Initialization
         val sniffling = Card(
             "홀짝", listOf(
-                MiniMessage.miniMessage().deserialize("<gray>20면체 주사위를 굴린다."),
-                MiniMessage.miniMessage().deserialize("<gray>값이 짝수라면 <blue><bold>마나</bold><gray>를 2 회복한다."),
-                MiniMessage.miniMessage().deserialize("<gray>값이 홀수라면 <blue><bold>마나</bold><gray>를 1 회복한다.")
+                "<gray>20면체 주사위를 굴린다.",
+                "<gray>값이 짝수라면 <blue><bold>마나</bold><gray>를 2 회복한다.",
+                "<gray>값이 홀수라면 <blue><bold>마나</bold><gray>를 1 회복한다."
             ), CardRarity.Uncommon, 1,
             { usePlayerData, _ ->
                 val dice = usePlayerData.diceRoll(1, 20)
@@ -164,7 +161,7 @@ class IcosahedronCardPack {
         //region recoveryVariables Uncommon Initialization
         val recoveryVariables = Card(
             "회복 변수", listOf(
-                MiniMessage.miniMessage().deserialize("<gray>체력을 20면체 주사위를 굴려 나온 값만큼 회복한다.")
+                "<gray>체력을 20면체 주사위를 굴려 나온 값만큼 회복한다."
             ), CardRarity.Uncommon, 1,
             { usePlayerData, _ ->
                 val dice = usePlayerData.diceRoll(1, 20)
@@ -179,7 +176,7 @@ class IcosahedronCardPack {
         //region weightedDice Rare Initialization
         val weightedDice = Card(
             "가중치 주사위", listOf(
-                MiniMessage.miniMessage().deserialize("<gray>이번 턴 동안 주사위를 굴리면 그 값에 1을 더한다.")
+                "<gray>이번 턴 동안 주사위를 굴리면 그 값에 1을 더한다."
             ), CardRarity.Rare, 1,
             { usePlayerData, _ ->
                 usePlayerData.diceWeight += 1
@@ -192,9 +189,9 @@ class IcosahedronCardPack {
         //region contradictoryRoll Rare Initialization
         val contradictoryRoll = Card(
             "상반된 굴림", listOf(
-                MiniMessage.miniMessage().deserialize("<gray>20면체 주사위를 굴린다."),
-                MiniMessage.miniMessage().deserialize("<gray>값이 10 이상이면 이번 턴 동안 주사위를 굴려 나온 값에 이 주사위 값을 뺀다."),
-                MiniMessage.miniMessage().deserialize("<gray>이외의 경우에는 이번 턴 동안 주사위를 굴려 나온 값에 이 주사위 값을 더한다.")
+                "<gray>20면체 주사위를 굴린다.",
+                "<gray>값이 10 이상이면 이번 턴 동안 주사위를 굴려 나온 값에 이 주사위 값을 뺀다.",
+                "<gray>이외의 경우에는 이번 턴 동안 주사위를 굴려 나온 값에 이 주사위 값을 더한다."
             ), CardRarity.Rare, 1,
             { usePlayerData, _ ->
                 val dice = usePlayerData.diceRoll(1, 20)
@@ -215,7 +212,7 @@ class IcosahedronCardPack {
         //region minMax Rare Initialization
         val minMax = Card(
             "최소 최대", listOf(
-                MiniMessage.miniMessage().deserialize("<gray>다음번 주사위를 굴리면 그 값은 반드시 최솟값 또는 최댓값으로 결정된다.")
+                "<gray>다음번 주사위를 굴리면 그 값은 반드시 최솟값 또는 최댓값으로 결정된다."
             ), CardRarity.Rare, 2,
             { usePlayerData, _ ->
                 usePlayerData.addTag("minMax", ResetType.None)
@@ -228,7 +225,7 @@ class IcosahedronCardPack {
         //region chanceAdvantage Legend Initialization
         val chanceAdvantage = Card(
             "확률 우위", listOf(
-                MiniMessage.miniMessage().deserialize("<gray>다음번 주사위를 굴리면 주사위를 2개 굴려 더 높은 값이 나온 주사위를 사용한다.")
+                "<gray>다음번 주사위를 굴리면 주사위를 2개 굴려 더 높은 값이 나온 주사위를 사용한다."
             ), CardRarity.Legend, 3,
             { usePlayerData, _ ->
                 usePlayerData.addTag("chanceAdvantage", ResetType.None)

@@ -2,6 +2,7 @@ package org.beobma.projectturngame.manager
 
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
+import net.kyori.adventure.text.minimessage.MiniMessage
 import org.beobma.projectturngame.card.Card
 import org.beobma.projectturngame.card.CardRarity
 import org.beobma.projectturngame.config.CardConfig.Companion.cardList
@@ -23,7 +24,7 @@ interface CardHandler {
     fun Player.use(card: Card)
     fun Player.drow(int: Int)
     fun Player.cardThrow(card: Card)
-    fun Player.addCard(card: Card, cardPosition: CardPosition = CardPosition.Hand)
+    fun Player.addCard(card: Card, cardPosition: CardPosition = Hand)
     fun Player.addDeckCard(card: Card)
     fun Player.clearHand()
     fun Player.clearGraveyard()
@@ -43,7 +44,7 @@ interface CardHandler {
 object CardManager : CardHandler {
     override fun Player.use(card: Card) {
         // 사용 불가
-        if (card.description.contains(KeywordType.NotAvailable.component)) {
+        if (card.description.contains(KeywordType.NotAvailable.string)) {
             this.player.sendMessage(cardNotAvailableText())
             return
         }
@@ -72,25 +73,25 @@ object CardManager : CardHandler {
 
     private fun Player.useCardProcessing(card: Card) {
         // 잔존 카드 처리
-        if (card.description.contains(KeywordType.Remnant.component)) {
+        if (card.description.contains(KeywordType.Remnant.string)) {
             return
         }
 
         // 소멸 카드 처리
-        if (card.description.contains(KeywordType.Extinction.component)) {
+        if (card.description.contains(KeywordType.Extinction.string)) {
             this.hand.remove(card)
             this.banish.add(card)
             return
         }
 
         // 휘발 카드 처리
-        if (card.description.contains(KeywordType.Volatilization.component)) {
+        if (card.description.contains(KeywordType.Volatilization.string)) {
             this.hand.remove(card)
             return
         }
 
         // 동일 카드 소멸 카드 처리
-        if (card.description.contains(KeywordType.SameCardDisappears.component)) {
+        if (card.description.contains(KeywordType.SameCardDisappears.string)) {
             val handCards = this.hand.filter { it.name == card.name }
             this.hand.removeAll(handCards)
             this.banish.addAll(handCards)
@@ -131,7 +132,7 @@ object CardManager : CardHandler {
 
     override fun Player.cardThrow(card: Card) {
         // 고정 효과가 적용된 경우
-        if (card.description.contains(KeywordType.Fix.component)) {
+        if (card.description.contains(KeywordType.Fix.string)) {
             return
         }
 
@@ -158,7 +159,7 @@ object CardManager : CardHandler {
     }
 
     override fun Player.addDeckCard(card: Card) {
-        if (card.description.contains(KeywordType.Fix.component)) {
+        if (card.description.contains(KeywordType.Fix.string)) {
             return
         }
         this.deck.add(card)
@@ -166,7 +167,7 @@ object CardManager : CardHandler {
 
     override fun Player.clearHand() {
         // 고정된 카드 제외
-        val cardList = this.hand.filter { !it.description.contains(KeywordType.Fix.component) }
+        val cardList = this.hand.filter { !it.description.contains(KeywordType.Fix.string) }
 
         this.hand.removeAll(cardList)
         applyHotbar()
@@ -174,27 +175,27 @@ object CardManager : CardHandler {
 
     override fun Player.clearGraveyard() {
         // 고정된 카드 제외
-        val cardList = this.hand.filter { !it.description.contains(KeywordType.Fix.component) }
+        val cardList = this.hand.filter { !it.description.contains(KeywordType.Fix.string) }
 
         this.graveyard.removeAll(cardList)
     }
 
     override fun Player.clearBanish() {
         // 고정된 카드 제외
-        val cardList = this.hand.filter { !it.description.contains(KeywordType.Fix.component) }
+        val cardList = this.hand.filter { !it.description.contains(KeywordType.Fix.string) }
 
         this.banish.removeAll(cardList)
     }
 
     override fun Player.clearDeck() {
         // 고정된 카드 제외
-        val cardList = this.hand.filter { !it.description.contains(KeywordType.Fix.component) }
+        val cardList = this.hand.filter { !it.description.contains(KeywordType.Fix.string) }
 
         this.deck.removeAll(cardList)
     }
 
     override fun Player.cardBanish(card: Card) {
-        if (!card.description.contains(KeywordType.Fix.component)) {
+        if (!card.description.contains(KeywordType.Fix.string)) {
             this.banish.add(card)
         }
     }
@@ -229,7 +230,7 @@ object CardManager : CardHandler {
         val cardItem = ItemStack(Material.SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE, 1).apply {
             itemMeta = itemMeta?.apply {
                 displayName(displayName.append(Component.text(" ($cost)")))
-                lore(this@toItem.description)
+                lore(this@toItem.description.map { MiniMessage.miniMessage().deserialize(it) })
                 addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
             }
         }
@@ -240,15 +241,12 @@ object CardManager : CardHandler {
     override fun ItemStack.toCard(): Card {
         val card = cardList.find { it.toItem().displayName() == this.displayName() && it.toItem().lore() == this.lore() }
 
-        return if (card !is Card) {
-            Card(
+        return card
+            ?: Card(
                 "오류", listOf(
-                    Component.text("이 카드는 존재할 수 없는 카드입니다.", TextColorType.Gray.textColor)
+                    "<gray>이 카드는 존재할 수 없는 카드입니다."
                 ), CardRarity.Common, 999
             )
-        } else {
-            card
-        }
     }
 
     override fun Player.applyHotbar() {
@@ -260,6 +258,6 @@ object CardManager : CardHandler {
     }
 
     override fun Card.isFix(): Boolean {
-        return this.description.contains(KeywordType.Fix.component)
+        return this.description.contains(KeywordType.Fix.string)
     }
 }

@@ -6,7 +6,7 @@ import org.beobma.projectturngame.util.ActionType
 
 class EnemyAction(
     val actionName: String,
-    val actionDescription: List<Component>,
+    val actionDescription: List<String>,
     val actionType: ActionType,
     val actionCondition: (Enemy) -> Boolean,
     val action: (Enemy) -> Unit,

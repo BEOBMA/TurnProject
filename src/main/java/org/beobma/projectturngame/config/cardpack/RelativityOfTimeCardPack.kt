@@ -1,10 +1,9 @@
 package org.beobma.projectturngame.config.cardpack
 
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.minimessage.MiniMessage
 import org.beobma.projectturngame.abnormalityStatus.AbnormalityStatus
 import org.beobma.projectturngame.card.Card
 import org.beobma.projectturngame.card.CardPack
+import org.beobma.projectturngame.card.CardPackType
 import org.beobma.projectturngame.card.CardRarity
 import org.beobma.projectturngame.config.CardConfig.Companion.cardList
 import org.beobma.projectturngame.config.CardConfig.Companion.cardPackList
@@ -28,7 +27,6 @@ import org.beobma.projectturngame.manager.TimeManager.decreaseTime
 import org.beobma.projectturngame.manager.TimeManager.getTime
 import org.beobma.projectturngame.manager.TimeManager.increaseTime
 import org.beobma.projectturngame.text.KeywordType
-import org.beobma.projectturngame.text.TextColorType
 import org.beobma.projectturngame.util.DamageType
 import org.beobma.projectturngame.util.EffectTime
 
@@ -40,21 +38,21 @@ class RelativityOfTimeCardPack {
     }
 
     private fun cardConfig() {
-        val cardPack = CardPack("시간의 상대성",
+        val cardPack = CardPack("<gray>시간의 상대성",
             listOf(
-                Component.text("여러 카드의 효과로 시간 수치를 쌓아 추가 턴을 얻는 등. 강력한 효과를 얻는다.")
-            ), mutableListOf()
+                "<gray>여러 카드의 효과로 시간 수치를 쌓아 추가 턴을 얻는 등. 강력한 효과를 얻는다."
+            ), mutableListOf(), mutableListOf(), CardPackType.Limitation
         )
 
         //region saveTime Common Initialization
         val saveTime = Card(
             "시간 저장", listOf(
-                KeywordType.Continue.component,
-                Component.text(""),
-                MiniMessage.miniMessage().deserialize("<gray>전투 종료 시까지 어느 대상이든 턴을 종료할 때마다 자신은 <gold><bold>시간 </bold><gray>1을 얻는다."),
-                Component.text(""),
-                dictionary.dictionaryList["지속"]!!,
-                dictionary.dictionaryList["시간"]!!
+                KeywordType.Continue.string,
+                "",
+                "<gray>전투 종료 시까지 어느 대상이든 턴을 종료할 때마다 자신은 <gold><bold>시간 </bold><gray>1을 얻는다.",
+                "",
+                dictionary.dictionaryList[KeywordType.Continue]!!,
+                dictionary.dictionaryList[KeywordType.Time]!!
             ), CardRarity.Common, 1,
             { usePlayerData, _ ->
                 val game = Info.game ?: return@Card false
@@ -70,10 +68,10 @@ class RelativityOfTimeCardPack {
         //region resourceAcceleration Common Initialization
         val resourceAcceleration = Card(
             "자원 가속", listOf(
-                MiniMessage.miniMessage().deserialize("<gold><bold>시간 </bold><gray>2를 소모하고 발동할 수 있다."),
-                MiniMessage.miniMessage().deserialize("<gray>덱에서 카드를 1장 뽑고 <blue><bold>마나 </bold><gray>1을 회복한다."),
-                Component.text(""),
-                dictionary.dictionaryList["시간"]!!
+                "<gold><bold>시간 </bold><gray>2를 소모하고 발동할 수 있다.",
+                "<gray>덱에서 카드를 1장 뽑고 <blue><bold>마나 </bold><gray>1을 회복한다.",
+                "",
+                dictionary.dictionaryList[KeywordType.Time]!!
             ), CardRarity.Common, 0,
             { usePlayerData, _ ->
                 val player = usePlayerData.player
@@ -97,13 +95,13 @@ class RelativityOfTimeCardPack {
         //region acceleration Common Initialization
         val acceleration = Card(
             "가속", listOf(
-                KeywordType.Continue.component,
-                Component.text(""),
-                MiniMessage.miniMessage().deserialize("<gold><bold>시간 </bold><gray>1을 소모하고 발동할 수 있다."),
-                MiniMessage.miniMessage().deserialize("<gray>전투 종료 시까지 자신의 속도가 3 증가한다."),
-                Component.text(""),
-                dictionary.dictionaryList["지속"]!!,
-                dictionary.dictionaryList["시간"]!!
+                KeywordType.Continue.string,
+                "",
+                "<gold><bold>시간 </bold><gray>1을 소모하고 발동할 수 있다.",
+                "<gray>전투 종료 시까지 자신의 속도가 3 증가한다.",
+                "",
+                dictionary.dictionaryList[KeywordType.Continue]!!,
+                dictionary.dictionaryList[KeywordType.Time]!!
             ), CardRarity.Common, 0,
             { usePlayerData, _ ->
                 val player = usePlayerData.player
@@ -132,9 +130,9 @@ class RelativityOfTimeCardPack {
         //region temporarySuspension Uncommon Initialization
         val temporarySuspension = Card(
             "일시적 중단", listOf(
-                MiniMessage.miniMessage().deserialize("<gold><bold>시간 </bold><gray>5를 얻는다. 이후 자신의 턴을 종료한다."),
-                Component.text(""),
-                dictionary.dictionaryList["시간"]!!
+                "<gold><bold>시간 </bold><gray>5를 얻는다. 이후 자신의 턴을 종료한다.",
+                "",
+                dictionary.dictionaryList[KeywordType.Time]!!
             ), CardRarity.Uncommon, 0,
             { usePlayerData, _ ->
                 usePlayerData.increaseTime(5, usePlayerData)
@@ -147,10 +145,10 @@ class RelativityOfTimeCardPack {
         //region accumulatedMoments Uncommon Initialization
         val accumulatedMoments = Card(
             "축적된 순간", listOf(
-                MiniMessage.miniMessage().deserialize("<gray>바라보는 적에게 자신의 <gold><bold>(시간 수치 x 2)</bold><gray> 만큼의 피해를 입힌다."),
-                MiniMessage.miniMessage().deserialize("<gray>이후 자신의 <gold><bold>시간 </bold><gray>수치를 절반으로 만든다."),
-                Component.text(""),
-                dictionary.dictionaryList["시간"]!!
+                "<gray>바라보는 적에게 자신의 <gold><bold>(시간 수치 x 2)</bold><gray> 만큼의 피해를 입힌다.",
+                "<gray>이후 자신의 <gold><bold>시간 </bold><gray>수치를 절반으로 만든다.",
+                "",
+                dictionary.dictionaryList[KeywordType.Time]!!
             ), CardRarity.Uncommon, 0,
             { usePlayerData, _ ->
                 val player = usePlayerData.player
@@ -180,10 +178,10 @@ class RelativityOfTimeCardPack {
         //region timeTheft Uncommon Initialization
         val timeTheft = Card(
             "시간 절도", listOf(
-                MiniMessage.miniMessage().deserialize("<gray>바라보는 적의 속도 만큼 <gold><bold>시간</bold><gray>을 얻는다."),
-                MiniMessage.miniMessage().deserialize("<gray>이후 대상의 속도를 0으로 만든다."),
-                Component.text(""),
-                dictionary.dictionaryList["시간"]!!
+                "<gray>바라보는 적의 속도 만큼 <gold><bold>시간</bold><gray>을 얻는다.",
+                "<gray>이후 대상의 속도를 0으로 만든다.",
+                "",
+                dictionary.dictionaryList[KeywordType.Time]!!
             ), CardRarity.Uncommon, 2,
             { usePlayerData, _ ->
                 val player = usePlayerData.player
@@ -208,10 +206,10 @@ class RelativityOfTimeCardPack {
         //region extensionOfTime Rare Initialization
         val extensionOfTime = Card(
             "시간의 연장선", listOf(
-                MiniMessage.miniMessage().deserialize("<gold><bold>시간 </bold><gray>10을 소모하고 발동할 수 있다."),
-                MiniMessage.miniMessage().deserialize("<gray>이번 라운드의 턴 순서 마지막에 추가 턴을 얻는다."),
-                Component.text(""),
-                dictionary.dictionaryList["시간"]!!
+                "<gold><bold>시간 </bold><gray>10을 소모하고 발동할 수 있다.",
+                "<gray>이번 라운드의 턴 순서 마지막에 추가 턴을 얻는다.",
+                "",
+                dictionary.dictionaryList[KeywordType.Time]!!
             ), CardRarity.Rare, 1,
             { usePlayerData, _ ->
                 val player = usePlayerData.player
@@ -234,10 +232,10 @@ class RelativityOfTimeCardPack {
         //region timeLifeIntersection Rare Initialization
         val timeLifeIntersection = Card(
             "시간 생명 교차", listOf(
-                MiniMessage.miniMessage().deserialize("<gray>자신의 체력을 최대 10까지 소모하고 소모한 체력 만큼 <gold><bold>시간</bold><gray>을 얻는다."),
-                MiniMessage.miniMessage().deserialize("<gray>이 효과로는 체력이 1 미만으로 내려가지 않으며, 이 경우 체력을 10 소모한 것으로 간주한다."),
-                Component.text(""),
-                dictionary.dictionaryList["시간"]!!
+                "<gray>자신의 체력을 최대 10까지 소모하고 소모한 체력 만큼 <gold><bold>시간</bold><gray>을 얻는다.",
+                "<gray>이 효과로는 체력이 1 미만으로 내려가지 않으며, 이 경우 체력을 10 소모한 것으로 간주한다.",
+                "",
+                dictionary.dictionaryList[KeywordType.Time]!!
             ), CardRarity.Rare, 1,
             { usePlayerData, _ ->
                 if (usePlayerData.health - 10 < 1) {
@@ -256,10 +254,10 @@ class RelativityOfTimeCardPack {
         //region lifeTimeIntersection Rare Initialization
         val lifeTimeIntersection = Card(
             "생명 시간 교차", listOf(
-                MiniMessage.miniMessage().deserialize("<gold><bold>시간 </bold><gray>수치만큼 체력을 회복하고 수치를 절반으로 만든다."),
-                MiniMessage.miniMessage().deserialize("<gray>만약, 자신의 체력이 1이었다면 <gold><bold>시간 </bold><gray> 수치를 소모하지 않는다."),
-                Component.text(""),
-                dictionary.dictionaryList["시간"]!!
+                "<gold><bold>시간 </bold><gray>수치만큼 체력을 회복하고 수치를 절반으로 만든다.",
+                "<gray>만약, 자신의 체력이 1이었다면 <gold><bold>시간 </bold><gray> 수치를 소모하지 않는다.",
+                "",
+                dictionary.dictionaryList[KeywordType.Time]!!
             ), CardRarity.Rare, 1,
             { usePlayerData, _ ->
                 val player = usePlayerData.player
@@ -285,10 +283,10 @@ class RelativityOfTimeCardPack {
         //region parallelTime Legend Initialization
         val parallelTime = Card(
             "평행 시간", listOf(
-                MiniMessage.miniMessage().deserialize("<gold><bold>시간 </bold><gray>50을 소모하고 발동할 수 있다."),
-                MiniMessage.miniMessage().deserialize("<gray>이번 라운드의 턴 순서 마지막에 모든 아군이 추가 턴을 얻는다."),
-                Component.text(""),
-                dictionary.dictionaryList["시간"]!!
+                "<gold><bold>시간 </bold><gray>50을 소모하고 발동할 수 있다.",
+                "<gray>이번 라운드의 턴 순서 마지막에 모든 아군이 추가 턴을 얻는다.",
+                "",
+                dictionary.dictionaryList[KeywordType.Time]!!
             ), CardRarity.Legend, 1,
             { usePlayerData, _ ->
                 val player = usePlayerData.player

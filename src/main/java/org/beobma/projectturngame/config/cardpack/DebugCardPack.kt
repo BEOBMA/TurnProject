@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.beobma.projectturngame.card.Card
 import org.beobma.projectturngame.card.CardPack
+import org.beobma.projectturngame.card.CardPackType
 import org.beobma.projectturngame.card.CardRarity
 import org.beobma.projectturngame.config.CardConfig.Companion.cardList
 import org.beobma.projectturngame.entity.enemy.Enemy
@@ -13,7 +14,6 @@ import org.beobma.projectturngame.manager.SelectionFactordManager.focusOn
 import org.beobma.projectturngame.manager.SoundManager.playCardUsingFailSound
 import org.beobma.projectturngame.manager.TextManager.targetingFailText
 import org.beobma.projectturngame.text.KeywordType
-import org.beobma.projectturngame.text.TextColorType
 
 class DebugCardPack {
     private val dictionary = Dictionary()
@@ -23,20 +23,20 @@ class DebugCardPack {
     }
 
     private fun cardConfig() {
-        val cardPack = CardPack("디버그",
+        val cardPack = CardPack("<bray>디버그",
             listOf(
-                Component.text("각종 디버그 카드가 담겨있다. 즉, 치트 카드가 모여있다.")
-            ), mutableListOf()
+                "<gray>각종 디버그 카드가 담겨있다. 즉, 치트 카드가 모여있다."
+            ), mutableListOf(), mutableListOf(), CardPackType.Special
         )
 
         //region developerPowers Legend Initialization
         val developerPowers = Card(
             "개발자의 권능", listOf(
-                KeywordType.Remnant.component,
-                Component.text(""),
-                MiniMessage.miniMessage().deserialize("<gray>바라보는 적을 제거한다."),
-                Component.text(""),
-                dictionary.dictionaryList["잔존"]!!
+                KeywordType.Remnant.string,
+                "",
+                "<gray>바라보는 적을 제거한다.",
+                "",
+                dictionary.dictionaryList[KeywordType.Remnant]!!
             ), CardRarity.Legend, 0,
             { usePlayerData, _ ->
                 val player = usePlayerData.player

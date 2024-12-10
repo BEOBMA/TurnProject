@@ -9,7 +9,6 @@ import org.beobma.projectturngame.config.cardpack.IcosahedronCardPack
 import org.beobma.projectturngame.config.cardpack.MasterOfAlchemyCardPack
 import org.beobma.projectturngame.config.cardpack.RelativityOfTimeCardPack
 import org.beobma.projectturngame.config.cardpack.SelectionAndFocusCardPack
-import org.beobma.projectturngame.config.cardpack.StartCardPack
 
 
 class CardConfig {
@@ -28,7 +27,6 @@ class CardConfig {
     }
 
     private fun cardConfig() {
-        StartCardPack()
         CirculationCardPack()
         SelectionAndFocusCardPack()
         IcosahedronCardPack()

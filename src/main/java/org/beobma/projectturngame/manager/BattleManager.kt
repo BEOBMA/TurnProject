@@ -1,6 +1,5 @@
 package org.beobma.projectturngame.manager
 
-import net.kyori.adventure.text.Component
 import org.beobma.projectturngame.entity.enemy.Enemy
 import org.beobma.projectturngame.entity.enemy.EnemyAction
 import org.beobma.projectturngame.game.GameDifficulty
@@ -20,7 +19,6 @@ import org.beobma.projectturngame.manager.SelectionFactordManager.allEnemyMember
 import org.beobma.projectturngame.manager.SelectionFactordManager.allTeamMembers
 import org.beobma.projectturngame.manager.StunManager.addStun
 import org.beobma.projectturngame.text.KeywordType
-import org.beobma.projectturngame.text.TextColorType
 import org.beobma.projectturngame.util.ActionType
 import org.beobma.projectturngame.util.DamageType
 import org.bukkit.Bukkit
@@ -52,7 +50,7 @@ object BattleManager : Battlehandler {
 
         fun spawnEntity(entityType: EntityType): LivingEntity {
             val entity = Bukkit.getWorld("world")!!
-                .spawnEntity(Location(Bukkit.getWorld("world"), 8.5, -40.0, 0.5, 90F, 0F), entityType) as LivingEntity
+                .spawnEntity(Location(Bukkit.getWorld("world"), 0.5, -40.0, 0.5, 90F, 0F), entityType) as LivingEntity
             return entity
         }
 
@@ -73,7 +71,7 @@ object BattleManager : Battlehandler {
                         listOf(
                             EnemyAction(
                                 "휴식",
-                                listOf(Component.text("자신의 체력이 50% 미만일 경우, 모든 아군의 체력을 5 회복시킨다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>자신의 체력이 50% 미만일 경우, 모든 아군의 체력을 5 회복시킨다."),
                                 ActionType.Heal, { enemy ->
                                     return@EnemyAction enemy.maxHealth / 2 > enemy.health
 
@@ -87,7 +85,7 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "휴식",
-                                listOf(Component.text("자신의 체력이 50% 미만일 경우, 자신의 체력을 5 회복시킨다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>자신의 체력이 50% 미만일 경우, 자신의 체력을 5 회복시킨다."),
                                 ActionType.Heal, { enemy ->
                                     return@EnemyAction enemy.maxHealth / 2 > enemy.health
 
@@ -99,7 +97,7 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "박치기",
-                                listOf(Component.text("무작위 적에게 8의 피해를 입힌다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>무작위 적에게 8의 피해를 입힌다."),
                                 ActionType.Attack,
                                 { enemy ->
                                     return@EnemyAction true
@@ -113,7 +111,7 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "박치기",
-                                listOf(Component.text("무작위 적에게 5의 피해를 입힌다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>무작위 적에게 5의 피해를 입힌다."),
                                 ActionType.Attack,
                                 { enemy ->
                                     return@EnemyAction true
@@ -135,7 +133,7 @@ object BattleManager : Battlehandler {
                         listOf(
                             EnemyAction(
                                 "몸통 박치기",
-                                listOf(Component.text("아군이 2명 이하일 경우, 모든 적에게 5의 피해를 입힌다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>아군이 2명 이하일 경우, 모든 적에게 5의 피해를 입힌다."),
                                 ActionType.Attack,
                                 { enemy ->
                                     val game = Info.game ?: return@EnemyAction false
@@ -153,7 +151,7 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "몸통 박치기",
-                                listOf(Component.text("무작위 적에게 5의 피해를 입힌다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>무작위 적에게 5의 피해를 입힌다."),
                                 ActionType.Attack,
                                 { enemy ->
                                     return@EnemyAction true
@@ -167,7 +165,7 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "몸통 박치기",
-                                listOf(Component.text("무작위 적에게 3의 피해를 입힌다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>무작위 적에게 3의 피해를 입힌다."),
                                 ActionType.Attack,
                                 { enemy ->
                                     return@EnemyAction true
@@ -189,7 +187,7 @@ object BattleManager : Battlehandler {
                         listOf(
                             EnemyAction(
                                 "부화",
-                                listOf(Component.text("아군이 5명 이하인 경우, '새끼 닭'을 소환한다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>아군이 5명 이하인 경우, '새끼 닭'을 소환한다."),
                                 ActionType.Summon,
                                 { enemy ->
                                     val game = Info.game ?: return@EnemyAction false
@@ -204,7 +202,7 @@ object BattleManager : Battlehandler {
                                             listOf(
                                                 EnemyAction(
                                                     "쪼기",
-                                                    listOf(Component.text("무작위 적에게 1의 피해를 입힌다.", TextColorType.Gray.textColor)),
+                                                    listOf("<gray>무작위 적에게 1의 피해를 입힌다."),
                                                     ActionType.Attack,
                                                     { enemy ->
                                                         return@EnemyAction true
@@ -225,7 +223,7 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "알 뿌리기",
-                                listOf(Component.text("무작위 적에게 2의 피해를 입힌다. 이 효과는 3번 발동한다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>무작위 적에게 2의 피해를 입힌다. 이 효과는 3번 발동한다."),
                                 ActionType.Attack,
                                 { enemy ->
                                     return@EnemyAction true
@@ -241,7 +239,7 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "알 뿌리기",
-                                listOf(Component.text("무작위 적에게 1의 피해를 입힌다. 이 효과는 3번 발동한다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>무작위 적에게 1의 피해를 입힌다. 이 효과는 3번 발동한다."),
                                 ActionType.Attack,
                                 { enemy ->
                                     return@EnemyAction true
@@ -268,7 +266,7 @@ object BattleManager : Battlehandler {
                         listOf(
                             EnemyAction(
                                 "휴식",
-                                listOf(Component.text("자신의 체력이 50% 미만일 경우, 모든 아군의 체력을 5 회복시킨다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>자신의 체력이 50% 미만일 경우, 모든 아군의 체력을 5 회복시킨다."),
                                 ActionType.Heal, { enemy ->
                                     return@EnemyAction enemy.maxHealth / 2 > enemy.health
 
@@ -282,7 +280,7 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "휴식",
-                                listOf(Component.text("자신의 체력이 50% 미만일 경우, 자신의 체력을 5 회복시킨다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>자신의 체력이 50% 미만일 경우, 자신의 체력을 5 회복시킨다."),
                                 ActionType.Heal, { enemy ->
                                     return@EnemyAction enemy.maxHealth / 2 > enemy.health
 
@@ -294,7 +292,7 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "박치기",
-                                listOf(Component.text("무작위 적에게 8의 피해를 입힌다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>무작위 적에게 8의 피해를 입힌다."),
                                 ActionType.Attack,
                                 { enemy ->
                                     return@EnemyAction true
@@ -308,7 +306,7 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "박치기",
-                                listOf(Component.text("무작위 적에게 5의 피해를 입힌다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>무작위 적에게 5의 피해를 입힌다."),
                                 ActionType.Attack,
                                 { enemy ->
                                     return@EnemyAction true
@@ -330,7 +328,7 @@ object BattleManager : Battlehandler {
                         listOf(
                             EnemyAction(
                                 "몸통 박치기",
-                                listOf(Component.text("아군이 2명 이하일 경우, 모든 적에게 5의 피해를 입힌다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>아군이 2명 이하일 경우, 모든 적에게 5의 피해를 입힌다."),
                                 ActionType.Attack,
                                 { enemy ->
                                     val game = Info.game ?: return@EnemyAction false
@@ -348,7 +346,7 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "몸통 박치기",
-                                listOf(Component.text("무작위 적에게 5의 피해를 입힌다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>무작위 적에게 5의 피해를 입힌다."),
                                 ActionType.Attack,
                                 { enemy ->
                                     return@EnemyAction true
@@ -362,7 +360,7 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "몸통 박치기",
-                                listOf(Component.text("무작위 적에게 3의 피해를 입힌다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>무작위 적에게 3의 피해를 입힌다."),
                                 ActionType.Attack,
                                 { enemy ->
                                     return@EnemyAction true
@@ -384,7 +382,7 @@ object BattleManager : Battlehandler {
                         listOf(
                             EnemyAction(
                                 "부화",
-                                listOf(Component.text("아군이 5명 이하인 경우, '새끼 닭'을 소환한다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>아군이 5명 이하인 경우, '새끼 닭'을 소환한다."),
                                 ActionType.Summon,
                                 { enemy ->
                                     val game = Info.game ?: return@EnemyAction false
@@ -399,7 +397,7 @@ object BattleManager : Battlehandler {
                                             listOf(
                                                 EnemyAction(
                                                     "쪼기",
-                                                    listOf(Component.text("무작위 적에게 1의 피해를 입힌다.", TextColorType.Gray.textColor)),
+                                                    listOf("<gray>무작위 적에게 1의 피해를 입힌다."),
                                                     ActionType.Attack,
                                                     { enemy ->
                                                         return@EnemyAction true
@@ -420,7 +418,7 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "알 뿌리기",
-                                listOf(Component.text("무작위 적에게 2의 피해를 입힌다. 이 효과는 3번 발동한다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>무작위 적에게 2의 피해를 입힌다. 이 효과는 3번 발동한다."),
                                 ActionType.Attack,
                                 { enemy ->
                                     return@EnemyAction true
@@ -436,7 +434,7 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "알 뿌리기",
-                                listOf(Component.text("무작위 적에게 1의 피해를 입힌다. 이 효과는 3번 발동한다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>무작위 적에게 1의 피해를 입힌다. 이 효과는 3번 발동한다."),
                                 ActionType.Attack,
                                 { enemy ->
                                     return@EnemyAction true
@@ -463,7 +461,7 @@ object BattleManager : Battlehandler {
                         listOf(
                             EnemyAction(
                                 "휴식",
-                                listOf(Component.text("자신의 체력이 50% 미만일 경우, 모든 아군의 체력을 5 회복시킨다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>자신의 체력이 50% 미만일 경우, 모든 아군의 체력을 5 회복시킨다."),
                                 ActionType.Heal, { enemy ->
                                     return@EnemyAction enemy.maxHealth / 2 > enemy.health
 
@@ -477,7 +475,7 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "휴식",
-                                listOf(Component.text("자신의 체력이 50% 미만일 경우, 자신의 체력을 5 회복시킨다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>자신의 체력이 50% 미만일 경우, 자신의 체력을 5 회복시킨다."),
                                 ActionType.Heal, { enemy ->
                                     return@EnemyAction enemy.maxHealth / 2 > enemy.health
 
@@ -489,7 +487,7 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "박치기",
-                                listOf(Component.text("무작위 적에게 8의 피해를 입힌다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>무작위 적에게 8의 피해를 입힌다."),
                                 ActionType.Attack,
                                 { enemy ->
                                     return@EnemyAction true
@@ -503,7 +501,7 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "박치기",
-                                listOf(Component.text("무작위 적에게 5의 피해를 입힌다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>무작위 적에게 5의 피해를 입힌다."),
                                 ActionType.Attack,
                                 { enemy ->
                                     return@EnemyAction true
@@ -525,7 +523,7 @@ object BattleManager : Battlehandler {
                         listOf(
                             EnemyAction(
                                 "몸통 박치기",
-                                listOf(Component.text("아군이 2명 이하일 경우, 모든 적에게 5의 피해를 입힌다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>아군이 2명 이하일 경우, 모든 적에게 5의 피해를 입힌다."),
                                 ActionType.Attack,
                                 { enemy ->
                                     val game = Info.game ?: return@EnemyAction false
@@ -543,7 +541,7 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "몸통 박치기",
-                                listOf(Component.text("무작위 적에게 5의 피해를 입힌다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>무작위 적에게 5의 피해를 입힌다."),
                                 ActionType.Attack,
                                 { enemy ->
                                     return@EnemyAction true
@@ -557,7 +555,7 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "몸통 박치기",
-                                listOf(Component.text("무작위 적에게 3의 피해를 입힌다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>무작위 적에게 3의 피해를 입힌다."),
                                 ActionType.Attack,
                                 { enemy ->
                                     return@EnemyAction true
@@ -579,7 +577,7 @@ object BattleManager : Battlehandler {
                         listOf(
                             EnemyAction(
                                 "부화",
-                                listOf(Component.text("아군이 5명 이하인 경우, '새끼 닭'을 소환한다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>아군이 5명 이하인 경우, '새끼 닭'을 소환한다."),
                                 ActionType.Summon,
                                 { enemy ->
                                     val game = Info.game ?: return@EnemyAction false
@@ -594,7 +592,7 @@ object BattleManager : Battlehandler {
                                             listOf(
                                                 EnemyAction(
                                                     "쪼기",
-                                                    listOf(Component.text("무작위 적에게 1의 피해를 입힌다.", TextColorType.Gray.textColor)),
+                                                    listOf("<gray>무작위 적에게 1의 피해를 입힌다."),
                                                     ActionType.Attack,
                                                     { enemy ->
                                                         return@EnemyAction true
@@ -615,7 +613,7 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "알 뿌리기",
-                                listOf(Component.text("무작위 적에게 2의 피해를 입힌다. 이 효과는 3번 발동한다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>무작위 적에게 2의 피해를 입힌다. 이 효과는 3번 발동한다."),
                                 ActionType.Attack,
                                 { enemy ->
                                     return@EnemyAction true
@@ -631,7 +629,7 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "알 뿌리기",
-                                listOf(Component.text("무작위 적에게 1의 피해를 입힌다. 이 효과는 3번 발동한다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>무작위 적에게 1의 피해를 입힌다. 이 효과는 3번 발동한다."),
                                 ActionType.Attack,
                                 { enemy ->
                                     return@EnemyAction true
@@ -658,7 +656,7 @@ object BattleManager : Battlehandler {
                         listOf(
                             EnemyAction(
                                 "휴식",
-                                listOf(Component.text("자신의 체력이 50% 미만일 경우, 모든 아군의 체력을 5 회복시킨다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>자신의 체력이 50% 미만일 경우, 모든 아군의 체력을 5 회복시킨다."),
                                 ActionType.Heal, { enemy ->
                                     return@EnemyAction enemy.maxHealth / 2 > enemy.health
 
@@ -672,7 +670,7 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "휴식",
-                                listOf(Component.text("자신의 체력이 50% 미만일 경우, 자신의 체력을 5 회복시킨다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>자신의 체력이 50% 미만일 경우, 자신의 체력을 5 회복시킨다."),
                                 ActionType.Heal, { enemy ->
                                     return@EnemyAction enemy.maxHealth / 2 > enemy.health
 
@@ -684,7 +682,7 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "박치기",
-                                listOf(Component.text("무작위 적에게 8의 피해를 입힌다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>무작위 적에게 8의 피해를 입힌다."),
                                 ActionType.Attack,
                                 { enemy ->
                                     return@EnemyAction true
@@ -698,7 +696,7 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "박치기",
-                                listOf(Component.text("무작위 적에게 5의 피해를 입힌다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>무작위 적에게 5의 피해를 입힌다."),
                                 ActionType.Attack,
                                 { enemy ->
                                     return@EnemyAction true
@@ -720,7 +718,7 @@ object BattleManager : Battlehandler {
                         listOf(
                             EnemyAction(
                                 "몸통 박치기",
-                                listOf(Component.text("아군이 2명 이하일 경우, 모든 적에게 5의 피해를 입힌다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>아군이 2명 이하일 경우, 모든 적에게 5의 피해를 입힌다."),
                                 ActionType.Attack,
                                 { enemy ->
                                     val game = Info.game ?: return@EnemyAction false
@@ -738,7 +736,7 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "몸통 박치기",
-                                listOf(Component.text("무작위 적에게 5의 피해를 입힌다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>무작위 적에게 5의 피해를 입힌다."),
                                 ActionType.Attack,
                                 { enemy ->
                                     return@EnemyAction true
@@ -752,7 +750,7 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "몸통 박치기",
-                                listOf(Component.text("무작위 적에게 3의 피해를 입힌다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>무작위 적에게 3의 피해를 입힌다."),
                                 ActionType.Attack,
                                 { enemy ->
                                     return@EnemyAction true
@@ -774,7 +772,7 @@ object BattleManager : Battlehandler {
                         listOf(
                             EnemyAction(
                                 "부화",
-                                listOf(Component.text("아군이 5명 이하인 경우, '새끼 닭'을 소환한다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>아군이 5명 이하인 경우, '새끼 닭'을 소환한다."),
                                 ActionType.Summon,
                                 { enemy ->
                                     val game = Info.game ?: return@EnemyAction false
@@ -789,7 +787,7 @@ object BattleManager : Battlehandler {
                                             listOf(
                                                 EnemyAction(
                                                     "쪼기",
-                                                    listOf(Component.text("무작위 적에게 1의 피해를 입힌다.", TextColorType.Gray.textColor)),
+                                                    listOf("<gray>무작위 적에게 1의 피해를 입힌다."),
                                                     ActionType.Attack,
                                                     { enemy ->
                                                         return@EnemyAction true
@@ -810,7 +808,7 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "알 뿌리기",
-                                listOf(Component.text("무작위 적에게 2의 피해를 입힌다. 이 효과는 3번 발동한다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>무작위 적에게 2의 피해를 입힌다. 이 효과는 3번 발동한다."),
                                 ActionType.Attack,
                                 { enemy ->
                                     return@EnemyAction true
@@ -826,7 +824,7 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "알 뿌리기",
-                                listOf(Component.text("무작위 적에게 1의 피해를 입힌다. 이 효과는 3번 발동한다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>무작위 적에게 1의 피해를 입힌다. 이 효과는 3번 발동한다."),
                                 ActionType.Attack,
                                 { enemy ->
                                     return@EnemyAction true
@@ -880,7 +878,7 @@ object BattleManager : Battlehandler {
                         listOf(
                             EnemyAction(
                                 "경계",
-                                listOf(Component.text("자신이 경계 상태가 아니라면, 경계 상태가 된다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>자신이 경계 상태가 아니라면, 경계 상태가 된다."),
                                 ActionType.Special, { enemy ->
                                     if (enemy.entity.scoreboardTags.contains("not_boundary")) return@EnemyAction false
 
@@ -893,7 +891,8 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "경계 - 회복",
-                                listOf(Component.text("자신이 경계 상태이고 체력이 25% 미만이라면, 자신의 체력을 최대 체력의 20% 만큼 회복한다. 이후 경계 상태를 해제하며 더 이상 경계 상태가 될 수 없다.", TextColorType.Gray.textColor)),
+                                listOf(
+                                    "<gray>자신이 경계 상태이고 체력이 25% 미만이라면, 자신의 체력을 최대 체력의 20% 만큼 회복한다. 이후 경계 상태를 해제하며 더 이상 경계 상태가 될 수 없다."),
                                 ActionType.Heal, { enemy ->
                                     if (!enemy.entity.scoreboardTags.contains("boundary")) return@EnemyAction false
                                     if (enemy.maxHealth / 4 <= enemy.health) return@EnemyAction false
@@ -909,7 +908,7 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "경계 - 공격",
-                                listOf(Component.text("자신이 경계 상태라면, 모든 적에게 7의 피해를 입힌다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>자신이 경계 상태라면, 모든 적에게 7의 피해를 입힌다."),
                                 ActionType.Attack,
                                 { enemy ->
                                     return@EnemyAction enemy.entity.scoreboardTags.contains("boundary")
@@ -926,7 +925,7 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "경계 - 공격",
-                                listOf(Component.text("자신이 경계 상태라면, 모든 적에게 5의 피해를 입힌다. 이후 경계 상태를 해제한다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>자신이 경계 상태라면, 모든 적에게 5의 피해를 입힌다. 이후 경계 상태를 해제한다."),
                                 ActionType.Attack,
                                 { enemy ->
                                     return@EnemyAction enemy.entity.scoreboardTags.contains("boundary")
@@ -943,7 +942,7 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "저항",
-                                listOf(Component.text("모든 적에게 3의 피해를 입힌다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>모든 적에게 3의 피해를 입힌다."),
                                 ActionType.Attack,
                                 { enemy ->
                                     return@EnemyAction true
@@ -970,7 +969,7 @@ object BattleManager : Battlehandler {
                         listOf(
                             EnemyAction(
                                 "경계",
-                                listOf(Component.text("자신이 경계 상태가 아니라면, 경계 상태가 된다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>자신이 경계 상태가 아니라면, 경계 상태가 된다."),
                                 ActionType.Special, { enemy ->
                                     if (enemy.entity.scoreboardTags.contains("not_boundary")) return@EnemyAction false
 
@@ -983,7 +982,7 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "경계 - 회복",
-                                listOf(Component.text("자신이 경계 상태이고 체력이 25% 미만이라면, 자신의 체력을 최대 체력의 20% 만큼 회복한다. 이후 경계 상태를 해제하며 더 이상 경계 상태가 될 수 없다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>자신이 경계 상태이고 체력이 25% 미만이라면, 자신의 체력을 최대 체력의 20% 만큼 회복한다. 이후 경계 상태를 해제하며 더 이상 경계 상태가 될 수 없다."),
                                 ActionType.Heal, { enemy ->
                                     if (!enemy.entity.scoreboardTags.contains("boundary")) return@EnemyAction false
                                     if (enemy.maxHealth / 4 <= enemy.health) return@EnemyAction false
@@ -999,7 +998,7 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "경계 - 공격",
-                                listOf(Component.text("자신이 경계 상태라면, 모든 적에게 5의 피해를 입힌다. 이후 경계 상태를 해제한다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>자신이 경계 상태라면, 모든 적에게 5의 피해를 입힌다. 이후 경계 상태를 해제한다."),
                                 ActionType.Attack,
                                 { enemy ->
                                     return@EnemyAction enemy.entity.scoreboardTags.contains("boundary")
@@ -1016,7 +1015,7 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "경계 - 공격",
-                                listOf(Component.text("자신이 경계 상태라면, 모든 적에게 7의 피해를 입힌다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>자신이 경계 상태라면, 모든 적에게 7의 피해를 입힌다."),
                                 ActionType.Attack,
                                 { enemy ->
                                     return@EnemyAction enemy.entity.scoreboardTags.contains("boundary")
@@ -1033,7 +1032,7 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "저항",
-                                listOf(Component.text("모든 적에게 3의 피해를 입힌다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>모든 적에게 3의 피해를 입힌다."),
                                 ActionType.Attack,
                                 { enemy ->
                                     return@EnemyAction true
@@ -1060,7 +1059,7 @@ object BattleManager : Battlehandler {
                         listOf(
                             EnemyAction(
                                 "경계",
-                                listOf(Component.text("자신이 경계 상태가 아니라면, 경계 상태가 된다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>자신이 경계 상태가 아니라면, 경계 상태가 된다."),
                                 ActionType.Special, { enemy ->
                                     if (enemy.entity.scoreboardTags.contains("not_boundary")) return@EnemyAction false
 
@@ -1073,7 +1072,7 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "경계 - 회복",
-                                listOf(Component.text("자신이 경계 상태이고 체력이 25% 미만이라면, 자신의 체력을 최대 체력의 20% 만큼 회복한다. 이후 경계 상태를 해제하며 더 이상 경계 상태가 될 수 없다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>자신이 경계 상태이고 체력이 25% 미만이라면, 자신의 체력을 최대 체력의 20% 만큼 회복한다. 이후 경계 상태를 해제하며 더 이상 경계 상태가 될 수 없다."),
                                 ActionType.Heal, { enemy ->
                                     if (!enemy.entity.scoreboardTags.contains("boundary")) return@EnemyAction false
                                     if (enemy.maxHealth / 4 <= enemy.health) return@EnemyAction false
@@ -1089,7 +1088,7 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "경계 - 공격",
-                                listOf(Component.text("자신이 경계 상태라면, 모든 적에게 5의 피해를 입힌다. 이후 경계 상태를 해제한다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>자신이 경계 상태라면, 모든 적에게 5의 피해를 입힌다. 이후 경계 상태를 해제한다."),
                                 ActionType.Attack,
                                 { enemy ->
                                     return@EnemyAction enemy.entity.scoreboardTags.contains("boundary")
@@ -1106,7 +1105,7 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "경계 - 공격",
-                                listOf(Component.text("자신이 경계 상태라면, 모든 적에게 7의 피해를 입힌다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>자신이 경계 상태라면, 모든 적에게 7의 피해를 입힌다."),
                                 ActionType.Attack,
                                 { enemy ->
                                     return@EnemyAction enemy.entity.scoreboardTags.contains("boundary")
@@ -1123,7 +1122,7 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "저항",
-                                listOf(Component.text("모든 적에게 3의 피해를 입힌다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>모든 적에게 3의 피해를 입힌다."),
                                 ActionType.Attack,
                                 { enemy ->
                                     return@EnemyAction true
@@ -1150,7 +1149,7 @@ object BattleManager : Battlehandler {
                         listOf(
                             EnemyAction(
                                 "경계",
-                                listOf(Component.text("자신이 경계 상태가 아니라면, 경계 상태가 된다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>자신이 경계 상태가 아니라면, 경계 상태가 된다."),
                                 ActionType.Special, { enemy ->
                                     if (enemy.entity.scoreboardTags.contains("not_boundary")) return@EnemyAction false
 
@@ -1163,7 +1162,7 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "경계 - 회복",
-                                listOf(Component.text("자신이 경계 상태이고 체력이 25% 미만이라면, 자신의 체력을 최대 체력의 20% 만큼 회복한다. 이후 경계 상태를 해제하며 더 이상 경계 상태가 될 수 없다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>자신이 경계 상태이고 체력이 25% 미만이라면, 자신의 체력을 최대 체력의 20% 만큼 회복한다. 이후 경계 상태를 해제하며 더 이상 경계 상태가 될 수 없다."),
                                 ActionType.Heal, { enemy ->
                                     if (!enemy.entity.scoreboardTags.contains("boundary")) return@EnemyAction false
                                     if (enemy.maxHealth / 4 <= enemy.health) return@EnemyAction false
@@ -1179,7 +1178,7 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "경계 - 공격",
-                                listOf(Component.text("자신이 경계 상태라면, 모든 적에게 5의 피해를 입힌다. 이후 경계 상태를 해제한다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>자신이 경계 상태라면, 모든 적에게 5의 피해를 입힌다. 이후 경계 상태를 해제한다."),
                                 ActionType.Attack,
                                 { enemy ->
                                     return@EnemyAction enemy.entity.scoreboardTags.contains("boundary")
@@ -1196,7 +1195,7 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "경계 - 공격",
-                                listOf(Component.text("자신이 경계 상태라면, 모든 적에게 7의 피해를 입힌다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>자신이 경계 상태라면, 모든 적에게 7의 피해를 입힌다."),
                                 ActionType.Attack,
                                 { enemy ->
                                     return@EnemyAction enemy.entity.scoreboardTags.contains("boundary")
@@ -1213,7 +1212,7 @@ object BattleManager : Battlehandler {
                             ),
                             EnemyAction(
                                 "저항",
-                                listOf(Component.text("모든 적에게 3의 피해를 입힌다.", TextColorType.Gray.textColor)),
+                                listOf("<gray>모든 적에게 3의 피해를 입힌다."),
                                 ActionType.Attack,
                                 { enemy ->
                                     return@EnemyAction true
@@ -1246,7 +1245,7 @@ object BattleManager : Battlehandler {
 
         fun spawnEntity(entityType: EntityType): LivingEntity {
             val entity = Bukkit.getWorld("world")!!
-                .spawnEntity(Location(Bukkit.getWorld("world"), 8.5, -40.0, 0.5, 90F, 0F), entityType) as LivingEntity
+                .spawnEntity(Location(Bukkit.getWorld("world"), 0.5, -40.0, 0.5, 90F, 0F), entityType) as LivingEntity
             return entity
         }
 
@@ -1268,7 +1267,7 @@ object BattleManager : Battlehandler {
                             EnemyAction(
                                 "돌진",
                                 listOf(
-                                    Component.text("자신의 기력 수치가 2 이상이라면, 모든 적에게 20의 피해를 입힌다. 이후 기력을 0으로 만든다.", TextColorType.Gray.textColor)
+                                    "<gray>자신의 기력 수치가 2 이상이라면, 모든 적에게 20의 피해를 입힌다. 이후 기력을 0으로 만든다."
                                 ),
                                 ActionType.Attack, { enemy ->
                                     return@EnemyAction enemy.getStack("energy").score >= 2
@@ -1284,10 +1283,9 @@ object BattleManager : Battlehandler {
                             EnemyAction(
                                 "돌진",
                                 listOf(
-                                    Component.text("자신의 기력 수치가 3 이상이라면, 모든 적에게 20의 피해를 입힌다. 이후 기력을 0으로 만들며 자신은 ", TextColorType.Gray.textColor).append(
-                                        KeywordType.Stun.component.append(Component.text(" 상태가 된다.", TextColorType.Gray.textColor))),
-                                    Component.text(""),
-                                    dictionary.dictionaryList["기절"]!!
+                                    "<gray>자신의 기력 수치가 3 이상이라면, 모든 적에게 20의 피해를 입힌다. 이후 기력을 0으로 만들며 자신은 ${KeywordType.Stun.string} 상태가 된다.",
+                                    "",
+                                    dictionary.dictionaryList[KeywordType.Stun]!!
                                 ),
                                 ActionType.Attack, { enemy ->
                                     return@EnemyAction enemy.getStack("energy").score >= 3
@@ -1304,10 +1302,9 @@ object BattleManager : Battlehandler {
                             EnemyAction(
                                 "돌진",
                                 listOf(
-                                    Component.text("자신의 기력 수치가 3 이상이라면, 모든 적에게 10의 피해를 입힌다. 이후 기력을 0으로 만들며 자신은 ", TextColorType.Gray.textColor).append(
-                                        KeywordType.Stun.component.append(Component.text(" 상태가 된다.", TextColorType.Gray.textColor))),
-                                    Component.text(""),
-                                    dictionary.dictionaryList["기절"]!!
+                                    "<gray>자신의 기력 수치가 3 이상이라면, 모든 적에게 10의 피해를 입힌다. 이후 기력을 0으로 만들며 자신은 ${KeywordType.Stun.string} 상태가 된다.",
+                                    "",
+                                    dictionary.dictionaryList[KeywordType.Stun]!!
                                 ),
                                 ActionType.Attack, { enemy ->
                                     return@EnemyAction enemy.getStack("energy").score >= 3
@@ -1324,8 +1321,9 @@ object BattleManager : Battlehandler {
                             EnemyAction(
                                 "기모으기",
                                 listOf(
-                                    Component.text("자신의 기력 수치를 1 증가시키고 10의 피해를 막는 ", TextColorType.Gray.textColor).append(
-                                        KeywordType.Shield.component.append(Component.text("을 얻는다.", TextColorType.Gray.textColor)))
+                                    "<gray>자신의 기력 수치를 1 증가시키고 10의 피해를 막는 ${KeywordType.Shield.string}을 얻는다.",
+                                    "",
+                                    dictionary.dictionaryList[KeywordType.Shield]!!
                                 ),
                                 ActionType.Defense, { enemy ->
                                     return@EnemyAction true
@@ -1339,8 +1337,9 @@ object BattleManager : Battlehandler {
                             EnemyAction(
                                 "기모으기",
                                 listOf(
-                                    Component.text("자신의 기력 수치를 1 증가시키고 5의 피해를 막는 ", TextColorType.Gray.textColor).append(
-                                        KeywordType.Shield.component.append(Component.text("을 얻는다.", TextColorType.Gray.textColor)))
+                                    "<gray>자신의 기력 수치를 1 증가시키고 5의 피해를 막는 ${KeywordType.Shield.string}을 얻는다.",
+                                    "",
+                                    dictionary.dictionaryList[KeywordType.Shield]!!
                                 ),
                                 ActionType.Defense, { enemy ->
                                     return@EnemyAction true
@@ -1354,7 +1353,7 @@ object BattleManager : Battlehandler {
                             EnemyAction(
                                 "기모으기",
                                 listOf(
-                                    Component.text("자신의 기력 수치를 1 증가시킨다.", TextColorType.Gray.textColor)
+                                    "<gray>자신의 기력 수치를 1 증가시킨다."
                                 ),
                                 ActionType.Special, { enemy ->
                                     return@EnemyAction enemy.getStack("energy").score >= 3
@@ -1378,7 +1377,7 @@ object BattleManager : Battlehandler {
                             EnemyAction(
                                 "돌진",
                                 listOf(
-                                    Component.text("자신의 기력 수치가 2 이상이라면, 모든 적에게 20의 피해를 입힌다. 이후 기력을 0으로 만든다.", TextColorType.Gray.textColor)
+                                    "<gray>자신의 기력 수치가 2 이상이라면, 모든 적에게 20의 피해를 입힌다. 이후 기력을 0으로 만든다."
                                 ),
                                 ActionType.Attack, { enemy ->
                                     return@EnemyAction enemy.getStack("energy").score >= 2
@@ -1394,10 +1393,9 @@ object BattleManager : Battlehandler {
                             EnemyAction(
                                 "돌진",
                                 listOf(
-                                    Component.text("자신의 기력 수치가 3 이상이라면, 모든 적에게 20의 피해를 입힌다. 이후 기력을 0으로 만들며 자신은 ", TextColorType.Gray.textColor).append(
-                                        KeywordType.Stun.component.append(Component.text(" 상태가 된다.", TextColorType.Gray.textColor))),
-                                    Component.text(""),
-                                    dictionary.dictionaryList["기절"]!!
+                                    "<gray>자신의 기력 수치가 3 이상이라면, 모든 적에게 20의 피해를 입힌다. 이후 기력을 0으로 만들며 자신은 ${KeywordType.Stun.string} 상태가 된다.",
+                                    "",
+                                    dictionary.dictionaryList[KeywordType.Stun]!!
                                 ),
                                 ActionType.Attack, { enemy ->
                                     return@EnemyAction enemy.getStack("energy").score >= 3
@@ -1414,10 +1412,9 @@ object BattleManager : Battlehandler {
                             EnemyAction(
                                 "돌진",
                                 listOf(
-                                    Component.text("자신의 기력 수치가 3 이상이라면, 모든 적에게 10의 피해를 입힌다. 이후 기력을 0으로 만들며 자신은 ", TextColorType.Gray.textColor).append(
-                                        KeywordType.Stun.component.append(Component.text(" 상태가 된다.", TextColorType.Gray.textColor))),
-                                    Component.text(""),
-                                    dictionary.dictionaryList["기절"]!!
+                                    "<gray>자신의 기력 수치가 3 이상이라면, 모든 적에게 10의 피해를 입힌다. 이후 기력을 0으로 만들며 자신은 ${KeywordType.Stun.string} 상태가 된다.",
+                                    "",
+                                    dictionary.dictionaryList[KeywordType.Stun]!!
                                 ),
                                 ActionType.Attack, { enemy ->
                                     return@EnemyAction enemy.getStack("energy").score >= 3
@@ -1434,8 +1431,9 @@ object BattleManager : Battlehandler {
                             EnemyAction(
                                 "기모으기",
                                 listOf(
-                                    Component.text("자신의 기력 수치를 1 증가시키고 10의 피해를 막는 ", TextColorType.Gray.textColor).append(
-                                        KeywordType.Shield.component.append(Component.text("을 얻는다.", TextColorType.Gray.textColor)))
+                                    "<gray>자신의 기력 수치를 1 증가시키고 10의 피해를 막는 ${KeywordType.Shield.string}을 얻는다.",
+                                    "",
+                                    dictionary.dictionaryList[KeywordType.Shield]!!
                                 ),
                                 ActionType.Defense, { enemy ->
                                     return@EnemyAction true
@@ -1449,8 +1447,9 @@ object BattleManager : Battlehandler {
                             EnemyAction(
                                 "기모으기",
                                 listOf(
-                                    Component.text("자신의 기력 수치를 1 증가시키고 5의 피해를 막는 ", TextColorType.Gray.textColor).append(
-                                        KeywordType.Shield.component.append(Component.text("을 얻는다.", TextColorType.Gray.textColor)))
+                                    "<gray>자신의 기력 수치를 1 증가시키고 5의 피해를 막는 ${KeywordType.Shield.string}을 얻는다.",
+                                    "",
+                                    dictionary.dictionaryList[KeywordType.Shield]!!
                                 ),
                                 ActionType.Defense, { enemy ->
                                     return@EnemyAction true
@@ -1464,7 +1463,7 @@ object BattleManager : Battlehandler {
                             EnemyAction(
                                 "기모으기",
                                 listOf(
-                                    Component.text("자신의 기력 수치를 1 증가시킨다.", TextColorType.Gray.textColor)
+                                    "<gray>자신의 기력 수치를 1 증가시킨다."
                                 ),
                                 ActionType.Special, { enemy ->
                                     return@EnemyAction enemy.getStack("energy").score >= 3
@@ -1488,7 +1487,7 @@ object BattleManager : Battlehandler {
                             EnemyAction(
                                 "돌진",
                                 listOf(
-                                    Component.text("자신의 기력 수치가 2 이상이라면, 모든 적에게 20의 피해를 입힌다. 이후 기력을 0으로 만든다.", TextColorType.Gray.textColor)
+                                    "<gray>자신의 기력 수치가 2 이상이라면, 모든 적에게 20의 피해를 입힌다. 이후 기력을 0으로 만든다."
                                 ),
                                 ActionType.Attack, { enemy ->
                                     return@EnemyAction enemy.getStack("energy").score >= 2
@@ -1504,10 +1503,9 @@ object BattleManager : Battlehandler {
                             EnemyAction(
                                 "돌진",
                                 listOf(
-                                    Component.text("자신의 기력 수치가 3 이상이라면, 모든 적에게 20의 피해를 입힌다. 이후 기력을 0으로 만들며 자신은 ", TextColorType.Gray.textColor).append(
-                                        KeywordType.Stun.component.append(Component.text(" 상태가 된다.", TextColorType.Gray.textColor))),
-                                    Component.text(""),
-                                    dictionary.dictionaryList["기절"]!!
+                                    "<gray>자신의 기력 수치가 3 이상이라면, 모든 적에게 20의 피해를 입힌다. 이후 기력을 0으로 만들며 자신은 ${KeywordType.Stun.string} 상태가 된다.",
+                                    "",
+                                    dictionary.dictionaryList[KeywordType.Stun]!!
                                 ),
                                 ActionType.Attack, { enemy ->
                                     return@EnemyAction enemy.getStack("energy").score >= 3
@@ -1524,10 +1522,9 @@ object BattleManager : Battlehandler {
                             EnemyAction(
                                 "돌진",
                                 listOf(
-                                    Component.text("자신의 기력 수치가 3 이상이라면, 모든 적에게 10의 피해를 입힌다. 이후 기력을 0으로 만들며 자신은 ", TextColorType.Gray.textColor).append(
-                                        KeywordType.Stun.component.append(Component.text(" 상태가 된다.", TextColorType.Gray.textColor))),
-                                    Component.text(""),
-                                    dictionary.dictionaryList["기절"]!!
+                                    "<gray>자신의 기력 수치가 3 이상이라면, 모든 적에게 10의 피해를 입힌다. 이후 기력을 0으로 만들며 자신은 ${KeywordType.Stun.string} 상태가 된다.",
+                                    "",
+                                    dictionary.dictionaryList[KeywordType.Stun]!!
                                 ),
                                 ActionType.Attack, { enemy ->
                                     return@EnemyAction enemy.getStack("energy").score >= 3
@@ -1544,8 +1541,9 @@ object BattleManager : Battlehandler {
                             EnemyAction(
                                 "기모으기",
                                 listOf(
-                                    Component.text("자신의 기력 수치를 1 증가시키고 10의 피해를 막는 ", TextColorType.Gray.textColor).append(
-                                        KeywordType.Shield.component.append(Component.text("을 얻는다.", TextColorType.Gray.textColor)))
+                                    "<gray>자신의 기력 수치를 1 증가시키고 10의 피해를 막는 ${KeywordType.Shield.string}을 얻는다.",
+                                    "",
+                                    dictionary.dictionaryList[KeywordType.Shield]!!
                                 ),
                                 ActionType.Defense, { enemy ->
                                     return@EnemyAction true
@@ -1559,8 +1557,9 @@ object BattleManager : Battlehandler {
                             EnemyAction(
                                 "기모으기",
                                 listOf(
-                                    Component.text("자신의 기력 수치를 1 증가시키고 5의 피해를 막는 ", TextColorType.Gray.textColor).append(
-                                        KeywordType.Shield.component.append(Component.text("을 얻는다.", TextColorType.Gray.textColor)))
+                                    "자신의 기력 수치를 1 증가시키고 5의 피해를 막는 ${KeywordType.Shield.string}을 얻는다.",
+                                    "",
+                                    dictionary.dictionaryList[KeywordType.Shield]!!
                                 ),
                                 ActionType.Defense, { enemy ->
                                     return@EnemyAction true
@@ -1574,7 +1573,7 @@ object BattleManager : Battlehandler {
                             EnemyAction(
                                 "기모으기",
                                 listOf(
-                                    Component.text("자신의 기력 수치를 1 증가시킨다.", TextColorType.Gray.textColor)
+                                    "<gray>자신의 기력 수치를 1 증가시킨다."
                                 ),
                                 ActionType.Special, { enemy ->
                                     return@EnemyAction enemy.getStack("energy").score >= 3
@@ -1598,7 +1597,7 @@ object BattleManager : Battlehandler {
                             EnemyAction(
                                 "돌진",
                                 listOf(
-                                    Component.text("자신의 기력 수치가 2 이상이라면, 모든 적에게 20의 피해를 입힌다. 이후 기력을 0으로 만든다.", TextColorType.Gray.textColor)
+                                    "<gray>자신의 기력 수치가 2 이상이라면, 모든 적에게 20의 피해를 입힌다. 이후 기력을 0으로 만든다."
                                 ),
                                 ActionType.Attack, { enemy ->
                                     return@EnemyAction enemy.getStack("energy").score >= 2
@@ -1614,10 +1613,9 @@ object BattleManager : Battlehandler {
                             EnemyAction(
                                 "돌진",
                                 listOf(
-                                    Component.text("자신의 기력 수치가 3 이상이라면, 모든 적에게 20의 피해를 입힌다. 이후 기력을 0으로 만들며 자신은 ", TextColorType.Gray.textColor).append(
-                                        KeywordType.Stun.component.append(Component.text(" 상태가 된다.", TextColorType.Gray.textColor))),
-                                    Component.text(""),
-                                    dictionary.dictionaryList["기절"]!!
+                                    "<gray>자신의 기력 수치가 3 이상이라면, 모든 적에게 20의 피해를 입힌다. 이후 기력을 0으로 만들며 자신은 ${KeywordType.Stun.string} 상태가 된다.",
+                                    "",
+                                    dictionary.dictionaryList[KeywordType.Stun]!!
                                 ),
                                 ActionType.Attack, { enemy ->
                                     return@EnemyAction enemy.getStack("energy").score >= 3
@@ -1634,10 +1632,9 @@ object BattleManager : Battlehandler {
                             EnemyAction(
                                 "돌진",
                                 listOf(
-                                    Component.text("자신의 기력 수치가 3 이상이라면, 모든 적에게 10의 피해를 입힌다. 이후 기력을 0으로 만들며 자신은 ", TextColorType.Gray.textColor).append(
-                                        KeywordType.Stun.component.append(Component.text(" 상태가 된다.", TextColorType.Gray.textColor))),
-                                    Component.text(""),
-                                    dictionary.dictionaryList["기절"]!!
+                                    "<gray>자신의 기력 수치가 3 이상이라면, 모든 적에게 10의 피해를 입힌다. 이후 기력을 0으로 만들며 자신은 ${KeywordType.Stun.string} 상태가 된다.",
+                                    "",
+                                    dictionary.dictionaryList[KeywordType.Stun]!!
                                 ),
                                 ActionType.Attack, { enemy ->
                                     return@EnemyAction enemy.getStack("energy").score >= 3
@@ -1654,8 +1651,9 @@ object BattleManager : Battlehandler {
                             EnemyAction(
                                 "기모으기",
                                 listOf(
-                                    Component.text("자신의 기력 수치를 1 증가시키고 10의 피해를 막는 ", TextColorType.Gray.textColor).append(
-                                        KeywordType.Shield.component.append(Component.text("을 얻는다.", TextColorType.Gray.textColor)))
+                                    "<gray>자신의 기력 수치를 1 증가시키고 10의 피해를 막는 ${KeywordType.Shield.string}을 얻는다.",
+                                    "",
+                                    dictionary.dictionaryList[KeywordType.Shield]!!
                                 ),
                                 ActionType.Defense, { enemy ->
                                     return@EnemyAction true
@@ -1669,8 +1667,9 @@ object BattleManager : Battlehandler {
                             EnemyAction(
                                 "기모으기",
                                 listOf(
-                                    Component.text("자신의 기력 수치를 1 증가시키고 5의 피해를 막는 ", TextColorType.Gray.textColor).append(
-                                        KeywordType.Shield.component.append(Component.text("을 얻는다.", TextColorType.Gray.textColor)))
+                                    "자신의 기력 수치를 1 증가시키고 5의 피해를 막는 ${KeywordType.Shield.string}을 얻는다.",
+                                    "",
+                                    dictionary.dictionaryList[KeywordType.Shield]!!
                                 ),
                                 ActionType.Defense, { enemy ->
                                     return@EnemyAction true
@@ -1684,7 +1683,7 @@ object BattleManager : Battlehandler {
                             EnemyAction(
                                 "기모으기",
                                 listOf(
-                                    Component.text("자신의 기력 수치를 1 증가시킨다.", TextColorType.Gray.textColor)
+                                    "<gray>자신의 기력 수치를 1 증가시킨다."
                                 ),
                                 ActionType.Special, { enemy ->
                                     return@EnemyAction enemy.getStack("energy").score >= 3
@@ -1725,7 +1724,7 @@ object BattleManager : Battlehandler {
         val world = Bukkit.getWorld("world")
 
         val enemyOrigin = when (game.gameField) {
-            GameField.Forest -> Location(world, 6.5, -40.0, 0.5, 90F, 0F)
+            GameField.Forest -> Location(world, 0.5, -40.0, 0.5, 90F, 0F)
             GameField.Cave, GameField.Sea, GameField.End -> Location(world, 6.5, -40.0, 0.5, 90F, 0F)
         }
 

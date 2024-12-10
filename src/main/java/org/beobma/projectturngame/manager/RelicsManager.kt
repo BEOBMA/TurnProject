@@ -1,6 +1,7 @@
 package org.beobma.projectturngame.manager
 
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.minimessage.MiniMessage
 import org.beobma.projectturngame.relics.Relics
 import org.beobma.projectturngame.text.TextColorType
 import org.bukkit.Material
@@ -16,7 +17,7 @@ object RelicsManager : RelicsHandler {
         val relicsItem = ItemStack(Material.RAISER_ARMOR_TRIM_SMITHING_TEMPLATE, 1).apply {
             itemMeta = itemMeta?.apply {
                 displayName(Component.text(name, TextColorType.Gray.textColor))
-                lore(description)
+                lore(description.map { MiniMessage.miniMessage().deserialize(it) })
                 addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
             }
         }

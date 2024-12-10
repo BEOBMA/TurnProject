@@ -2,14 +2,13 @@ package org.beobma.projectturngame.manager
 
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
+import net.kyori.adventure.text.minimessage.MiniMessage
 import org.beobma.projectturngame.ProjectTurnGame
 import org.beobma.projectturngame.abnormalityStatus.AbnormalityStatus
 import org.beobma.projectturngame.card.Card
 import org.beobma.projectturngame.config.CardConfig
-import org.beobma.projectturngame.config.CardConfig.Companion.cardPackList
 import org.beobma.projectturngame.config.CardConfig.Companion.reforgeCardPair
 import org.beobma.projectturngame.config.EventConfig.Companion.eventList
-import org.beobma.projectturngame.config.cardpack.StartCardPack.Companion.startCardList
 import org.beobma.projectturngame.entity.Entity
 import org.beobma.projectturngame.entity.enemy.Enemy
 import org.beobma.projectturngame.entity.player.Player
@@ -33,6 +32,7 @@ import org.beobma.projectturngame.manager.EnemyManager.damage
 import org.beobma.projectturngame.manager.HealthManager.setHealth
 import org.beobma.projectturngame.manager.InventoryManager.openEventInventory
 import org.beobma.projectturngame.manager.InventoryManager.openMapInventory
+import org.beobma.projectturngame.manager.InventoryManager.openStartCardPackInventory
 import org.beobma.projectturngame.manager.MaxHealthManager.setMaxHealth
 import org.beobma.projectturngame.manager.ParticleAnimationManager.isPlay
 import org.beobma.projectturngame.manager.PlayerManager.addMana
@@ -52,7 +52,6 @@ import org.bukkit.Location
 import org.bukkit.Sound
 import org.bukkit.scheduler.BukkitRunnable
 
-
 interface GameHandler {
     fun Game.start()
     fun Game.stop()
@@ -68,6 +67,7 @@ interface GameHandler {
     fun Game.nextSector()
     fun Game.moveTile()
 
+    fun firstStart()
     fun Game.gameOver()
 
     fun Entity.turnStart()
@@ -77,35 +77,22 @@ interface GameHandler {
 object GameManager : GameHandler {
 
     override fun Game.start() {
+        ProjectTurnGame.instance.logger.info("Game is starting.")
         Info.game = this@start
 
-        broadcast(Component.text("[!] 잠시 후 게임을 준비합니다.").decorate(TextDecoration.BOLD))
-        broadcastDelayedMessages(
-            listOf(
-                Component.text("[!] 해당 플러그인과 맵은 BEOBMA에 의해 개발되었습니다.").decorate(TextDecoration.BOLD),
-                Component.text("[!] 잠시 후 게임에 등장할 카드 팩을 뽑습니다.").decorate(TextDecoration.BOLD),
-                Component.text("[!] 등장할 카드 팩:").decorate(TextDecoration.BOLD)
-            )
-        )
+        broadcast(Component.text("[!] 잠시 후 모든 플레이어가 자신이 사용할 카드팩을 선택합니다.").decorate(TextDecoration.BOLD))
 
         object : BukkitRunnable() {
             override fun run() {
-                val shuffledCardPackList = cardPackList.shuffled()
-                gameCardPack.addAll(shuffledCardPackList.take(5))
-                gameCardPack.forEach { broadcast(Component.text(it.name)) }
-                broadcast(Component.text("[!] 특정 이벤트로 이 외의 카드 팩 또한 게임에 등장할 수 있습니다.").decorate(TextDecoration.BOLD))
-                broadcast(Component.text("[!] 잠시 후 게임이 시작됩니다.").decorate(TextDecoration.BOLD))
-
-                object : BukkitRunnable() {
-                    override fun run() {
-                        firstStart()
-                    }
-                }.runTaskLater(ProjectTurnGame.instance, 60L)
+                players.forEach {
+                    it.openStartCardPackInventory()
+                }
             }
-        }.runTaskLater(ProjectTurnGame.instance, 280L)
+        }.runTaskLater(ProjectTurnGame.instance, 80L)
     }
 
     override fun Game.stop() {
+        ProjectTurnGame.instance.logger.info("Game is stopping.")
         isPlay = false
         ProjectTurnGame.instance.server.scheduler.cancelTasks(ProjectTurnGame.instance)
 
@@ -131,10 +118,12 @@ object GameManager : GameHandler {
     }
 
     override fun Game.clear() {
+        ProjectTurnGame.instance.logger.info("Game is being cleared.")
         this.stop()
     }
 
     override fun Game.battleStart() {
+        ProjectTurnGame.instance.logger.info("Battle is starting.")
         playerDatas.forEach { player ->
             player.battleStartReset()
         }
@@ -142,6 +131,7 @@ object GameManager : GameHandler {
         val event = GameBattleStartEvent(BattleType.Normal)
         ProjectTurnGame.instance.server.pluginManager.callEvent(event)
         if (event.isCancelled) {
+            ProjectTurnGame.instance.logger.info("Battle start event cancelled.")
             moveTile()
             return
         }
@@ -156,6 +146,7 @@ object GameManager : GameHandler {
     }
 
     override fun Game.battleStop() {
+        ProjectTurnGame.instance.logger.info("Battle is stopping.")
         this.playerDatas.forEach { playerData ->
             playerData.battleEndReset()
             when (this.battleType) {
@@ -169,6 +160,7 @@ object GameManager : GameHandler {
     }
 
     override fun Game.hardBattleStart() {
+        ProjectTurnGame.instance.logger.info("Hard battle is starting.")
         playerDatas.forEach { player ->
             player.battleStartReset()
         }
@@ -176,6 +168,7 @@ object GameManager : GameHandler {
         val event = GameBattleStartEvent(BattleType.Hard)
         ProjectTurnGame.instance.server.pluginManager.callEvent(event)
         if (event.isCancelled) {
+            ProjectTurnGame.instance.logger.info("Hard battle start event cancelled.")
             moveTile()
             return
         }
@@ -191,6 +184,7 @@ object GameManager : GameHandler {
     }
 
     override fun Game.hardBattleStop() {
+        ProjectTurnGame.instance.logger.info("Hard battle is stopping.")
         this.playerDatas.forEach { playerData ->
             playerData.battleEndReset()
             playerData.eliteReward()
@@ -198,6 +192,7 @@ object GameManager : GameHandler {
     }
 
     override fun Game.bossStart() {
+        ProjectTurnGame.instance.logger.info("Boss battle is starting.")
         playerDatas.forEach { player ->
             player.battleStartReset()
         }
@@ -205,6 +200,7 @@ object GameManager : GameHandler {
         val event = GameBattleStartEvent(BattleType.Boss)
         ProjectTurnGame.instance.server.pluginManager.callEvent(event)
         if (event.isCancelled) {
+            ProjectTurnGame.instance.logger.info("Boss battle start event cancelled.")
             moveTile()
             return
         }
@@ -220,6 +216,7 @@ object GameManager : GameHandler {
     }
 
     override fun Game.bossStop() {
+        ProjectTurnGame.instance.logger.info("Boss battle is stopping.")
         this.playerDatas.forEach { playerData ->
             playerData.battleEndReset()
             playerData.relicsReward()
@@ -227,7 +224,9 @@ object GameManager : GameHandler {
     }
 
     override fun Game.eventStart() {
+        ProjectTurnGame.instance.logger.info("Event is starting.")
         if (eventList.isEmpty()) {
+            ProjectTurnGame.instance.logger.info("No events available, moving to the next tile.")
             moveTile()
             return
         }
@@ -240,6 +239,7 @@ object GameManager : GameHandler {
     }
 
     override fun Game.restStart() {
+        ProjectTurnGame.instance.logger.info("Resting phase is starting.")
         this.playerDatas.forEach {
             if (!it.isDead) {
                 it.heal(20, it)
@@ -250,7 +250,7 @@ object GameManager : GameHandler {
     }
 
     override fun Game.nextSector() {
-        // 베타 테스트의 경우 시작 지역을 클리어 시 종료함.
+        ProjectTurnGame.instance.logger.info("Moving to the next sector.")
         this.clear()
 
 //        this.stop()
@@ -265,20 +265,24 @@ object GameManager : GameHandler {
     }
 
     override fun Game.gameOver() {
+        ProjectTurnGame.instance.logger.info("Game over.")
         this.stop()
     }
 
     override fun Entity.turnStart() {
+        ProjectTurnGame.instance.logger.info("Entity ${this.name} is starting its turn.")
         val game = Info.game ?: return
         game.gameTurnOrder.remove(this)
         val event = EntityTurnStartEvent(this)
         ProjectTurnGame.instance.server.pluginManager.callEvent(event)
         if (event.isCancelled) {
+            ProjectTurnGame.instance.logger.info("Turn start event cancelled for ${this.name}.")
             this.turnEnd()
             return
         }
 
         if (this is Player) {
+            ProjectTurnGame.instance.logger.info("Player ${this.player.name} is starting their turn.")
             this@turnStart.addMana(1)
 
             this.player.run {
@@ -292,12 +296,13 @@ object GameManager : GameHandler {
                 turnStartUnit.clear()
             }
             if (this.isStun()) {
+                ProjectTurnGame.instance.logger.info("Player ${this.player.name} is stunned.")
                 this.removeStun()
                 this.turnEnd()
             }
         }
-
-        if (this is Enemy) {
+        else if (this is Enemy) {
+            ProjectTurnGame.instance.logger.info("Enemy ${this.entity.name} is starting its turn.")
             this.entity.run {
                 isGlowing = true
                 scoreboardTags.add("this_Turn")
@@ -306,8 +311,11 @@ object GameManager : GameHandler {
             object : BukkitRunnable() {
                 override fun run() {
                     if (isStun()) {
+                        ProjectTurnGame.instance.logger.info("Enemy ${this@turnStart.entity.name} is stunned.")
                         removeStun()
                         turnEnd()
+                        cancel()
+                        return
                     }
 
                     this@turnStart.actionList.forEach {
@@ -327,28 +335,39 @@ object GameManager : GameHandler {
                         if (it.actionCondition.invoke(this@turnStart) == true) {
                             bleedingHandler(this@turnStart)
                             if (this@turnStart.isDead) {
+                                ProjectTurnGame.instance.logger.info("Enemy ${this@turnStart.entity.name} has died.")
+                                if (game.gameEnemys.isEmpty()) return
                                 this@turnStart.turnEnd()
+                                cancel()
                                 return
                             }
-                            it.action.invoke(this@turnStart)
+
+                            broadcast(MiniMessage.miniMessage().deserialize("<gray>${this@turnStart.name}이(가) ${it.actionName}을 발동합니다."))
                             object : BukkitRunnable() {
                                 override fun run() {
-                                    this@turnStart.turnEnd()
-                                    return
+                                    it.action.invoke(this@turnStart)
+
+                                    object : BukkitRunnable() {
+                                        override fun run() {
+                                            this@turnStart.turnEnd()
+                                        }
+                                    }.runTaskLater(ProjectTurnGame.instance, 40L)
                                 }
-                            }.runTaskLater(ProjectTurnGame.instance, 60L)
+                            }.runTaskLater(ProjectTurnGame.instance, 40L)
+                            return
                         }
                     }
-                    this@turnStart.turnEnd()
                 }
             }.runTaskLater(ProjectTurnGame.instance, 60L)
         }
     }
 
     override fun Entity.turnEnd() {
+        ProjectTurnGame.instance.logger.info("Entity ${this.name} is ending its turn.")
         val game = Info.game ?: return
 
         if (this is Player) {
+            ProjectTurnGame.instance.logger.info("Player ${this.player.name} is ending their turn.")
             this.player.run {
                 isGlowing = false
                 scoreboardTags.remove("this_Turn")
@@ -358,22 +377,45 @@ object GameManager : GameHandler {
                 turnEndUnit.clear()
             }
         }
-
-        if (this is Enemy) {
+        else if (this is Enemy) {
+            ProjectTurnGame.instance.logger.info("Enemy ${this.entity.name} is ending its turn.")
             this.entity.run {
                 isGlowing = false
                 scoreboardTags.remove("this_Turn")
             }
         }
+
         val firstEntry = game.gameTurnOrder.firstOrNull()
         if (firstEntry != null) {
             firstEntry.turnStart()
         } else {
+            ProjectTurnGame.instance.logger.info("All turns have ended, starting new turn cycle.")
             allTurnEnd()
         }
     }
 
+    override fun firstStart() {
+        ProjectTurnGame.instance.logger.info("Initializing the first start of the game.")
+        val game = Info.game ?: return
+
+        game.playerDatas.forEach { playerData ->
+            playerData.setMaxHealth(40)
+            playerData.setHealth(40)
+            playerData.setMaxMana(3)
+            playerData.setMana(3)
+            playerData.deck.addAll(playerData.cardPack.cardList)
+        }
+
+        game.gameSector.addAll(GameField.entries)
+        game.gameField = GameField.Forest
+        game.gameSector.remove(game.gameField)
+        playerLocationRetake()
+
+        game.moveTile()
+    }
+
     private fun allTurnStart() {
+        ProjectTurnGame.instance.logger.info("All turns are starting.")
         val game = Info.game ?: return
         val speed: MutableMap<Int, MutableList<Entity>> = mutableMapOf()
         val diceSides = 12
@@ -384,8 +426,8 @@ object GameManager : GameHandler {
 
         fun addEntitySpeed(entity: Entity, speedMap: MutableMap<Int, MutableList<Entity>>, baseSpeed: Int?) {
             baseSpeed?.let {
-                // 주사위를 굴려 나온 값과 속도를 더함
                 val finalSpeed = it + rollDice(diceSides)
+                ProjectTurnGame.instance.logger.info("Entity ${entity::class.simpleName} rolled speed $finalSpeed.")
                 speedMap.getOrPut(finalSpeed) { mutableListOf() }.add(entity)
             }
         }
@@ -404,57 +446,23 @@ object GameManager : GameHandler {
         val sortedSpeed = speed.toSortedMap(compareByDescending { it })
 
         game.gameTurnOrder = sortedSpeed.values.flatten().toMutableList()
+        ProjectTurnGame.instance.logger.info("Turn order determined.")
         game.gameTurnOrder.firstOrNull()?.turnStart() ?: allTurnEnd()
     }
 
     private fun allTurnEnd() {
+        ProjectTurnGame.instance.logger.info("All turns have ended, starting new cycle.")
         allTurnStart()
     }
 
-    private fun firstStart() {
-        val game = Info.game ?: return
-        game.players.forEach { player ->
-            game.playerDatas.add(
-                Player(
-                    player,
-                    0,
-                    3,
-                    mutableListOf(),
-                    mutableListOf(),
-                    mutableListOf(),
-                    mutableListOf()
-                )
-            )
-        }
-
-        game.playerDatas.forEach { playerData ->
-            playerData.setMaxHealth(40)
-            playerData.setHealth(40)
-            playerData.setMaxMana(3)
-            playerData.setMana(3)
-            playerData.deck.addAll(startCardList)
-        }
-
-        game.gameSector.addAll(GameField.entries)
-        // 베타 테스트 버전에서는 숲에서만 시작할 수 있음.
-        game.gameField = GameField.Forest
-//        game.gameField = when (game.gameDifficulty) {
-//            Easy -> GameField.Forest
-//            Normal -> GameField.Cave
-//            Hard -> GameField.Sea
-//        }
-        game.gameSector.remove(game.gameField)
-        playerLocationRetake()
-
-        game.moveTile()
-    }
-
     override fun Game.moveTile() {
-        if (!this.playerDatas.filter { it.player.scoreboardTags.contains("inventory_MapChoice") }.isEmpty()) return
+        ProjectTurnGame.instance.logger.info("Moving tile.")
+        if (!this.playerDatas.none { it.player.scoreboardTags.contains("inventory_MapChoice") }) return
 
         tileStep++
 
         if (tileStep > 8) {
+            ProjectTurnGame.instance.logger.info("Tile step exceeds 8, moving to next sector.")
             nextSector()
             return
         }
@@ -467,23 +475,15 @@ object GameManager : GameHandler {
         Bukkit.broadcast(message)
     }
 
-    private fun broadcastDelayedMessages(messages: List<Component>) {
-        messages.forEachIndexed { index, message ->
-            object : BukkitRunnable() {
-                override fun run() {
-                    Bukkit.broadcast(message)
-                }
-            }.runTaskLater(ProjectTurnGame.instance, 60L * (index + 1))
-        }
-    }
-
     private fun Player.battleStartReset() {
+        ProjectTurnGame.instance.logger.info("Resetting player ${this.player.name} for battle start.")
         this.deck.shuffle()
         this.drow(5)
         this@battleStartReset.setMana(this@battleStartReset.maxMana)
     }
 
     private fun Player.battleEndReset() {
+        ProjectTurnGame.instance.logger.info("Resetting player ${this.player.name} for battle end.")
         this.setMana(this.maxMana)
         this.abnormalityStatus.removeAll(this.abnormalityStatus.filter { it.resetType == ResetType.BattleEnd })
 
@@ -501,13 +501,13 @@ object GameManager : GameHandler {
         this.player.scoreboardTags.remove("this_Turn")
         this.player.isGlowing = false
 
-        // 재련된 카드 되돌리기
-        if (this.deck.any { it.description.contains(KeywordType.Reforged.component) }) {
+        if (this.deck.any { it.description.contains(KeywordType.Reforged.string.toString()) }) {
             val playerDeckList = this.deck.toMutableList()
 
             playerDeckList.forEachIndexed { index, card ->
                 val newCard = reforgeCardPair.entries.find { it.value.description == card.description }?.key
                 if (newCard is Card) {
+                    ProjectTurnGame.instance.logger.info("Replacing reforged card in player ${this.player.name}'s deck.")
                     playerDeckList[index] = newCard
                 }
             }
@@ -518,21 +518,25 @@ object GameManager : GameHandler {
     }
 
     private fun bleedingHandler(entity: Entity) {
+        ProjectTurnGame.instance.logger.info("Handling bleeding for entity ${entity::class.simpleName}.")
         val bleeding = entity.abnormalityStatus.find { it.keywordType == KeywordType.Bleeding }
 
         if (bleeding !is AbnormalityStatus) return
 
         if (entity is Enemy) {
+            ProjectTurnGame.instance.logger.info("Enemy ${entity.entity.name} takes bleeding damage: ${bleeding.power}.")
             entity.damage(bleeding.power, null, DamageType.AbnormalStatus)
         }
 
         if (entity is Player) {
+            ProjectTurnGame.instance.logger.info("Player ${entity.player.name} takes bleeding damage: ${bleeding.power}.")
             entity.damage(bleeding.power, null, DamageType.AbnormalStatus)
         }
 
         bleeding.power = (bleeding.power / 2).toInt()
 
         if (bleeding.power <= 1) {
+            ProjectTurnGame.instance.logger.info("Bleeding effect removed from entity ${entity::class.simpleName}.")
             entity.abnormalityStatus.remove(bleeding)
         }
     }

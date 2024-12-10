@@ -30,7 +30,7 @@ class OnPlayerInteractEvent : Listener {
             event.isCancelled = true
             return
         }
-        val card = cardList.find { it == item.toCard() } ?: return
+        val card = playerData.hand.find { it == item.toCard() } ?: return
 
         if (card.cost > playerData.mana) {
             player.sendMessage(manaFailText())

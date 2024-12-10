@@ -2,6 +2,7 @@ package org.beobma.projectturngame.command
 
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
+import net.kyori.adventure.text.minimessage.MiniMessage
 import org.beobma.projectturngame.config.CardConfig.Companion.cardList
 import org.beobma.projectturngame.game.Game
 import org.beobma.projectturngame.game.GameDifficulty
@@ -20,6 +21,7 @@ import org.beobma.projectturngame.manager.InventoryManager.openEnemyInfoInventor
 import org.beobma.projectturngame.manager.InventoryManager.openGraveyardInfoInventory
 import org.beobma.projectturngame.manager.InventoryManager.openMyInfoInventory
 import org.beobma.projectturngame.manager.InventoryManager.openTurnOtherInfoInventory
+import org.beobma.projectturngame.text.KeywordType
 import org.beobma.projectturngame.text.TextColorType
 import org.beobma.projectturngame.util.CardPosition
 import org.bukkit.Bukkit
@@ -128,7 +130,7 @@ class Command : Listener, CommandExecutor, TabCompleter {
                     val key = args.drop(1).joinToString(" ").trim()
                     val dictionaryList = Dictionary().dictionaryList
 
-                    val definition = dictionaryList[key]
+                    val definition = dictionaryList[KeywordType.entries.find { it.keywordName == key }]
                     if (definition == null) {
                         sender.sendMessage(
                             Component.text("[!] 용어 '$key' 가 사전에 없습니다.", TextColorType.Red.textColor)
@@ -137,7 +139,7 @@ class Command : Listener, CommandExecutor, TabCompleter {
                         return false
                     }
 
-                    sender.sendMessage(definition)
+                    sender.sendMessage(MiniMessage.miniMessage().deserialize(definition))
                     return true
                 }
 
@@ -282,7 +284,7 @@ class Command : Listener, CommandExecutor, TabCompleter {
                 1 -> listOf("start", "stop", "dictionary", "info", "정보", "사전")
                 2 -> when (args[0].lowercase(Locale.getDefault())) {
                     "start" -> GameType.entries.map { it.name }
-                    "dictionary", "사전" -> Dictionary().dictionaryList.keys.toList()
+                    "dictionary", "사전" -> KeywordType.entries.map { it.keywordName }
                     "info", "정보" -> listOf("덱", "묘지", "제외", "연금술 재료 더미", "턴 순서", "자신", "적")
                     else -> emptyList()
                 }

@@ -1,9 +1,9 @@
 package org.beobma.projectturngame.card
 
-import net.kyori.adventure.text.Component
-
 class CardPack(
     val name: String,
-    val description: List<Component>,
-    val cardList: MutableList<Card>
+    val description: List<String>,
+    val startCardList: MutableList<Card>,
+    val cardList: MutableList<Card>,
+    val cardPackType: CardPackType
 )

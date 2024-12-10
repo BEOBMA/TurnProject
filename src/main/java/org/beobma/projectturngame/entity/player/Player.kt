@@ -1,6 +1,8 @@
 package org.beobma.projectturngame.entity.player
 
 import org.beobma.projectturngame.card.Card
+import org.beobma.projectturngame.card.CardPack
+import org.beobma.projectturngame.card.CardPackType
 import org.beobma.projectturngame.entity.Entity
 import org.beobma.projectturngame.relics.Relics
 import org.bukkit.attribute.Attribute
@@ -10,6 +12,7 @@ class Player(
     val player: Player,
     var mana: Int,
     var maxMana: Int,
+    var cardPack: CardPack,
     var hand: MutableList<Card>,
     var deck: MutableList<Card>,
     var graveyard: MutableList<Card>,

@@ -38,6 +38,12 @@ class OnInventoryCloseEvent : Listener {
                 "inventory_SectorChoice"
             )
 
+            player.scoreboardTags.contains("inventory_StartCardPack") -> reopenInventoryLater(
+                player,
+                closeInventory,
+                "inventory_StartCardPack"
+            )
+
             player.scoreboardTags.contains("inventory_RelicsChoice") -> {
                 player.inventory.clear()
                 player.scoreboardTags.remove("inventory_RelicsChoice")
@@ -56,13 +62,14 @@ class OnInventoryCloseEvent : Listener {
                 player.inventory.clear()
                 player.scoreboardTags.remove("inventory_CardChoice")
 
-                if (game.players.none { it.scoreboardTags.contains("inventory_CardChoice") && it.scoreboardTags.contains("inventory_EventChoice") }) {
+                if (game.players.none { it.scoreboardTags.contains("inventory_CardChoice") || it.scoreboardTags.contains("inventory_EventChoice") }) {
                     game.moveTile()
                     reopenInventoryLater(
                         player,
                         game.gameMapInventory,
                         "inventory_MapChoice"
                     )
+                    return
                 }
             }
 

@@ -2,6 +2,7 @@ package org.beobma.projectturngame.manager
 
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
+import net.kyori.adventure.text.minimessage.MiniMessage
 import org.beobma.projectturngame.ProjectTurnGame
 import org.beobma.projectturngame.entity.enemy.Enemy
 import org.beobma.projectturngame.entity.enemy.EnemyAction
@@ -77,6 +78,7 @@ object EnemyManager : EnemyHandler {
 
         game.gameTurnOrder.remove(this)
         game.gameEnemys.remove(this)
+        this.isDead = true
         this.entity.remove()
 
         if (game.gameEnemys.isEmpty()) {
@@ -174,22 +176,22 @@ object EnemyManager : EnemyHandler {
 
     override fun Enemy.toItem(): ItemStack {
         val name = this.name
-        val abnormalityStatusList = mutableListOf<Component>()
+        val abnormalityStatusList = mutableListOf<String>()
 
         this.abnormalityStatus.forEach {
-            abnormalityStatusList.add(it.keywordType.component.append(Component.text(": ${it.power}", it.keywordType.component.color())))
+            abnormalityStatusList.add("${it.keywordType.string}<gray>: ${it.power}")
         }
-        val lore = mutableListOf<Component>(
-            Component.text("체력 / 최대 체력 : ${this.health} / ${this.maxHealth}", TextColorType.Gray.textColor),
-            Component.text("속도 : ${this.speed}", TextColorType.Gray.textColor),
-            Component.text("상태이상 목록:", TextColorType.Gray.textColor),
+        val lore = mutableListOf<String>(
+            "<gray>체력 / 최대 체력 : ${this.health} / ${this.maxHealth}",
+            "<gray>속도 : ${this.speed}",
+            "<gray>상태이상 목록:"
         )
 
         lore.addAll(abnormalityStatusList)
         val item = ItemStack(Material.ZOMBIE_HEAD, 1).apply {
             itemMeta = itemMeta?.apply {
                 displayName(Component.text(name))
-                lore(lore)
+                lore(lore.map { MiniMessage.miniMessage().deserialize(it) })
                 addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
             }
         }
@@ -203,7 +205,7 @@ object EnemyManager : EnemyHandler {
         val item = ItemStack(Material.SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE, 1).apply {
             itemMeta = itemMeta?.apply {
                 displayName(Component.text(name))
-                lore(lore)
+                lore(lore.map { MiniMessage.miniMessage().deserialize(it) })
                 addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
             }
         }

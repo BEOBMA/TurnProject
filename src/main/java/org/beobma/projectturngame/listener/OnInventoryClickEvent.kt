@@ -2,6 +2,7 @@ package org.beobma.projectturngame.listener
 
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
+import org.beobma.projectturngame.ProjectTurnGame
 import org.beobma.projectturngame.config.CardConfig.Companion.cardList
 import org.beobma.projectturngame.config.RelicsConfig.Companion.relicsList
 import org.beobma.projectturngame.game.Game
@@ -9,10 +10,12 @@ import org.beobma.projectturngame.game.GameField
 import org.beobma.projectturngame.info.Info
 import org.beobma.projectturngame.localization.Localization
 import org.beobma.projectturngame.manager.CardManager.toItem
+import org.beobma.projectturngame.manager.CardPackManager.toCardPack
 import org.beobma.projectturngame.manager.EventManager.toEventOption
 import org.beobma.projectturngame.manager.GameManager.battleStart
 import org.beobma.projectturngame.manager.GameManager.bossStart
 import org.beobma.projectturngame.manager.GameManager.eventStart
+import org.beobma.projectturngame.manager.GameManager.firstStart
 import org.beobma.projectturngame.manager.GameManager.hardBattleStart
 import org.beobma.projectturngame.manager.GameManager.moveTile
 import org.beobma.projectturngame.manager.GameManager.nextSector
@@ -22,6 +25,7 @@ import org.beobma.projectturngame.manager.InventoryManager.openBanishInfoInvento
 import org.beobma.projectturngame.manager.InventoryManager.openDeckInfoInventory
 import org.beobma.projectturngame.manager.InventoryManager.openGraveyardInfoInventory
 import org.beobma.projectturngame.manager.InventoryManager.openSectorInventory
+import org.beobma.projectturngame.manager.InventoryManager.openStartCardPackInventory
 import org.beobma.projectturngame.manager.RelicsManager
 import org.beobma.projectturngame.text.TextColorType
 import org.bukkit.entity.Player
@@ -78,24 +82,34 @@ class OnInventoryClickEvent : Listener {
             return
         }
 
+        if (player.scoreboardTags.contains("inventory_StartCardPack")) {
+            startCardPackHandler(clickItem, player, inventory)
+            event.isCancelled = true
+            return
+        }
+
         if (player.scoreboardTags.contains("inventory_DeckInfo")) {
             deckInfoChoiceHandler(clickItem, player, inventory)
             event.isCancelled = true
+            return
         }
 
         if (player.scoreboardTags.contains("inventory_GraveyardInfo")) {
             graveyardInfoChoiceHandler(clickItem, player, inventory)
             event.isCancelled = true
+            return
         }
 
         if (player.scoreboardTags.contains("inventory_BanishInfo")) {
             banishInfoChoiceHandler(clickItem, player, inventory)
             event.isCancelled = true
+            return
         }
 
         if (player.scoreboardTags.contains("inventory_AlchemYingredientsPileInfo")) {
             alchemYingredientsPileInfoChoiceHandler(clickItem, player, inventory)
             event.isCancelled = true
+            return
         }
 
         if (player.scoreboardTags.contains("inventory_EventOptionChoice")) {
@@ -198,7 +212,7 @@ class OnInventoryClickEvent : Listener {
         }
 
 
-
+        ProjectTurnGame.instance.server.scheduler.cancelTasks(ProjectTurnGame.instance)
         game.players.forEach { player ->
             player.scoreboardTags.remove("inventory_MapChoice")
             player.closeInventory()
@@ -237,7 +251,7 @@ class OnInventoryClickEvent : Listener {
         player.scoreboardTags.remove("inventory_CardChoice")
         player.inventory.clear()
         player.closeInventory()
-        if (game.players.none { it.scoreboardTags.contains("inventory_CardChoice") && it.scoreboardTags.contains("inventory_EventChoice") }) {
+        if (game.players.none { it.scoreboardTags.contains("inventory_CardChoice") || it.scoreboardTags.contains("inventory_EventChoice") }) {
             game.moveTile()
         }
     }
@@ -250,8 +264,44 @@ class OnInventoryClickEvent : Listener {
         player.scoreboardTags.remove("inventory_RelicsChoice")
         player.inventory.clear()
         player.closeInventory()
-        if (game.players.none { it.scoreboardTags.contains("inventory_RelicsChoice") && it.scoreboardTags.contains("inventory_EventChoice") }) {
+        if (game.players.none { it.scoreboardTags.contains("inventory_RelicsChoice") || it.scoreboardTags.contains("inventory_EventChoice") }) {
             game.moveTile()
+        }
+    }
+
+    private fun startCardPackHandler(clickItem: ItemStack, player: Player, inventory: InventoryView) {
+        val game = Info.game ?: return
+        val itemMeta = clickItem.itemMeta ?: return
+        when (itemMeta.displayName()) {
+            Component.text("이전 페이지", TextColorType.Gray.textColor).decorate(TextDecoration.BOLD) -> {
+                player.closeInventory()
+                val currentPage = getCurrentPageFromTitle(inventory.title().toString())
+                player.openStartCardPackInventory(currentPage - 1)
+            }
+            Component.text("다음 페이지", TextColorType.Gray.textColor).decorate(TextDecoration.BOLD) -> {
+                player.closeInventory()
+                val currentPage = getCurrentPageFromTitle(inventory.title().toString())
+                player.openStartCardPackInventory(currentPage + 1)
+            }
+            else -> {
+                game.playerDatas.add(
+                    org.beobma.projectturngame.entity.player.Player(
+                        player,
+                        0,
+                        3,
+                        clickItem.toCardPack(),
+                        mutableListOf(),
+                        mutableListOf(),
+                        mutableListOf(),
+                        mutableListOf()
+                    )
+                )
+                player.scoreboardTags.remove("inventory_StartCardPack")
+                player.closeInventory()
+                if (game.players.none { it.scoreboardTags.contains("inventory_StartCardPack") }) {
+                    firstStart()
+                }
+            }
         }
     }
 

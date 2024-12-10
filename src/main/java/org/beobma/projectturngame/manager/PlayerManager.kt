@@ -1,6 +1,7 @@
 package org.beobma.projectturngame.manager
 
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.minimessage.MiniMessage
 import org.beobma.projectturngame.ProjectTurnGame
 import org.beobma.projectturngame.entity.enemy.Enemy
 import org.beobma.projectturngame.entity.player.Player
@@ -66,7 +67,7 @@ object PlayerManager : PlayerHandler {
             this.maxMana = 0
         }
 
-        this.applyScoreboard()
+        this.applyPlayerInfo()
     }
 
     override fun Player.addMaxMana(int: Int) {
@@ -76,7 +77,7 @@ object PlayerManager : PlayerHandler {
             this.maxMana = 0
         }
 
-        this.applyScoreboard()
+        this.applyPlayerInfo()
     }
 
     override fun Player.setMana(int: Int) {
@@ -90,7 +91,7 @@ object PlayerManager : PlayerHandler {
             this.mana = this.maxMana
         }
 
-        this.applyScoreboard()
+        this.applyPlayerInfo()
     }
 
     override fun Player.addMana(int: Int) {
@@ -104,7 +105,7 @@ object PlayerManager : PlayerHandler {
             this.mana = this.maxMana
         }
 
-        this.applyScoreboard()
+        this.applyPlayerInfo()
     }
 
     override fun Player.addShield(int: Int) {
@@ -192,7 +193,7 @@ object PlayerManager : PlayerHandler {
         this.isDead = true
 
         if (game.playerDatas.all { it.isDead }) {
-            gameOver()
+            game.gameOver()
         } else {
             playerLocationRetake()
             game.gameTurnOrder.remove(this)
@@ -246,23 +247,23 @@ object PlayerManager : PlayerHandler {
         val game = Info.game ?: return ItemStack(Material.BARRIER)
         val playerData = game.playerDatas.find { it == this } ?: return ItemStack(Material.BARRIER)
         val name = playerData.name
-        val abnormalityStatusList: MutableList<Component> = mutableListOf()
+        val abnormalityStatusList: MutableList<String> = mutableListOf()
 
         playerData.abnormalityStatus.forEach {
-            abnormalityStatusList.add(it.keywordType.component.append(Component.text(": ${it.power}", it.keywordType.component.color())))
+            abnormalityStatusList.add("${it.keywordType.string}<gray>: ${it.power}")
         }
-        val lore = mutableListOf<Component>(
-            Component.text("체력 / 최대 체력 : ${playerData.health} / ${playerData.maxHealth}", TextColorType.Gray.textColor),
-            Component.text("마나 / 최대 마나 : ${playerData.mana} / ${playerData.maxMana}", TextColorType.Gray.textColor),
-            Component.text("속도 : ${playerData.speed}", TextColorType.Gray.textColor),
-            Component.text("상태이상 목록:", TextColorType.Gray.textColor),
+        val lore = mutableListOf<String>(
+            "<gray>체력 / 최대 체력 : ${playerData.health} / ${playerData.maxHealth}",
+            "<gray>마나 / 최대 마나 : ${playerData.mana} / ${playerData.maxMana}",
+            "<gray>속도 : ${playerData.speed}",
+            "<gray>상태이상 목록:"
         )
 
         lore.addAll(abnormalityStatusList)
         val item = ItemStack(Material.PLAYER_HEAD, 1).apply {
             itemMeta = itemMeta?.apply {
                 displayName(Component.text(name))
-                lore(lore)
+                lore(lore.map { MiniMessage.miniMessage().deserialize(it) })
                 addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
             }
         }
@@ -271,8 +272,15 @@ object PlayerManager : PlayerHandler {
     }
 
 
-    private fun Player.applyScoreboard() {
-            player.getScore("mana").score = this@applyScoreboard.mana
-            player.getScore("maxMana").score = this@applyScoreboard.maxMana
+    private fun Player.applyPlayerInfo() {
+        player.getScore("mana").score = mana
+        player.level = mana
+        player.getScore("maxMana").score = maxMana
+
+        if (mana <= 0) {
+            player.exp = 0.01f
+        } else {
+            player.exp = 0.99f
         }
+    }
 }

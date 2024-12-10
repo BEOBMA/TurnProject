@@ -6,6 +6,7 @@ import org.beobma.projectturngame.card.Card
 import org.beobma.projectturngame.config.CardConfig.Companion.reforgeCardPair
 import org.beobma.projectturngame.info.Info
 import org.beobma.projectturngame.manager.CardManager.applyHotbar
+import org.beobma.projectturngame.manager.CardManager.toItem
 import org.beobma.projectturngame.manager.CustomStackManager.increaseStack
 import org.beobma.projectturngame.manager.ParticleAnimationManager.isPlay
 import org.beobma.projectturngame.manager.PlayerManager.isTurn
@@ -23,7 +24,7 @@ class OnPlayerDropItemEvent : Listener {
         val player = event.player
         val game = Info.game ?: return
         val playerData = game.playerDatas.find { it.player == player } ?: return
-        val card = playerData.hand.find { it.description == item.itemStack.lore() } ?: return
+        val card = playerData.hand.find { it.toItem() == item.itemStack } ?: return
         val description = card.description
 
         if (!playerData.isTurn()) {
@@ -38,7 +39,7 @@ class OnPlayerDropItemEvent : Listener {
             return
         }
         // 연금술
-        if (description.contains(KeywordType.AlchemYingredients.component)) {
+        if (description.contains(KeywordType.AlchemYingredients.string)) {
             playerData.alchemYingredientsPile.add(card)
             playerData.hand.remove(card)
             player.inventory.remove(item.itemStack)
@@ -47,12 +48,13 @@ class OnPlayerDropItemEvent : Listener {
         }
 
         // 재련
-        if (description.contains(KeywordType.Reforge.component)) {
+        if (description.contains(KeywordType.Reforge.string)) {
             if (playerData.mana < 1) {
                 event.isCancelled = true
                 return
             }
 
+            playerData.mana--
             val reforgedCard = reforgeCardPair[card]
             if (reforgedCard == null) {
                 event.isCancelled = true
@@ -74,7 +76,6 @@ class OnPlayerDropItemEvent : Listener {
 
             playerData.increaseStack("ReforgeStack", 1)
             playerData.applyHotbar()
-            event.isCancelled = true
             return
         }
 

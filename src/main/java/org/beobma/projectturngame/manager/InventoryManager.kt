@@ -2,7 +2,8 @@ package org.beobma.projectturngame.manager
 
 import net.kyori.adventure.text.Component
 import org.beobma.projectturngame.card.Card
-import org.beobma.projectturngame.config.RelicsConfig.Companion.relicsList
+import org.beobma.projectturngame.card.CardPackType
+import org.beobma.projectturngame.config.CardConfig.Companion.cardPackList
 import org.beobma.projectturngame.entity.enemy.Enemy
 import org.beobma.projectturngame.game.GameDifficulty
 import org.beobma.projectturngame.game.GameField
@@ -11,6 +12,8 @@ import org.beobma.projectturngame.info.Info
 import org.beobma.projectturngame.localization.Localization
 import org.beobma.projectturngame.manager.CardManager.toItem
 import org.beobma.projectturngame.manager.GameManager.stop
+import org.beobma.projectturngame.manager.RelicsManager.toItem
+import org.beobma.projectturngame.relics.Relics
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
@@ -21,9 +24,10 @@ interface InventoryHandler {
     fun Player.openMapInventory(inventoryOpenType: InventoryOpenType)
     fun Player.openSectorInventory()
     fun Player.openCardCompensationInventory(cardList: List<Card>)
-    fun Player.openRelicsCompensationInventory()
+    fun Player.openRelicsCompensationInventory(relics: List<Relics>)
 
     fun Player.openEventInventory(event: Event)
+    fun Player.openStartCardPackInventory(page: Int = 0)
 
     fun Player.openDeckInfoInventory(page: Int = 0)
     fun Player.openGraveyardInfoInventory(page: Int = 0)
@@ -56,13 +60,15 @@ object InventoryManager : InventoryHandler {
         val inventory = createCardCompensationInventory(cardList)
         this.loadDeckToInventory()
         this.scoreboardTags.add("inventory_CardChoice")
+        this.scoreboardTags.remove("inventory_EventOptionChoice")
         this.openInventory(inventory)
     }
 
-    override fun Player.openRelicsCompensationInventory() {
-        val inventory = createRelicsCompensationInventory()
+    override fun Player.openRelicsCompensationInventory(relics: List<Relics>) {
+        val inventory = createRelicsCompensationInventory(relics)
         this.loadDeckToInventory()
         this.scoreboardTags.add("inventory_RelicsChoice")
+        this.scoreboardTags.remove("inventory_EventOptionChoice")
         this.openInventory(inventory)
     }
 
@@ -70,6 +76,42 @@ object InventoryManager : InventoryHandler {
         val inventory = createEventInventory(event)
         this.loadDeckToInventory()
         this.scoreboardTags.add("inventory_EventOptionChoice")
+        this.openInventory(inventory)
+    }
+
+    override fun Player.openStartCardPackInventory(page: Int) {
+        val cardPackList = cardPackList.filter { it.cardPackType == CardPackType.Limitation }
+        val totalPages = (cardPackList.size + 18 - 1) / 18
+        val localization = Localization()
+        val nextPage = localization.nextPage
+        val previousPage = localization.previousPage
+
+        if (page < 0 || page >= totalPages) return
+        val inventory = createEmptyInfoInventory(Component.text("사용할 카드팩을 선택하세요."))
+
+        val startIdx = page * 18
+        val endIdx = minOf(startIdx + 18, cardPackList.size)
+
+        var slot = 0
+        run inventorySetCardPack@ {
+            cardPackList.forEach { cardPack ->
+                inventory.setItem(slot, CardPackManager.run { cardPack.toItem() })
+                slot++
+                if (endIdx < slot) {
+                    return@inventorySetCardPack
+                }
+            }
+        }
+
+        if (page > 0) {
+            inventory.setItem(18, previousPage)
+        }
+
+        if (page < totalPages - 1) {
+            inventory.setItem(26, nextPage)
+        }
+
+        this.scoreboardTags.add("inventory_StartCardPack")
         this.openInventory(inventory)
     }
 
@@ -340,9 +382,10 @@ object InventoryManager : InventoryHandler {
         return inventory
     }
 
-    private fun createRelicsCompensationInventory(): Inventory {
+    private fun createRelicsCompensationInventory(relics: List<Relics>): Inventory {
         val localization = Localization()
         val emptySlot = localization.emptySlot
+        val randomRelicsList = relics.shuffled()
         val inventory: Inventory = Bukkit.createInventory(null, 27, Component.text("유물 보상"))
 
         for (i in 0 until inventory.size) {
@@ -350,16 +393,11 @@ object InventoryManager : InventoryHandler {
         }
 
 
-        if (relicsList.size > 3) {
-            val relics1 = relicsList.random()
-            val relics2 = relicsList.filter { it != relics1 }.random()
-            val relics3 = relicsList.filter { it != relics1 && it != relics2 }.random()
 
-            RelicsManager.run {
-                inventory.setItem(11, relics1.toItem())
-                inventory.setItem(13, relics2.toItem())
-                inventory.setItem(15, relics3.toItem())
-            }
+        if (randomRelicsList.size > 3) {
+            inventory.setItem(11, randomRelicsList[0].toItem())
+            inventory.setItem(13, randomRelicsList[1].toItem())
+            inventory.setItem(15, randomRelicsList[2].toItem())
         }
         return inventory
     }

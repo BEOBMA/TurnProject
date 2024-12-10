@@ -15,7 +15,7 @@ class CrawfishRelics {
 
     private fun relicsConfig() {
         val relics = Relics("가재",listOf(
-            Component.text("피격 시 받는 피해가 1 감소한다.", TextColorType.Gray.textColor)
+            "<gray>피격 시 받는 피해가 1 감소한다."
         ), EffectTime.WhenHit)
         { player, inputList ->
             val attacker = inputList[0]

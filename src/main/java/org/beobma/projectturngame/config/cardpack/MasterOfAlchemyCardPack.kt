@@ -1,10 +1,9 @@
 package org.beobma.projectturngame.config.cardpack
 
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.minimessage.MiniMessage
 import org.beobma.projectturngame.abnormalityStatus.AbnormalityStatus
 import org.beobma.projectturngame.card.Card
 import org.beobma.projectturngame.card.CardPack
+import org.beobma.projectturngame.card.CardPackType
 import org.beobma.projectturngame.card.CardRarity
 import org.beobma.projectturngame.config.CardConfig.Companion.cardList
 import org.beobma.projectturngame.config.CardConfig.Companion.cardPackList
@@ -25,7 +24,6 @@ import org.beobma.projectturngame.manager.TextManager.cardUseFailText
 import org.beobma.projectturngame.manager.TextManager.targetingFailText
 import org.beobma.projectturngame.manager.WeaknessManager.increaseWeakness
 import org.beobma.projectturngame.text.KeywordType
-import org.beobma.projectturngame.text.TextColorType
 
 class MasterOfAlchemyCardPack {
     private val dictionary = Dictionary()
@@ -35,69 +33,69 @@ class MasterOfAlchemyCardPack {
     }
 
     private fun cardConfig() {
-        val cardPack = CardPack("연금술의 대가",
+        val cardPack = CardPack("<gray>연금술의 대가",
             listOf(
-                Component.text("각기 다른 카드를 조합하여 새로운 카드를 만든다.")
-            ), mutableListOf()
+                "<gray>각기 다른 카드를 조합하여 새로운 카드를 만든다."
+            ), mutableListOf(), mutableListOf(), CardPackType.Limitation
         )
 
         //region alchemy ingredients Initialization
         val water = Card(
             "물", listOf(
-        KeywordType.NotAvailable.component,
-        KeywordType.AlchemYingredients.component,
-        Component.text(""),
-        MiniMessage.miniMessage().deserialize("<dark_gray>그 누구도 물 없이 살 수는 없었다."),
-        Component.text(""),
-        dictionary.dictionaryList["사용 불가"]!!,
-        dictionary.dictionaryList["연금술 재료"]!!
+        KeywordType.NotAvailable.string,
+        KeywordType.AlchemYingredients.string,
+        "",
+        "<dark_gray>그 누구도 물 없이 살 수는 없었다.",
+        "",
+        dictionary.dictionaryList[KeywordType.NotAvailable]!!,
+        dictionary.dictionaryList[KeywordType.AlchemYingredients]!!
         ), CardRarity.Common, 0
         )
 
         val fire = Card(
             "불", listOf(
-                KeywordType.NotAvailable.component,
-                KeywordType.AlchemYingredients.component,
-                Component.text(""),
-                MiniMessage.miniMessage().deserialize("<dark_gray>불을 발견한 사람은 인류를 창조했다."),
-                Component.text(""),
-                dictionary.dictionaryList["사용 불가"]!!,
-                dictionary.dictionaryList["연금술 재료"]!!
+                KeywordType.NotAvailable.string,
+                KeywordType.AlchemYingredients.string,
+                "",
+                "<dark_gray>불을 발견한 사람은 인류를 창조했다.",
+                "",
+                dictionary.dictionaryList[KeywordType.NotAvailable]!!,
+                dictionary.dictionaryList[KeywordType.AlchemYingredients]!!
             ), CardRarity.Common, 0
         )
 
         val dirt = Card(
             "흙", listOf(
-                KeywordType.NotAvailable.component,
-                KeywordType.AlchemYingredients.component,
-                Component.text(""),
-                MiniMessage.miniMessage().deserialize("<dark_gray>흙은 모든 생명의 어머니이자 보호자다."),
-                Component.text(""),
-                dictionary.dictionaryList["사용 불가"]!!,
-                dictionary.dictionaryList["연금술 재료"]!!
+                KeywordType.NotAvailable.string,
+                KeywordType.AlchemYingredients.string,
+                "",
+                "<dark_gray>흙은 모든 생명의 어머니이자 보호자다.",
+                "",
+                dictionary.dictionaryList[KeywordType.NotAvailable]!!,
+                dictionary.dictionaryList[KeywordType.AlchemYingredients]!!
             ), CardRarity.Common, 0
         )
 
         val air = Card(
             "공기", listOf(
-                KeywordType.NotAvailable.component,
-                KeywordType.AlchemYingredients.component,
-                Component.text(""),
-                MiniMessage.miniMessage().deserialize("<dark_gray>공기는 우리의 첫 번째 음식이다."),
-                Component.text(""),
-                dictionary.dictionaryList["사용 불가"]!!,
-                dictionary.dictionaryList["연금술 재료"]!!
+                KeywordType.NotAvailable.string,
+                KeywordType.AlchemYingredients.string,
+                "",
+                "<dark_gray>공기는 우리의 첫 번째 음식이다.",
+                "",
+                dictionary.dictionaryList[KeywordType.NotAvailable]!!,
+                dictionary.dictionaryList[KeywordType.AlchemYingredients]!!
             ), CardRarity.Common, 0
         )
 
 
         val river = Card(
             "강", listOf(
-                KeywordType.Volatilization.component,
-                Component.text(""),
-                MiniMessage.miniMessage().deserialize("<blue><bold>마나</bold><gray>를 2 회복한다."),
-                Component.text(""),
-                dictionary.dictionaryList["휘발"]!!
+                KeywordType.Volatilization.string,
+                "",
+                "<blue><bold>마나</bold><gray>를 2 회복한다.",
+                "",
+                dictionary.dictionaryList[KeywordType.Volatilization]!!
             ), CardRarity.Uncommon, 0, { usePlayerData, _ ->
                 usePlayerData.addMana(2)
                 return@Card true
@@ -106,12 +104,12 @@ class MasterOfAlchemyCardPack {
 
         val sun = Card(
             "태양", listOf(
-                KeywordType.Volatilization.component,
-                Component.text(""),
-                MiniMessage.miniMessage().deserialize("<gray>모든 적에게 <red><bold>화상 </bold><gray>5를 부여한다."),
-                Component.text(""),
-                dictionary.dictionaryList["휘발"]!!,
-                dictionary.dictionaryList["화상"]!!
+                KeywordType.Volatilization.string,
+                "",
+                "<gray>모든 적에게 <red><bold>화상 </bold><gray>5를 부여한다.",
+                "",
+                dictionary.dictionaryList[KeywordType.Volatilization]!!,
+                dictionary.dictionaryList[KeywordType.Burn]!!
             ), CardRarity.Uncommon, 0, { usePlayerData, _ ->
                 val targets = usePlayerData.allEnemyMembers()
 
@@ -125,12 +123,12 @@ class MasterOfAlchemyCardPack {
 
         val earth = Card(
             "대지", listOf(
-                KeywordType.Volatilization.component,
-                Component.text(""),
-                MiniMessage.miniMessage().deserialize("<gray>10의 피해를 막는 <aqua><bold>보호막</bold><gray>을 얻는다."),
-                Component.text(""),
-                dictionary.dictionaryList["휘발"]!!,
-                dictionary.dictionaryList["보호막"]!!
+                KeywordType.Volatilization.string,
+                "",
+                "<gray>10의 피해를 막는 <aqua><bold>보호막</bold><gray>을 얻는다.",
+                "",
+                dictionary.dictionaryList[KeywordType.Volatilization]!!,
+                dictionary.dictionaryList[KeywordType.Shield]!!
             ), CardRarity.Uncommon, 0, { usePlayerData, _ ->
                 usePlayerData.addShield(10)
 
@@ -140,11 +138,11 @@ class MasterOfAlchemyCardPack {
 
         val wind = Card(
             "바람", listOf(
-                KeywordType.Volatilization.component,
-                Component.text(""),
-                MiniMessage.miniMessage().deserialize("<gray>덱에서 카드를 2장 뽑는다."),
-                Component.text(""),
-                dictionary.dictionaryList["휘발"]!!
+                KeywordType.Volatilization.string,
+                "",
+                "<gray>덱에서 카드를 2장 뽑는다.",
+                "",
+                dictionary.dictionaryList[KeywordType.Volatilization]!!
             ), CardRarity.Uncommon, 0, { usePlayerData, _ ->
                 usePlayerData.drow(2)
                 return@Card true
@@ -153,12 +151,12 @@ class MasterOfAlchemyCardPack {
 
         val steam = Card(
             "증기", listOf(
-                KeywordType.Volatilization.component,
-                Component.text(""),
-                MiniMessage.miniMessage().deserialize("<gray>바라보는 적에게 <gray><bold>나약함 </bold><gray> 3을 부여한다."),
-                Component.text(""),
-                dictionary.dictionaryList["휘발"]!!,
-                dictionary.dictionaryList["나약함"]!!
+                KeywordType.Volatilization.string,
+                "",
+                "<gray>바라보는 적에게 <dark_gray><bold>나약함 </bold><gray> 3을 부여한다.",
+                "",
+                dictionary.dictionaryList[KeywordType.Volatilization]!!,
+                dictionary.dictionaryList[KeywordType.Weakness]!!
             ), CardRarity.Uncommon, 0, { usePlayerData, _ ->
                 val player = usePlayerData.player
                 val target = usePlayerData.focusOn()
@@ -175,11 +173,11 @@ class MasterOfAlchemyCardPack {
 
         val mud = Card(
             "진흙", listOf(
-                KeywordType.Volatilization.component,
-                Component.text(""),
-                MiniMessage.miniMessage().deserialize("<gray>모든 적의 속도가 1 감소한다."),
-                Component.text(""),
-                dictionary.dictionaryList["휘발"]!!
+                KeywordType.Volatilization.string,
+                "",
+                "<gray>모든 적의 속도가 1 감소한다.",
+                "",
+                dictionary.dictionaryList[KeywordType.Volatilization]!!
             ), CardRarity.Uncommon, 0, { usePlayerData, _ ->
                 val targets = usePlayerData.allEnemyMembers()
 
@@ -193,12 +191,12 @@ class MasterOfAlchemyCardPack {
 
         val fog = Card(
             "안개", listOf(
-                KeywordType.Volatilization.component,
-                Component.text(""),
-                MiniMessage.miniMessage().deserialize("<gray>모든 적에게 <gray><bold>실명 </bold><gray>5를 부여한다."),
-                Component.text(""),
-                dictionary.dictionaryList["휘발"]!!,
-                dictionary.dictionaryList["실명"]!!
+                KeywordType.Volatilization.string,
+                "",
+                "<gray>모든 적에게 <dark_gray><bold>실명 </bold><gray>5를 부여한다.",
+                "",
+                dictionary.dictionaryList[KeywordType.Volatilization]!!,
+                dictionary.dictionaryList[KeywordType.Blindness]!!
             ), CardRarity.Uncommon, 0, { usePlayerData, _ ->
                 val targets = usePlayerData.allEnemyMembers()
 
@@ -212,12 +210,12 @@ class MasterOfAlchemyCardPack {
 
         val lava = Card(
             "용암", listOf(
-                KeywordType.Volatilization.component,
-                Component.text(""),
-                MiniMessage.miniMessage().deserialize("<gray>모든 적에게 10의 피해를 입힌다. 대상에게 <red><bold>화상</bold><gray>이 있었다면 추가로 10의 피해를 입힌다."),
-                Component.text(""),
-                dictionary.dictionaryList["휘발"]!!,
-                dictionary.dictionaryList["화상"]!!
+                KeywordType.Volatilization.string,
+                "",
+                "<gray>모든 적에게 10의 피해를 입힌다. 대상에게 <red><bold>화상</bold><gray>이 있었다면 추가로 10의 피해를 입힌다.",
+                "",
+                dictionary.dictionaryList[KeywordType.Volatilization]!!,
+                dictionary.dictionaryList[KeywordType.Burn]!!
             ), CardRarity.Uncommon, 0, { usePlayerData, _ ->
                 val targets = usePlayerData.allEnemyMembers()
 
@@ -235,12 +233,12 @@ class MasterOfAlchemyCardPack {
 
         val lightning = Card(
             "번개", listOf(
-                KeywordType.Volatilization.component,
-                Component.text(""),
-                MiniMessage.miniMessage().deserialize("<gray>무작위 적에게 3의 피해를 입힌다."),
-                MiniMessage.miniMessage().deserialize("<gray>위 효과는 3번 사용하며, 첫 번째 대상에게 여러번 적중할 때마다 추가로 3의 피해를 입힌다."),
-                Component.text(""),
-                dictionary.dictionaryList["휘발"]!!
+                KeywordType.Volatilization.string,
+                "",
+                "<gray>무작위 적에게 3의 피해를 입힌다.",
+                "<gray>위 효과는 3번 사용하며, 첫 번째 대상에게 여러번 적중할 때마다 추가로 3의 피해를 입힌다.",
+                "",
+                dictionary.dictionaryList[KeywordType.Volatilization]!!
             ), CardRarity.Uncommon, 0, { usePlayerData, _ ->
                 val targets = usePlayerData.allEnemyMembers()
                 val firstTarget = targets.random()
@@ -260,12 +258,12 @@ class MasterOfAlchemyCardPack {
 
         val dust = Card(
             "먼지", listOf(
-                KeywordType.Volatilization.component,
-                Component.text(""),
-                MiniMessage.miniMessage().deserialize("<gray>바라보는 적에게 <gray><bold>실명 </bold><gray>10을 부여한다."),
-                Component.text(""),
-                dictionary.dictionaryList["휘발"]!!,
-                dictionary.dictionaryList["실명"]!!
+                KeywordType.Volatilization.string,
+                "",
+                "<gray>바라보는 적에게 <dark_gray><bold>실명 </bold><gray>10을 부여한다.",
+                "",
+                dictionary.dictionaryList[KeywordType.Volatilization]!!,
+                dictionary.dictionaryList[KeywordType.Blindness]!!
             ), CardRarity.Uncommon, 0, { usePlayerData, _ ->
                 val player = usePlayerData.player
                 val target = usePlayerData.focusOn()
@@ -287,10 +285,10 @@ class MasterOfAlchemyCardPack {
         //region lesserConjugation Common Initialization
         val lesserConjugation = Card(
             "하급 연성", listOf(
-                MiniMessage.miniMessage().deserialize("<gold><bold>연금술 재료 더미</bold><gray>의 카드들 중, 무작위 카드 2장을 <gold><bold>연성</bold><gray>한다."),
-                Component.text(""),
-                dictionary.dictionaryList["연금술 재료 더미"]!!,
-                dictionary.dictionaryList["연성"]!!
+                "<gold><bold>연금술 재료 더미</bold><gray>의 카드들 중, 무작위 카드 2장을 <gold><bold>연성</bold><gray>한다.",
+                "",
+                dictionary.dictionaryList[KeywordType.AlchemYingredientsPile]!!,
+                dictionary.dictionaryList[KeywordType.Ductility]!!
             ), CardRarity.Common, 1,
             { usePlayerData, _ ->
                 val player = usePlayerData.player
@@ -301,51 +299,32 @@ class MasterOfAlchemyCardPack {
                     return@Card false
                 }
 
-                val cardA = usePlayerData.alchemYingredientsPile.random()
-                val cardB = if (usePlayerData.alchemYingredientsPile.filter { it != cardA }
-                        .isEmpty()) cardA.copy() else usePlayerData.alchemYingredientsPile.filter { it != cardA }.random()
+                val ingredients = usePlayerData.alchemYingredientsPile.shuffled().take(2)
+                val (cardA, cardB) = if (ingredients.size < 2) {
+                    return@Card false
+                } else ingredients
 
-                usePlayerData.addCard(
-                    when (listOf(cardA.name, cardB.name).sorted()) {
-                        listOf("물", "물") -> {
-                            river
-                        }
-                        listOf("불", "불") -> {
-                            sun
-                        }
-                        listOf("흙", "흙") -> {
-                            earth
-                        }
-                        listOf("공기", "공기") -> {
-                            wind
-                        }
-                        listOf("물", "불") -> {
-                            steam
-                        }
-                        listOf("물", "흙") -> {
-                            mud
-                        }
-                        listOf("물", "공기") -> {
-                            fog
-                        }
-                        listOf("불", "흙") -> {
-                            lava
-                        }
-                        listOf("불", "공기") -> {
-                            lightning
-                        }
-                        listOf("흙", "공기") -> {
-                            dust
-                        }
+                val resultCard = when (listOf(cardA.name, cardB.name).sorted()) {
+                    listOf("물", "물") -> river
+                    listOf("불", "불") -> sun
+                    listOf("흙", "흙") -> earth
+                    listOf("공기", "공기") -> wind
+                    listOf("물", "불") -> steam
+                    listOf("물", "흙") -> mud
+                    listOf("물", "공기") -> fog
+                    listOf("불", "흙") -> lava
+                    listOf("불", "공기") -> lightning
+                    listOf("흙", "공기") -> dust
+                    else -> null
+                }
 
-                        else -> {
-                            return@Card false
-                        }
-                    }
-                )
+                if (resultCard == null) return@Card false
+
+                usePlayerData.addCard(resultCard)
                 usePlayerData.alchemYingredientsPile.removeAll(listOf(cardA, cardB))
 
                 return@Card true
+
             }
         )
         //endregion
@@ -353,9 +332,9 @@ class MasterOfAlchemyCardPack {
         //region kilnOfCreation Common Initialization
         val kilnOfCreation = Card(
             "창조의 가마", listOf(
-                MiniMessage.miniMessage().deserialize("<gray>'연금술의 대가' 카드팩에 존재하는 <gold><bold>연금술 재료 </bold><gray>카드들 중, 무작위 2장을 생성하고 패에 넣는다."),
-                Component.text(""),
-                dictionary.dictionaryList["연금술 재료"]!!
+                "<gray>'연금술의 대가' 카드팩에 존재하는 <gold><bold>연금술 재료 </bold><gray>카드들 중, 무작위 2장을 생성하고 패에 넣는다.",
+                "",
+                dictionary.dictionaryList[KeywordType.AlchemYingredients]!!
             ), CardRarity.Common, 1,
             { usePlayerData, _ ->
                 val cardList = listOf(water, fire, dirt, air)
@@ -369,9 +348,9 @@ class MasterOfAlchemyCardPack {
         //region materialReproduction Common Initialization
         val materialReproduction = Card(
             "재료 복제", listOf(
-                MiniMessage.miniMessage().deserialize("<gold><bold>연금술 재료 더미</bold><gray>의 무작위 카드 1장과 동일한 카드를 생성하고 <gold><bold>연금술 재료 더미</bold><gray>에 넣는다."),
-                Component.text(""),
-                dictionary.dictionaryList["연금술 재료 더미"]!!
+                "<gold><bold>연금술 재료 더미</bold><gray>의 무작위 카드 1장과 동일한 카드를 생성하고 <gold><bold>연금술 재료 더미</bold><gray>에 넣는다.",
+                "",
+                dictionary.dictionaryList[KeywordType.AlchemYingredientsPile    ]!!
             ), CardRarity.Common, 0,
             { usePlayerData, _ ->
                 val player = usePlayerData.player
@@ -393,10 +372,10 @@ class MasterOfAlchemyCardPack {
         //region intermediateSoftness Uncommon Initialization
         val intermediateSoftness = Card(
             "중급 연성", listOf(
-                MiniMessage.miniMessage().deserialize("<gold><bold>연금술 재료 더미</bold><gray>의 카드들 중, 무작위 카드 2장을 <gold><bold>연성</bold><gray>한다."),
-                Component.text(""),
-                dictionary.dictionaryList["연금술 재료 더미"]!!,
-                dictionary.dictionaryList["연성"]!!
+                "<gold><bold>연금술 재료 더미</bold><gray>의 카드들 중, 무작위 카드 2장을 <gold><bold>연성</bold><gray>한다.",
+                "",
+                dictionary.dictionaryList[KeywordType.AlchemYingredientsPile    ]!!,
+                dictionary.dictionaryList[KeywordType.Ductility]!!
             ), CardRarity.Uncommon, 0,
             { usePlayerData, _ ->
                 val player = usePlayerData.player
@@ -407,51 +386,40 @@ class MasterOfAlchemyCardPack {
                     return@Card false
                 }
 
-                val cardA = usePlayerData.alchemYingredientsPile.random()
-                val cardB = if (usePlayerData.alchemYingredientsPile.filter { it != cardA }
-                        .isEmpty()) cardA.copy() else usePlayerData.alchemYingredientsPile.filter { it != cardA }.random()
+                val ingredients = usePlayerData.alchemYingredientsPile.shuffled().take(2)
+                if (ingredients.size < 2) {
+                    player.sendMessage(cardUseFailText())
+                    player.playCardUsingFailSound()
+                    return@Card false
+                }
 
-                usePlayerData.addCard(
-                    when (listOf(cardA.name, cardB.name).sorted()) {
-                        listOf("물", "물") -> {
-                            river
-                        }
-                        listOf("불", "불") -> {
-                            sun
-                        }
-                        listOf("흙", "흙") -> {
-                            earth
-                        }
-                        listOf("공기", "공기") -> {
-                            wind
-                        }
-                        listOf("물", "불") -> {
-                            steam
-                        }
-                        listOf("물", "흙") -> {
-                            mud
-                        }
-                        listOf("물", "공기") -> {
-                            fog
-                        }
-                        listOf("불", "흙") -> {
-                            lava
-                        }
-                        listOf("불", "공기") -> {
-                            lightning
-                        }
-                        listOf("흙", "공기") -> {
-                            dust
-                        }
+                val (cardA, cardB) = ingredients
 
-                        else -> {
-                            return@Card false
-                        }
-                    }
-                )
+                val resultCard = when (listOf(cardA.name, cardB.name).sorted()) {
+                    listOf("물", "물") -> river
+                    listOf("불", "불") -> sun
+                    listOf("흙", "흙") -> earth
+                    listOf("공기", "공기") -> wind
+                    listOf("물", "불") -> steam
+                    listOf("물", "흙") -> mud
+                    listOf("물", "공기") -> fog
+                    listOf("불", "흙") -> lava
+                    listOf("불", "공기") -> lightning
+                    listOf("흙", "공기") -> dust
+                    else -> null
+                }
+
+                if (resultCard == null) {
+                    player.sendMessage(cardUseFailText())
+                    player.playCardUsingFailSound()
+                    return@Card false
+                }
+
+                usePlayerData.addCard(resultCard)
                 usePlayerData.alchemYingredientsPile.removeAll(listOf(cardA, cardB))
 
                 return@Card true
+
             }
         )
         //endregion\
@@ -459,10 +427,10 @@ class MasterOfAlchemyCardPack {
         //region disappearanceOfMaterials Uncommon Initialization
         val disappearanceOfMaterials = Card(
             "재료의 소멸", listOf(
-                MiniMessage.miniMessage().deserialize("<gold><bold>연금술 재료 더미</bold><gray>의 카드들 중, 무작위 카드 1장을 소멸시키고 발동할 수 있다."),
-                MiniMessage.miniMessage().deserialize("<gray>덱에서 카드를 1장 뽑고 <blue><bold>마나</bold><gray>를 1 회복한다."),
-                Component.text(""),
-                dictionary.dictionaryList["연금술 재료 더미"]!!
+                "<gold><bold>연금술 재료 더미</bold><gray>의 카드들 중, 무작위 카드 1장을 소멸시키고 발동할 수 있다.",
+                "<gray>덱에서 카드를 1장 뽑고 <blue><bold>마나</bold><gray>를 1 회복한다.",
+                "",
+                dictionary.dictionaryList[KeywordType.AlchemYingredientsPile    ]!!
             ), CardRarity.Uncommon, 0,
             { usePlayerData, _ ->
                 val player = usePlayerData.player
@@ -485,17 +453,17 @@ class MasterOfAlchemyCardPack {
         //region deactivateConjugation Uncommon Initialization
         val deactivateConjugation = Card(
             "연성 해제", listOf(
-                MiniMessage.miniMessage().deserialize("<gray>패에 <gold><bold>연성</bold><gray>을 통해 생성된 카드를 소멸시키고 발동할 수 있다."),
-                MiniMessage.miniMessage().deserialize("<gray>소멸시킨 카드의 재료가 되는 카드를 생성하고 <gold><bold>연금술 재료 더미</bold><gray>에 넣는다."),
-                Component.text(""),
-                dictionary.dictionaryList["연성"]!!,
-                dictionary.dictionaryList["연금술 재료 더미"]!!
+                "<gray>패에 <gold><bold>연성</bold><gray>을 통해 생성된 카드를 소멸시키고 발동할 수 있다.",
+                "<gray>소멸시킨 카드의 재료가 되는 카드를 생성하고 <gold><bold>연금술 재료 더미</bold><gray>에 넣는다.",
+                "",
+                dictionary.dictionaryList[KeywordType.Ductility]!!,
+                dictionary.dictionaryList[KeywordType.AlchemYingredientsPile]!!
             ), CardRarity.Uncommon, 0,
             { usePlayerData, _ ->
                 val player = usePlayerData.player
                 val cards = listOf(river, sun, earth, wind, steam, mud, fog, lava, lightning, dust)
 
-                if (!usePlayerData.hand.containsAll(cards)) {
+                if (usePlayerData.hand.none { cards.contains(it) }) {
                     player.sendMessage(cardUseFailText())
                     player.playCardUsingFailSound()
                     return@Card false
@@ -558,14 +526,14 @@ class MasterOfAlchemyCardPack {
         //region urgentDelivery Rare Initialization
         val urgentDelivery = Card(
             "긴급 배달", listOf(
-                MiniMessage.miniMessage().deserialize("<gray>'연금술의 대가' 카드팩에 존재하는 <gold><bold>연금술 재료</bold><gray> 카드들 중, 무작위 카드를 가능한 만큼 생성하고 패에 넣는다."),
-                Component.text(""),
-                dictionary.dictionaryList["연금술 재료"]!!
+                "<gray>'연금술의 대가' 카드팩에 존재하는 <gold><bold>연금술 재료</bold><gray> 카드들 중, 무작위 카드를 가능한 만큼 생성하고 패에 넣는다.",
+                "",
+                dictionary.dictionaryList[KeywordType.AlchemYingredients]!!
             ), CardRarity.Rare, 1,
             { usePlayerData, _ ->
                 val cardList = listOf(water, fire, dirt, air)
 
-                while (usePlayerData.hand.size <= 9) {
+                while (usePlayerData.hand.size < 9) {
                     usePlayerData.addCard(cardList.random())
                 }
                 return@Card true
@@ -577,11 +545,11 @@ class MasterOfAlchemyCardPack {
         //region substitutionDuctility Legend Initialization
         val substitutionDuctility = Card(
             "치환 연성", listOf(
-                MiniMessage.miniMessage().deserialize("<gold><bold>연금술 재료 더미</bold>의 카드들 중, 무작위 카드 2장을 제외하고 발동할 수 있다."),
-                MiniMessage.miniMessage().deserialize("<gray>제외한 카드를 <gold><bold>연성</bold>한 것으로 간주하고 연성한 카드를 패에 넣는다."),
-                Component.text(""),
-                dictionary.dictionaryList["연금술 재료 더미"]!!,
-                dictionary.dictionaryList["연성"]!!
+                "<gold><bold>연금술 재료 더미</bold><gray>의 카드들 중, 무작위 카드 2장을 제외하고 발동할 수 있다.",
+                "<gray>제외한 카드를 <gold><bold>연성</bold><gray>한 것으로 간주하고 연성한 카드를 패에 넣는다.",
+                "",
+                dictionary.dictionaryList[KeywordType.AlchemYingredientsPile]!!,
+                dictionary.dictionaryList[KeywordType.Ductility]!!
             ), CardRarity.Legend, 0,
             { usePlayerData, _ ->
                 val player = usePlayerData.player
@@ -593,47 +561,31 @@ class MasterOfAlchemyCardPack {
                 }
 
                 val cardA = usePlayerData.alchemYingredientsPile.random()
-                val cardB = if (usePlayerData.alchemYingredientsPile.filter { it != cardA }
-                        .isEmpty()) cardA.copy() else usePlayerData.alchemYingredientsPile.filter { it != cardA }.random()
+                val cardB = usePlayerData.alchemYingredientsPile
+                    .filter { it != cardA }
+                    .randomOrNull() ?: cardA.copy()
 
-                usePlayerData.addCard(
-                    when (listOf(cardA.name, cardB.name).sorted()) {
-                        listOf("물", "물") -> {
-                            river
-                        }
-                        listOf("불", "불") -> {
-                            sun
-                        }
-                        listOf("흙", "흙") -> {
-                            earth
-                        }
-                        listOf("공기", "공기") -> {
-                            wind
-                        }
-                        listOf("물", "불") -> {
-                            steam
-                        }
-                        listOf("물", "흙") -> {
-                            mud
-                        }
-                        listOf("물", "공기") -> {
-                            fog
-                        }
-                        listOf("불", "흙") -> {
-                            lava
-                        }
-                        listOf("불", "공기") -> {
-                            lightning
-                        }
-                        listOf("흙", "공기") -> {
-                            dust
-                        }
+                val resultCard = when (listOf(cardA.name, cardB.name).sorted()) {
+                    listOf("물", "물") -> river
+                    listOf("불", "불") -> sun
+                    listOf("흙", "흙") -> earth
+                    listOf("공기", "공기") -> wind
+                    listOf("물", "불") -> steam
+                    listOf("물", "흙") -> mud
+                    listOf("물", "공기") -> fog
+                    listOf("불", "흙") -> lava
+                    listOf("불", "공기") -> lightning
+                    listOf("흙", "공기") -> dust
+                    else -> null
+                }
 
-                        else -> {
-                            return@Card false
-                        }
-                    }
-                )
+                if (resultCard == null) {
+                    player.sendMessage(cardUseFailText())
+                    player.playCardUsingFailSound()
+                    return@Card false
+                }
+
+                usePlayerData.addCard(resultCard)
                 usePlayerData.banish.addAll(listOf(cardA, cardB))
                 usePlayerData.alchemYingredientsPile.removeAll(listOf(cardA, cardB))
 

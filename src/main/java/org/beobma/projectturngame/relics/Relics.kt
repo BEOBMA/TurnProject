@@ -6,7 +6,7 @@ import org.beobma.projectturngame.util.EffectTime
 
 class Relics(
     val name: String,
-    val description: List<Component>,
+    val description: List<String>,
     val effectTime: EffectTime,
     val effect: ((Player, List<Any>) -> Any)?
 )

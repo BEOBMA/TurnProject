@@ -6,7 +6,7 @@ import org.bukkit.Material
 
 class EventOption(
     val name: String,
-    val description: List<Component>,
+    val description: List<String>,
     val itemMaterial: Material,
     val optionChoiceEffect: ((Player) -> Unit)?
 )

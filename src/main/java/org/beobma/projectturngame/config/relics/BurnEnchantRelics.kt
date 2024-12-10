@@ -1,13 +1,11 @@
 package org.beobma.projectturngame.config.relics
 
-import net.kyori.adventure.text.Component
 import org.beobma.projectturngame.config.RelicsConfig.Companion.relicsList
 import org.beobma.projectturngame.entity.Entity
 import org.beobma.projectturngame.localization.Dictionary
 import org.beobma.projectturngame.manager.BurnManager.increaseBurn
 import org.beobma.projectturngame.relics.Relics
 import org.beobma.projectturngame.text.KeywordType
-import org.beobma.projectturngame.text.TextColorType
 import org.beobma.projectturngame.util.DamageType
 import org.beobma.projectturngame.util.EffectTime
 
@@ -17,10 +15,12 @@ class BurnEnchantRelics {
     }
 
     private fun relicsConfig() {
-        val relics = Relics("인챈트 - 화상",listOf(
-            Component.text("공격 적중 시 대상에게 ", TextColorType.Gray.textColor).append(KeywordType.Burn.component.append(Component.text(" 1을 부여한다.", TextColorType.Gray.textColor))),
-            Component.text(""),
-            Dictionary().dictionaryList["화상"]!!
+        val dictionary = Dictionary()
+        val relics = Relics("인챈트 - 화상",
+            listOf(
+            "공격 적중 시 대상에게 ${KeywordType.Burn.string}</bold><gray>을 1 부여한다.",
+            "",
+            dictionary.dictionaryList[KeywordType.Burn]!!
             ), EffectTime.OnHit)
         { player, inputList ->
             val entity = inputList[0]
