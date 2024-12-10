@@ -2,16 +2,17 @@ package org.beobma.projectturngame.manager
 
 import org.bukkit.Location
 import org.bukkit.Particle
+import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import kotlin.math.cos
 import kotlin.math.sin
 
 interface ParticleHandler {
-    fun spawnSphereParticles(player: Player, particle: Particle, radius: Double, points: Int)
+    fun spawnSphereParticles(player: Entity, particle: Particle, radius: Double, points: Int)
 }
 
 object ParticleManager : ParticleHandler {
-    override fun spawnSphereParticles(player: Player, particle: Particle, radius: Double, points: Int) {
+    override fun spawnSphereParticles(player: Entity, particle: Particle, radius: Double, points: Int) {
         val playerLocation: Location = player.location.add(0.0, 1.0, 0.0)
 
         for (i in 0 until points) {

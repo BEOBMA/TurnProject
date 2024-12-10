@@ -12,6 +12,8 @@ import org.beobma.projectturngame.manager.ParticleAnimationManager.isPlay
 import org.beobma.projectturngame.manager.PlayerManager.isTurn
 import org.beobma.projectturngame.text.KeywordType
 import org.beobma.projectturngame.text.TextColorType
+import org.bukkit.Particle
+import org.bukkit.Sound
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerDropItemEvent
@@ -44,6 +46,7 @@ class OnPlayerDropItemEvent : Listener {
             playerData.hand.remove(card)
             player.inventory.remove(item.itemStack)
             playerData.applyHotbar()
+            player.world.playSound(player.location, Sound.ITEM_BUCKET_EMPTY_POWDER_SNOW , 1.0F, 0.5F)
             return
         }
 
@@ -61,6 +64,7 @@ class OnPlayerDropItemEvent : Listener {
                 return
             }
 
+            player.world.playSound(player.location, Sound.BLOCK_ANVIL_USE , 1.0F, 1.0F)
             fun MutableList<Card>.replaceCard(targetCard: Card, newCard: Card) {
                 forEachIndexed { index, currentCard ->
                     if (currentCard.description == targetCard.description) {
