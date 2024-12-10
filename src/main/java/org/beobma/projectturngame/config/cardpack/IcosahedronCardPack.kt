@@ -22,6 +22,8 @@ import org.beobma.projectturngame.manager.SelectionFactordManager.focusOn
 import org.beobma.projectturngame.manager.SoundManager.playCardUsingFailSound
 import org.beobma.projectturngame.manager.TextManager.targetingFailText
 import org.beobma.projectturngame.util.ResetType
+import org.bukkit.Particle
+import org.bukkit.Sound
 
 class IcosahedronCardPack {
     private val dictionary = Dictionary()
@@ -54,6 +56,13 @@ class IcosahedronCardPack {
 
                 val dice = usePlayerData.diceRoll(1, 20)
 
+                if (dice < 10) {
+                    player.world.playSound(player.location, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1.0F, 0.5F)
+                }
+                else {
+                    player.world.playSound(player.location, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1.0F, 2.0F)
+                }
+                player.world.spawnParticle(Particle.SWEEP_ATTACK, target.entity.location, 1, 0.0, 0.0, 0.0, 1.0)
                 target.damage(dice, usePlayerData)
                 return@Card true
             }
@@ -68,14 +77,17 @@ class IcosahedronCardPack {
                 "<gray>이 외의 경우에는 패에서 무작위 카드 1장을 버린다."
             ), CardRarity.Common, 1,
             { usePlayerData, _ ->
+                val player = usePlayerData.player
                 val dice = usePlayerData.diceRoll(1, 20)
 
                 if (dice >= 10) {
                     usePlayerData.drow(2)
+                    player.world.playSound(player.location, Sound.ITEM_BOOK_PAGE_TURN, 1.0F, 1.5F)
                 }
                 else {
                     val card = usePlayerData.hand.random()
                     usePlayerData.cardThrow(card)
+                    player.world.playSound(player.location, Sound.ENTITY_WIND_CHARGE_WIND_BURST, 1.0F, 0.5F)
                 }
                 return@Card true
             }
@@ -90,16 +102,18 @@ class IcosahedronCardPack {
                 "<gray>이 외의 경우에는 <blue><bold>마나</bold><gray>를 0으로 만들고 패의 카드를 모두 버린다."
             ), CardRarity.Common, 3,
             { usePlayerData, _ ->
+                val player = usePlayerData.player
                 val dice = usePlayerData.diceRoll(1, 20)
 
                 if (dice == 20) {
                     usePlayerData.addMana(usePlayerData.maxMana)
-
                     usePlayerData.drow(5)
+                    player.world.playSound(player.location, Sound.ITEM_GOAT_HORN_SOUND_1, 1.0F, 2.0F)
                 }
                 else {
                     usePlayerData.setMana(0)
                     usePlayerData.clearHand()
+                    player.world.playSound(player.location, Sound.ENTITY_WITHER_DEATH, 0.5F, 1.0F)
                 }
                 return@Card true
             }
@@ -126,10 +140,13 @@ class IcosahedronCardPack {
                 val dice = usePlayerData.diceRoll(1, 20)
 
                 if (dice == 1) {
+                    player.world.playSound(player.location, Sound.ENTITY_WITHER_DEATH, 0.5F, 1.0F)
                     usePlayerData.death()
                 }
                 else {
                     target.damage(15, usePlayerData)
+                    player.world.playSound(player.location, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1.0F, 0.5F)
+                    player.world.spawnParticle(Particle.SWEEP_ATTACK, target.entity.location, 1, 0.0, 0.0, 0.0, 1.0)
                 }
                 return@Card true
             }
@@ -144,14 +161,18 @@ class IcosahedronCardPack {
                 "<gray>값이 홀수라면 <blue><bold>마나</bold><gray>를 1 회복한다."
             ), CardRarity.Uncommon, 1,
             { usePlayerData, _ ->
+                val player = usePlayerData.player
                 val dice = usePlayerData.diceRoll(1, 20)
+
+                player.world.playSound(player.location, Sound.BLOCK_RESPAWN_ANCHOR_CHARGE, 1.0F, 2.0F)
+                player.world.spawnParticle(Particle.WAX_OFF, player.location, 10, 0.5, 0.5, 0.5, 1.0)
 
                 if (dice % 2 == 0) {
                     usePlayerData.addMana(2)
+
                 }
                 else {
                     usePlayerData.addMana(1)
-
                 }
                 return@Card true
             }
@@ -164,8 +185,11 @@ class IcosahedronCardPack {
                 "<gray>체력을 20면체 주사위를 굴려 나온 값만큼 회복한다."
             ), CardRarity.Uncommon, 1,
             { usePlayerData, _ ->
+                val player = usePlayerData.player
                 val dice = usePlayerData.diceRoll(1, 20)
 
+                player.world.playSound(player.location, Sound.BLOCK_BEACON_ACTIVATE, 1.0F, 2.0F)
+                player.world.spawnParticle(Particle.HEART, player.location, 5, 0.1, 0.1, 0.1, 0.0)
                 usePlayerData.heal(dice, usePlayerData)
 
                 return@Card true
@@ -179,8 +203,11 @@ class IcosahedronCardPack {
                 "<gray>이번 턴 동안 주사위를 굴리면 그 값에 1을 더한다."
             ), CardRarity.Rare, 1,
             { usePlayerData, _ ->
+                val player = usePlayerData.player
                 usePlayerData.diceWeight += 1
                 usePlayerData.turnEndUnit.add { usePlayerData.diceWeight -= 1 }
+
+                player.world.playSound(player.location, Sound.BLOCK_BEACON_ACTIVATE, 1.0F, 2.0F)
                 return@Card true
             }
         )
@@ -194,15 +221,18 @@ class IcosahedronCardPack {
                 "<gray>이외의 경우에는 이번 턴 동안 주사위를 굴려 나온 값에 이 주사위 값을 더한다."
             ), CardRarity.Rare, 1,
             { usePlayerData, _ ->
+                val player = usePlayerData.player
                 val dice = usePlayerData.diceRoll(1, 20)
 
                 if (dice >= 10) {
                     usePlayerData.diceWeight -= dice
                     usePlayerData.turnEndUnit.add { usePlayerData.diceWeight += dice }
+                    player.world.playSound(player.location, Sound.BLOCK_BEACON_DEACTIVATE, 1.0F, 0.5F)
                 }
                 else {
                     usePlayerData.diceWeight += dice
                     usePlayerData.turnEndUnit.add { usePlayerData.diceWeight -= dice }
+                    player.world.playSound(player.location, Sound.BLOCK_BEACON_ACTIVATE, 1.0F, 2.0F)
                 }
                 return@Card true
             }
@@ -215,8 +245,9 @@ class IcosahedronCardPack {
                 "<gray>다음번 주사위를 굴리면 그 값은 반드시 최솟값 또는 최댓값으로 결정된다."
             ), CardRarity.Rare, 2,
             { usePlayerData, _ ->
+                val player = usePlayerData.player
                 usePlayerData.addTag("minMax", ResetType.None)
-
+                player.world.playSound(player.location, Sound.BLOCK_BEACON_ACTIVATE, 1.0F, 2.0F)
                 return@Card true
             }
         )
@@ -228,7 +259,9 @@ class IcosahedronCardPack {
                 "<gray>다음번 주사위를 굴리면 주사위를 2개 굴려 더 높은 값이 나온 주사위를 사용한다."
             ), CardRarity.Legend, 3,
             { usePlayerData, _ ->
+                val player = usePlayerData.player
                 usePlayerData.addTag("chanceAdvantage", ResetType.None)
+                player.world.playSound(player.location, Sound.BLOCK_BEACON_ACTIVATE, 1.0F, 2.0F)
                 return@Card true
             }
         )
