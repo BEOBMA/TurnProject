@@ -24,6 +24,9 @@ import org.beobma.projectturngame.manager.SoundManager.playCardUsingFailSound
 import org.beobma.projectturngame.manager.StunManager.addStun
 import org.beobma.projectturngame.manager.TextManager.targetingFailText
 import org.beobma.projectturngame.text.KeywordType
+import org.bukkit.Material
+import org.bukkit.Particle
+import org.bukkit.Sound
 
 class HammerOfReforgingCardPack {
     private val dictionary = Dictionary()
@@ -58,6 +61,8 @@ class HammerOfReforgingCardPack {
                     player.playCardUsingFailSound()
                     return@Card false
                 }
+                player.world.playSound(player.location, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1.0F, 0.5F)
+                player.world.spawnParticle(Particle.SWEEP_ATTACK, target.entity.location, 1, 0.0, 0.0, 0.0, 1.0)
 
                 target.damage(5, usePlayerData)
                 return@Card true
@@ -82,6 +87,9 @@ class HammerOfReforgingCardPack {
                     player.playCardUsingFailSound()
                     return@Card false
                 }
+
+                player.world.playSound(player.location, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1.0F, 0.5F)
+                player.world.spawnParticle(Particle.SWEEP_ATTACK, target.entity.location, 5, 0.1, 0.1, 0.1, 1.0)
 
                 target.damage(20, usePlayerData)
                 return@Card true
@@ -111,8 +119,11 @@ class HammerOfReforgingCardPack {
 
                 val targets = usePlayerData.enemyDiffusion(target)
 
+                player.world.playSound(player.location, Sound.ITEM_MACE_SMASH_GROUND, 1.0F, 1.5F)
+
                 targets.forEach {
                     it.damage(7, usePlayerData)
+                    player.world.spawnParticle(Particle.SWEEP_ATTACK, it.entity.location, 1, 0.0, 0.0, 0.0, 1.0)
                 }
 
                 return@Card true
@@ -140,8 +151,11 @@ class HammerOfReforgingCardPack {
 
                 val targets = usePlayerData.enemyDiffusion(target)
 
+                player.world.playSound(player.location, Sound.ITEM_MACE_SMASH_GROUND, 1.0F, 0.5F)
+
                 targets.forEach {
                     it.damage(17, usePlayerData)
+                    player.world.spawnParticle(Particle.SWEEP_ATTACK, it.entity.location, 20, 0.1, 0.1, 0.1, 1.0)
                 }
 
                 return@Card true
@@ -161,7 +175,9 @@ class HammerOfReforgingCardPack {
                 dictionary.dictionaryList[KeywordType.Protect]!!
             ), CardRarity.Common, 1,
             { usePlayerData, _ ->
+                val player = usePlayerData.player
                 usePlayerData.increaseProtect(1, usePlayerData)
+                player.world.playSound(player.location, Sound.ITEM_SHIELD_BLOCK, 1.0F, 1.0F)
 
                 return@Card true
             }
@@ -178,11 +194,13 @@ class HammerOfReforgingCardPack {
                 dictionary.dictionaryList[KeywordType.Protect]!!
             ), CardRarity.Common, 1,
             { usePlayerData, _ ->
+                val player = usePlayerData.player
                 val targets = usePlayerData.allTeamMembers(true, false)
 
                 targets.forEach {
                     it.increaseProtect(3, usePlayerData)
                 }
+                player.world.playSound(player.location, Sound.ITEM_SHIELD_BLOCK, 1.0F, 0.7F)
 
                 return@Card true
             }
@@ -211,6 +229,8 @@ class HammerOfReforgingCardPack {
                     return@Card false
                 }
 
+                player.world.playSound(player.location, Sound.ITEM_MACE_SMASH_GROUND_HEAVY, 1.0F, 1.5F)
+                player.world.spawnParticle(Particle.SWEEP_ATTACK, target.entity.location, 1, 0.0, 0.0, 0.0, 1.0)
                 target.damage(13, usePlayerData)
                 return@Card true
             }
@@ -236,6 +256,8 @@ class HammerOfReforgingCardPack {
                     return@Card false
                 }
 
+                player.world.playSound(player.location, Sound.ITEM_MACE_SMASH_GROUND_HEAVY, 1.0F, 0.5F)
+                player.world.spawnParticle(Particle.SWEEP_ATTACK, target.entity.location, 1, 0.0, 0.0, 0.0, 1.0)
                 target.damage(23, usePlayerData)
                 target.addStun()
                 return@Card true
@@ -258,8 +280,10 @@ class HammerOfReforgingCardPack {
                 val player = usePlayerData.player
                 val targets = usePlayerData.allEnemyMembers()
 
+                player.world.playSound(player.location, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1.0F, 1.0F)
                 targets.forEach {
                     it.damage(7, usePlayerData)
+                    player.world.spawnParticle(Particle.SWEEP_ATTACK, it.entity.location, 1, 0.0, 0.0, 0.0, 1.0)
                 }
                 return@Card true
             }
@@ -279,9 +303,13 @@ class HammerOfReforgingCardPack {
                 val player = usePlayerData.player
                 val targets = usePlayerData.allEnemyMembers()
 
+                player.world.playSound(player.location, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1.0F, 1.0F)
+
                 targets.forEach {
                     it.damage(12, usePlayerData)
                     it.increaseBleeding(5, usePlayerData)
+                    player.world.spawnParticle(Particle.SWEEP_ATTACK, it.entity.location, 1, 0.0, 0.0, 0.0, 1.0)
+                    player.world.spawnParticle(Particle.ITEM, it.entity.location, 1, 0.0, 0.0, 0.0, 1.0, Material.REDSTONE.createBlockData())
                 }
                 return@Card true
             }
@@ -308,6 +336,8 @@ class HammerOfReforgingCardPack {
                     return@Card false
                 }
 
+                player.world.playSound(player.location, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1.0F, 2.0F)
+                player.world.spawnParticle(Particle.SWEEP_ATTACK, target.entity.location, 1, 0.0, 0.0, 0.0, 1.0)
                 target.damage(10, usePlayerData)
                 return@Card true
             }
@@ -333,9 +363,13 @@ class HammerOfReforgingCardPack {
                     return@Card false
                 }
 
+                player.world.playSound(player.location, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1.0F, 2.0F)
+                player.world.spawnParticle(Particle.SWEEP_ATTACK, target.entity.location, 1, 0.0, 0.0, 0.0, 1.0)
                 target.damage(10, usePlayerData)
                 if (target.maxHealth / 5 >= target.health) {
                     target.damage(40, usePlayerData)
+                    player.world.playSound(player.location, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1.0F, 2.0F)
+                    player.world.spawnParticle(Particle.END_ROD, target.entity.location, 50, 0.0, 0.0, 0.0, 0.4)
                 }
                 return@Card true
             }
@@ -364,6 +398,8 @@ class HammerOfReforgingCardPack {
                     return@Card false
                 }
 
+                player.world.playSound(player.location, Sound.ITEM_MACE_SMASH_GROUND, 1.0F, 2.0F)
+                player.world.spawnParticle(Particle.SWEEP_ATTACK, target.entity.location, 1, 0.0, 0.0, 0.0, 1.0)
                 target.damage(20, usePlayerData)
                 return@Card true
             }
@@ -390,9 +426,13 @@ class HammerOfReforgingCardPack {
                     return@Card false
                 }
 
+                player.world.playSound(player.location, Sound.ITEM_MACE_SMASH_GROUND, 1.0F, 2.0F)
+                player.world.spawnParticle(Particle.SWEEP_ATTACK, target.entity.location, 1, 0.0, 0.0, 0.0, 1.0)
                 target.damage(20, usePlayerData)
                 if (target.getBleeding() is AbnormalityStatus) {
                     target.damage(10, usePlayerData)
+                    player.world.playSound(player.location, Sound.ITEM_MACE_SMASH_GROUND, 1.0F, 2.0F)
+                    player.world.spawnParticle(Particle.CRIT, target.entity.location, 30, 0.0, 0.0, 0.0, 1.0)
                 }
                 return@Card true
             }
@@ -413,6 +453,7 @@ class HammerOfReforgingCardPack {
             { usePlayerData, _ ->
                 val player = usePlayerData.player
 
+                player.world.playSound(player.location, Sound.ITEM_SHIELD_BLOCK, 1.0F, 1.0F)
                 usePlayerData.addShield(20)
                 return@Card true
             }
@@ -431,6 +472,7 @@ class HammerOfReforgingCardPack {
             { usePlayerData, _ ->
                 val player = usePlayerData.player
 
+                player.world.playSound(player.location, Sound.ITEM_SHIELD_BLOCK, 1.0F, 0.5F)
                 usePlayerData.addShield(40)
                 return@Card true
             }
@@ -457,6 +499,8 @@ class HammerOfReforgingCardPack {
                     return@Card false
                 }
 
+                player.world.playSound(player.location, Sound.ITEM_MACE_SMASH_AIR, 1.0F, 2.0F)
+
                 target.damage(10, usePlayerData)
                 return@Card true
             }
@@ -481,6 +525,8 @@ class HammerOfReforgingCardPack {
                     return@Card false
                 }
 
+                player.world.playSound(player.location, Sound.ITEM_MACE_SMASH_AIR, 1.0F, 1.5F)
+                player.world.spawnParticle(Particle.CRIT, target.entity.location, 10, 0.0, 0.0, 0.0, 1.0)
                 target.damage(20, usePlayerData)
                 return@Card true
             }
