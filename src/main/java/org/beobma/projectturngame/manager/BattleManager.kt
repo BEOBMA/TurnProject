@@ -25,6 +25,7 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
+import kotlin.math.sqrt
 
 
 interface Battlehandler {
@@ -46,7 +47,7 @@ object BattleManager : Battlehandler {
             GameDifficulty.Hard -> 1.25
         }
 
-        val healthWeight = (game.tileStep) * difficultyWeight
+        val healthWeight = sqrt(game.tileStep.toDouble()) * difficultyWeight
 
         fun spawnEntity(entityType: EntityType): LivingEntity {
             val entity = Bukkit.getWorld("world")!!

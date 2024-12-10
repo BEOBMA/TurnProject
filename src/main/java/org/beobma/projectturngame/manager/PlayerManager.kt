@@ -15,6 +15,7 @@ import org.beobma.projectturngame.util.DamageType
 import org.beobma.projectturngame.util.ResetType
 import org.beobma.projectturngame.util.ResetType.*
 import org.bukkit.Material
+import org.bukkit.Sound
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import kotlin.random.Random
@@ -146,6 +147,7 @@ object PlayerManager : PlayerHandler {
             else {
                 this.shield -= finalDamage
                 finalDamage = 0
+                player.world.playSound(player.location, Sound.ITEM_SHIELD_BLOCK, 1.0F, 1.0F)
             }
         }
 

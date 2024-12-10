@@ -14,6 +14,7 @@ import org.beobma.projectturngame.manager.GameManager.battleStop
 import org.beobma.projectturngame.text.TextColorType
 import org.beobma.projectturngame.util.DamageType
 import org.bukkit.Material
+import org.bukkit.Sound
 import org.bukkit.attribute.Attribute
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
@@ -115,6 +116,7 @@ object EnemyManager : EnemyHandler {
             }
             // 최종 피해가 보호막 수치보다 미만일 경우
             else {
+                entity.world.playSound(entity.location, Sound.ITEM_SHIELD_BLOCK, 1.0F, 1.0F)
                 this.shield -= finalDamage
                 finalDamage = 0
             }
