@@ -309,7 +309,7 @@ class HammerOfReforgingCardPack {
                     it.damage(12, usePlayerData)
                     it.increaseBleeding(5, usePlayerData)
                     player.world.spawnParticle(Particle.SWEEP_ATTACK, it.entity.location, 1, 0.0, 0.0, 0.0, 1.0)
-                    player.world.spawnParticle(Particle.ITEM, it.entity.location, 1, 0.0, 0.0, 0.0, 1.0, Material.REDSTONE.createBlockData())
+                    player.world.spawnParticle(Particle.CRIT, it.entity.location, 10, 0.0, 0.0, 0.0, 1.0)
                 }
                 return@Card true
             }

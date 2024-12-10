@@ -9,6 +9,7 @@ import org.beobma.projectturngame.manager.CardManager.applyHotbar
 import org.beobma.projectturngame.manager.CardManager.toItem
 import org.beobma.projectturngame.manager.CustomStackManager.increaseStack
 import org.beobma.projectturngame.manager.ParticleAnimationManager.isPlay
+import org.beobma.projectturngame.manager.PlayerManager.addMana
 import org.beobma.projectturngame.manager.PlayerManager.isTurn
 import org.beobma.projectturngame.text.KeywordType
 import org.beobma.projectturngame.text.TextColorType
@@ -57,7 +58,7 @@ class OnPlayerDropItemEvent : Listener {
                 return
             }
 
-            playerData.mana--
+            playerData.addMana(-1)
             val reforgedCard = reforgeCardPair[card]
             if (reforgedCard == null) {
                 event.isCancelled = true
