@@ -29,6 +29,8 @@ import org.beobma.projectturngame.manager.TimeManager.increaseTime
 import org.beobma.projectturngame.text.KeywordType
 import org.beobma.projectturngame.util.DamageType
 import org.beobma.projectturngame.util.EffectTime
+import org.bukkit.Particle
+import org.bukkit.Sound
 
 class RelativityOfTimeCardPack {
     private val dictionary = Dictionary()
@@ -55,8 +57,11 @@ class RelativityOfTimeCardPack {
                 dictionary.dictionaryList[KeywordType.Time]!!
             ), CardRarity.Common, 1,
             { usePlayerData, _ ->
+                val player = usePlayerData.player
                 val game = Info.game ?: return@Card false
 
+                player.world.playSound(player.location, Sound.BLOCK_BEACON_POWER_SELECT, 1.0F, 2.0F)
+                player.world.spawnParticle(Particle.END_ROD, player.location, 10, 0.0, 0.0, 0.0, 0.3)
                 game.continueEffects.add(ContinueEffect(usePlayerData, EffectTime.TurnEnd, {
                     usePlayerData.increaseTime(1, usePlayerData)
                 }))
@@ -82,6 +87,10 @@ class RelativityOfTimeCardPack {
                     player.playCardUsingFailSound()
                     return@Card false
                 }
+
+                player.world.playSound(player.location, Sound.ITEM_BOOK_PAGE_TURN, 1.0F, 1.5F)
+                player.world.playSound(player.location, Sound.BLOCK_RESPAWN_ANCHOR_CHARGE, 1.0F, 2.0F)
+                player.world.spawnParticle(Particle.WAX_OFF, player.location, 10, 0.5, 0.5, 0.5, 1.0)
 
                 usePlayerData.decreaseTime(2, usePlayerData)
                 usePlayerData.drow(1)
@@ -115,6 +124,8 @@ class RelativityOfTimeCardPack {
                 }
 
                 usePlayerData.decreaseTime(1, usePlayerData)
+                player.world.playSound(player.location, Sound.ENTITY_SNIFFER_STEP, 1.0F, 2.0F)
+                player.world.spawnParticle(Particle.ENCHANT, player.location, 10, 0.3, 0.3, 0.3, 1.0)
 
                 usePlayerData.speed += 3
                 game.battleEndUnit.add {
@@ -135,6 +146,10 @@ class RelativityOfTimeCardPack {
                 dictionary.dictionaryList[KeywordType.Time]!!
             ), CardRarity.Uncommon, 0,
             { usePlayerData, _ ->
+                val player = usePlayerData.player
+
+                player.world.playSound(player.location, Sound.BLOCK_RESPAWN_ANCHOR_DEPLETE, 1.0F, 2.0F)
+                player.world.spawnParticle(Particle.WAX_OFF, player.location, 10, 0.5, 0.5, 0.5, 1.0)
                 usePlayerData.increaseTime(5, usePlayerData)
                 usePlayerData.turnEnd()
                 return@Card true
@@ -167,6 +182,8 @@ class RelativityOfTimeCardPack {
                     return@Card false
                 }
 
+                player.world.playSound(player.location, Sound.BLOCK_RESPAWN_ANCHOR_SET_SPAWN, 1.0F, 1.0F)
+                player.world.spawnParticle(Particle.END_ROD, target.entity.location, 30, 0.0, 0.0, 0.0, 0.5)
                 target.damage(time.power * 2, usePlayerData, DamageType.Normal)
 
                 usePlayerData.decreaseTime(time.power / 2, usePlayerData)
@@ -194,6 +211,8 @@ class RelativityOfTimeCardPack {
                 }
                 val targetSpeed = target.speed.toInt()
 
+                player.world.playSound(player.location, Sound.BLOCK_RESPAWN_ANCHOR_SET_SPAWN, 1.0F, 2.0F)
+                player.world.spawnParticle(Particle.WAX_OFF, target.entity.location, 10, 0.5, 0.5, 0.5, 1.0)
                 usePlayerData.increaseTime(targetSpeed, usePlayerData)
                 target.speed = 0
 
@@ -222,6 +241,8 @@ class RelativityOfTimeCardPack {
                     return@Card false
                 }
 
+                player.world.playSound(player.location, Sound.BLOCK_RESPAWN_ANCHOR_CHARGE, 1.0F, 0.5F)
+                player.world.spawnParticle(Particle.WAX_OFF, player.location, 50, 0.0, 0.0, 0.0, 1.0)
                 usePlayerData.decreaseTime(10, usePlayerData)
                 game.gameTurnOrder.add(usePlayerData)
                 return@Card true
@@ -238,11 +259,15 @@ class RelativityOfTimeCardPack {
                 dictionary.dictionaryList[KeywordType.Time]!!
             ), CardRarity.Rare, 1,
             { usePlayerData, _ ->
+                val player = usePlayerData.player
                 if (usePlayerData.health - 10 < 1) {
                     usePlayerData.setHealth(1)
                     usePlayerData.increaseTime(10, usePlayerData)
                     return@Card true
                 }
+
+                player.world.playSound(player.location, Sound.BLOCK_RESPAWN_ANCHOR_CHARGE, 1.0F, 1.0F)
+                player.world.spawnParticle(Particle.DAMAGE_INDICATOR, player.location, 10, 0.5, 0.5, 0.5, 1.0)
 
                 usePlayerData.addHealth(-10)
                 usePlayerData.increaseTime(10, usePlayerData)
@@ -270,6 +295,8 @@ class RelativityOfTimeCardPack {
                     return@Card false
                 }
 
+                player.world.playSound(player.location, Sound.BLOCK_RESPAWN_ANCHOR_CHARGE, 1.0F, 2.0F)
+                player.world.spawnParticle(Particle.HEART, player.location, 10, 0.5, 0.5, 0.5, 1.0)
                 usePlayerData.heal(time.power, usePlayerData)
                 if (!isHealthZero) {
                     usePlayerData.decreaseTime(time.power / 2, usePlayerData)
@@ -300,6 +327,8 @@ class RelativityOfTimeCardPack {
                     return@Card false
                 }
 
+                player.world.playSound(player.location, Sound.BLOCK_RESPAWN_ANCHOR_DEPLETE, 1.0F, 0.5F)
+                player.world.spawnParticle(Particle.END_ROD, player.location, 50, 0.1, 0.1, 0.1, 0.4)
                 usePlayerData.decreaseTime(50, usePlayerData)
                 game.gameTurnOrder.addAll(playerTeam)
                 return@Card true
