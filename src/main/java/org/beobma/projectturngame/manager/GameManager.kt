@@ -289,6 +289,7 @@ object GameManager : GameHandler {
                 isGlowing = true
                 playSound(location, Sound.BLOCK_NOTE_BLOCK_GUITAR, 1.0F, 1.0F)
                 drow(1)
+                scoreboardTags.remove("dontStun")
                 scoreboardTags.add("this_Turn")
                 turnStartUnit.forEach {
                     it.invoke()
@@ -305,6 +306,7 @@ object GameManager : GameHandler {
             ProjectTurnGame.instance.logger.info("Enemy ${this.entity.name} is starting its turn.")
             this.entity.run {
                 isGlowing = true
+                scoreboardTags.remove("dontStun")
                 scoreboardTags.add("this_Turn")
             }
 
