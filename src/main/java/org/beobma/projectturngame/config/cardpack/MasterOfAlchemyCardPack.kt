@@ -113,7 +113,7 @@ class MasterOfAlchemyCardPack {
             "태양", listOf(
                 KeywordType.Volatilization.string,
                 "",
-                "<gray>모든 적에게 <red><bold>화상 </bold><gray>5를 부여한다.",
+                "<gray>모든 적에게 <red><bold>화상</bold><gray>을 10 부여한다.",
                 "",
                 dictionary.dictionaryList[KeywordType.Volatilization]!!,
                 dictionary.dictionaryList[KeywordType.Burn]!!
@@ -126,7 +126,7 @@ class MasterOfAlchemyCardPack {
 
                 targets.forEach {
                     player.world.spawnParticle(Particle.FLAME, it.entity.location, 30, 0.0, 0.0, 0.0, 0.2)
-                    it.increaseBurn(5, usePlayerData)
+                    it.increaseBurn(10, usePlayerData)
                 }
 
                 return@Card true
@@ -137,14 +137,14 @@ class MasterOfAlchemyCardPack {
             "대지", listOf(
                 KeywordType.Volatilization.string,
                 "",
-                "<gray>10의 피해를 막는 <aqua><bold>보호막</bold><gray>을 얻는다.",
+                "<gray>50의 피해를 막는 <aqua><bold>보호막</bold><gray>을 얻는다.",
                 "",
                 dictionary.dictionaryList[KeywordType.Volatilization]!!,
                 dictionary.dictionaryList[KeywordType.Shield]!!
             ), CardRarity.Uncommon, 0,
             { usePlayerData, _ ->
                 val player = usePlayerData.player
-                usePlayerData.addShield(10)
+                usePlayerData.addShield(50)
 
                 player.world.playSound(player.location, Sound.ITEM_SHIELD_BLOCK, 1.0F, 1.0F)
                 spawnSphereParticles(player, Particle.END_ROD, 2.0, 300)
@@ -156,13 +156,13 @@ class MasterOfAlchemyCardPack {
             "바람", listOf(
                 KeywordType.Volatilization.string,
                 "",
-                "<gray>덱에서 카드를 2장 뽑는다.",
+                "<gray>덱에서 카드를 4장 뽑는다.",
                 "",
                 dictionary.dictionaryList[KeywordType.Volatilization]!!
             ), CardRarity.Uncommon, 0,
             { usePlayerData, _ ->
                 val player = usePlayerData.player
-                usePlayerData.drow(2)
+                usePlayerData.drow(4)
                 player.world.playSound(player.location, Sound.ITEM_BOOK_PAGE_TURN, 1.0F, 1.5F)
                 return@Card true
             }
@@ -172,7 +172,7 @@ class MasterOfAlchemyCardPack {
             "증기", listOf(
                 KeywordType.Volatilization.string,
                 "",
-                "<gray>바라보는 적에게 <dark_gray><bold>나약함 </bold><gray> 3을 부여한다.",
+                "<gray>바라보는 적에게 <dark_gray><bold>나약함</bold><gray>을 7 부여한다.",
                 "",
                 dictionary.dictionaryList[KeywordType.Volatilization]!!,
                 dictionary.dictionaryList[KeywordType.Weakness]!!
@@ -188,7 +188,7 @@ class MasterOfAlchemyCardPack {
                 }
                 player.world.playSound(player.location, Sound.BLOCK_LAVA_EXTINGUISH, 1.0F, 1.0F)
                 spawnSphereParticles(target.entity, Particle.ASH, 2.0, 300)
-                target.increaseWeakness(3, usePlayerData)
+                target.increaseWeakness(7, usePlayerData)
                 return@Card true
             }
         )
@@ -197,7 +197,7 @@ class MasterOfAlchemyCardPack {
             "진흙", listOf(
                 KeywordType.Volatilization.string,
                 "",
-                "<gray>모든 적의 속도가 1 감소한다.",
+                "<gray>모든 적의 속도가 3 감소한다.",
                 "",
                 dictionary.dictionaryList[KeywordType.Volatilization]!!
             ), CardRarity.Uncommon, 0,
@@ -206,7 +206,7 @@ class MasterOfAlchemyCardPack {
                 val targets = usePlayerData.allEnemyMembers()
 
                 targets.forEach {
-                    it.speed -= 1
+                    it.speed -= 3
                     spawnSphereParticles(it.entity, Particle.ASH, 2.0, 100)
                 }
 
@@ -219,7 +219,7 @@ class MasterOfAlchemyCardPack {
             "안개", listOf(
                 KeywordType.Volatilization.string,
                 "",
-                "<gray>모든 적에게 <dark_gray><bold>실명 </bold><gray>5를 부여한다.",
+                "<gray>모든 적에게 <dark_gray><bold>실명</bold><gray>을 7 부여한다.",
                 "",
                 dictionary.dictionaryList[KeywordType.Volatilization]!!,
                 dictionary.dictionaryList[KeywordType.Blindness]!!
@@ -230,7 +230,7 @@ class MasterOfAlchemyCardPack {
 
                 player.world.playSound(player.location, Sound.BLOCK_LAVA_EXTINGUISH, 1.0F, 0.5F)
                 targets.forEach {
-                    it.increaseBlindness(5, usePlayerData)
+                    it.increaseBlindness(7, usePlayerData)
                     spawnSphereParticles(it.entity, Particle.CLOUD, 2.0, 50)
                 }
 
@@ -242,7 +242,7 @@ class MasterOfAlchemyCardPack {
             "용암", listOf(
                 KeywordType.Volatilization.string,
                 "",
-                "<gray>모든 적에게 10의 피해를 입힌다. 대상에게 <red><bold>화상</bold><gray>이 있었다면 추가로 10의 피해를 입힌다.",
+                "<gray>모든 적에게 20의 피해를 입힌다. 대상에게 <red><bold>화상</bold><gray>이 있었다면 추가로 20의 피해를 입힌다.",
                 "",
                 dictionary.dictionaryList[KeywordType.Volatilization]!!,
                 dictionary.dictionaryList[KeywordType.Burn]!!
@@ -253,10 +253,10 @@ class MasterOfAlchemyCardPack {
 
                 player.world.playSound(player.location, Sound.ITEM_BUCKET_FILL_LAVA, 1.0F, 0.5F)
                 targets.forEach {
-                    it.damage(10, usePlayerData)
+                    it.damage(20, usePlayerData)
 
                     if (it.getBurn() is AbnormalityStatus) {
-                        it.damage(10, usePlayerData)
+                        it.damage(20, usePlayerData)
                         player.world.spawnParticle(Particle.FLAME, it.entity.location, 40, 0.0, 0.0, 0.0, 0.1)
                     }
                 }
@@ -269,8 +269,8 @@ class MasterOfAlchemyCardPack {
             "번개", listOf(
                 KeywordType.Volatilization.string,
                 "",
-                "<gray>무작위 적에게 3의 피해를 입힌다.",
-                "<gray>위 효과는 3번 사용하며, 첫 번째 대상에게 여러번 적중할 때마다 추가로 3의 피해를 입힌다.",
+                "<gray>무작위 적에게 6의 피해를 입힌다.",
+                "<gray>위 효과는 3번 사용하며, 첫 번째 대상에게 여러번 적중할 때마다 추가로 6의 피해를 입힌다.",
                 "",
                 dictionary.dictionaryList[KeywordType.Volatilization]!!
             ), CardRarity.Uncommon, 0,
@@ -280,15 +280,15 @@ class MasterOfAlchemyCardPack {
                 val firstTarget = targets.random()
 
                 player.world.playSound(player.location, Sound.ENTITY_LIGHTNING_BOLT_IMPACT, 0.4F, 0.5F)
-                firstTarget.damage(3, usePlayerData)
+                firstTarget.damage(6, usePlayerData)
                 repeat(2) {
                     if (targets.isEmpty()) return@Card true
                     val target = targets.random()
 
                     player.world.spawnParticle(Particle.WAX_ON, target.entity.location, 30, 0.0, 0.0, 0.0, 0.2)
-                    target.damage(3, usePlayerData)
+                    target.damage(6, usePlayerData)
                     if (target == firstTarget) {
-                        target.damage(3, usePlayerData)
+                        target.damage(6, usePlayerData)
                     }
                 }
                 return@Card true
@@ -299,7 +299,7 @@ class MasterOfAlchemyCardPack {
             "먼지", listOf(
                 KeywordType.Volatilization.string,
                 "",
-                "<gray>바라보는 적에게 <dark_gray><bold>실명 </bold><gray>10을 부여한다.",
+                "<gray>바라보는 적에게 <dark_gray><bold>실명</bold><gray>을 10 부여한다.",
                 "",
                 dictionary.dictionaryList[KeywordType.Volatilization]!!,
                 dictionary.dictionaryList[KeywordType.Blindness]!!
@@ -375,7 +375,7 @@ class MasterOfAlchemyCardPack {
         //region kilnOfCreation Common Initialization
         val kilnOfCreation = Card(
             "창조의 가마", listOf(
-                "<gray>'연금술의 대가' 카드팩에 존재하는 <gold><bold>연금술 재료 </bold><gray>카드들 중, 무작위 2장을 생성하고 패에 넣는다.",
+                "<gray>'연금술의 대가' 카드팩에 존재하는 <gold><bold>연금술 재료 </bold><gray>카드들 중, 무작위 3장을 생성하고 패에 넣는다.",
                 "",
                 dictionary.dictionaryList[KeywordType.AlchemYingredients]!!
             ), CardRarity.Common, 1,
@@ -386,6 +386,7 @@ class MasterOfAlchemyCardPack {
                 player.world.playSound(player.location, Sound.ITEM_BOOK_PAGE_TURN, 1.0F, 1.5F)
                 usePlayerData.addCard(cardList.random())
                 usePlayerData.addCard(cardList.random())
+                usePlayerData.addCard(cardList.random())
                 return@Card true
             }
         )
@@ -394,7 +395,7 @@ class MasterOfAlchemyCardPack {
         //region materialReproduction Common Initialization
         val materialReproduction = Card(
             "재료 복제", listOf(
-                "<gold><bold>연금술 재료 더미</bold><gray>의 무작위 카드 1장과 동일한 카드를 생성하고 <gold><bold>연금술 재료 더미</bold><gray>에 넣는다.",
+                "<gold><bold>연금술 재료 더미</bold><gray>의 무작위 카드 1장과 동일한 카드를 생성하고 <gold><bold>연금술 재료 더미</bold><gray>에 2장 넣는다.",
                 "",
                 dictionary.dictionaryList[KeywordType.AlchemYingredientsPile]!!
             ), CardRarity.Common, 0,
@@ -408,7 +409,9 @@ class MasterOfAlchemyCardPack {
                     return@Card false
                 }
                 player.world.playSound(player.location, Sound.ITEM_BOOK_PAGE_TURN, 1.0F, 1.5F)
-                usePlayerData.alchemYingredientsPile.add(cards.random())
+                val card = cards.random()
+                usePlayerData.alchemYingredientsPile.add(card)
+                usePlayerData.alchemYingredientsPile.add(card)
                 return@Card true
             }
         )
@@ -475,9 +478,9 @@ class MasterOfAlchemyCardPack {
         val disappearanceOfMaterials = Card(
             "재료의 소멸", listOf(
                 "<gold><bold>연금술 재료 더미</bold><gray>의 카드들 중, 무작위 카드 1장을 소멸시키고 발동할 수 있다.",
-                "<gray>덱에서 카드를 1장 뽑고 <blue><bold>마나</bold><gray>를 1 회복한다.",
+                "<gray>덱에서 카드를 2장 뽑고 <blue><bold>마나</bold><gray>를 3 회복한다.",
                 "",
-                dictionary.dictionaryList[KeywordType.AlchemYingredientsPile    ]!!
+                dictionary.dictionaryList[KeywordType.AlchemYingredientsPile]!!
             ), CardRarity.Uncommon, 0,
             { usePlayerData, _ ->
                 val player = usePlayerData.player
@@ -490,8 +493,8 @@ class MasterOfAlchemyCardPack {
 
                 player.world.playSound(player.location, Sound.ENTITY_WIND_CHARGE_WIND_BURST, 1.0F, 0.5F)
                 usePlayerData.alchemYingredientsPile.remove(usePlayerData.alchemYingredientsPile.random())
-                usePlayerData.addMana(1)
-                usePlayerData.drow(1)
+                usePlayerData.addMana(3)
+                usePlayerData.drow(2)
 
                 return@Card true
             }
@@ -502,7 +505,8 @@ class MasterOfAlchemyCardPack {
         val deactivateConjugation = Card(
             "연성 해제", listOf(
                 "<gray>패에 <gold><bold>연성</bold><gray>을 통해 생성된 카드를 소멸시키고 발동할 수 있다.",
-                "<gray>소멸시킨 카드의 재료가 되는 카드를 생성하고 <gold><bold>연금술 재료 더미</bold><gray>에 넣는다.",
+                "<gray>덱에서 카드를 2장 뽑고 <blue><bold>마나</bold><gray>를 3 회복한다.",
+                "<gray>또한, 소멸시킨 카드의 재료가 되는 카드를 생성하고 <gold><bold>연금술 재료 더미</bold><gray>에 넣는다.",
                 "",
                 dictionary.dictionaryList[KeywordType.Ductility]!!,
                 dictionary.dictionaryList[KeywordType.AlchemYingredientsPile]!!
@@ -565,6 +569,8 @@ class MasterOfAlchemyCardPack {
                         return@Card false
                     }
                 }
+                usePlayerData.addMana(3)
+                usePlayerData.drow(2)
 
                 return@Card true
             }
@@ -596,8 +602,7 @@ class MasterOfAlchemyCardPack {
         //region substitutionDuctility Legend Initialization
         val substitutionDuctility = Card(
             "치환 연성", listOf(
-                "<gold><bold>연금술 재료 더미</bold><gray>의 카드들 중, 무작위 카드 2장을 제외하고 발동할 수 있다.",
-                "<gray>제외한 카드를 <gold><bold>연성</bold><gray>한 것으로 간주하고 연성한 카드를 패에 넣는다.",
+                "<gold><bold>연금술 재료 더미</bold><gray>의 카드들 중, 무작위 카드 2장을 <gold><bold>연성</bold><gray>한 것으로 간주하고 연성한 카드를 패에 넣는다.",
                 "",
                 dictionary.dictionaryList[KeywordType.AlchemYingredientsPile]!!,
                 dictionary.dictionaryList[KeywordType.Ductility]!!
@@ -638,8 +643,6 @@ class MasterOfAlchemyCardPack {
 
                 player.world.playSound(player.location, Sound.BLOCK_BREWING_STAND_BREW, 1.0F, 0.7F)
                 usePlayerData.addCard(resultCard)
-                usePlayerData.banish.addAll(listOf(cardA, cardB))
-                usePlayerData.alchemYingredientsPile.removeAll(listOf(cardA, cardB))
 
                 return@Card true
             }
