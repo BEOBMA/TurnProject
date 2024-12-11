@@ -312,9 +312,11 @@ interface StunHandler {
 object StunManager : StunHandler {
     override fun Entity.addStun() {
         if (this is Player) {
+            if (player.scoreboardTags.contains("dontStun")) return
             this.player.scoreboardTags.add("Stun")
         }
         if (this is Enemy) {
+           if (player.scoreboardTags.contains("dontStun")) return
             this.entity.scoreboardTags.add("Stun")
         }
     }
