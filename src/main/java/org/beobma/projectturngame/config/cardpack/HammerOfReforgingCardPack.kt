@@ -48,7 +48,7 @@ class HammerOfReforgingCardPack {
                 KeywordType.Reforge.string,
                 "",
                 "<gray>바라보는 적에게 5의 피해를 입힌다.",
-                "<gold><bold>재련</bold><gray>하면 대신 20의 피해를 입힌다.",
+                "<gold><bold>재련</bold><gray>하면 대신 7의 피해를 입힌다.",
                 "",
                 dictionary.dictionaryList[KeywordType.Reforge]!!
             ), CardRarity.Common, 0,
@@ -74,7 +74,7 @@ class HammerOfReforgingCardPack {
             "쐐기 창", listOf(
                 KeywordType.Reforged.string,
                 "",
-                "<gray>바라보는 적에게 <gold><bold>20</bold><gray>의 피해를 입힌다.",
+                "<gray>바라보는 적에게 <gold><bold>7</bold><gray>의 피해를 입힌다.",
                 "",
                 dictionary.dictionaryList[KeywordType.Reforged]!!
             ), CardRarity.Common, 0,
@@ -91,7 +91,7 @@ class HammerOfReforgingCardPack {
                 player.world.playSound(player.location, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1.0F, 0.5F)
                 player.world.spawnParticle(Particle.SWEEP_ATTACK, target.entity.location, 5, 0.1, 0.1, 0.1, 1.0)
 
-                target.damage(20, usePlayerData)
+                target.damage(7, usePlayerData)
                 return@Card true
             }
         )
@@ -103,7 +103,7 @@ class HammerOfReforgingCardPack {
                 KeywordType.Reforge.string,
                 "",
                 "<gray>바라보는 적과 그 양옆 적에게 7의 피해를 입힌다.",
-                "<gold><bold>재련</bold><gray>하면 대신 17의 피해를 입힌다.",
+                "<gold><bold>재련</bold><gray>하면 대신 15의 피해를 입힌다.",
                 "",
                 dictionary.dictionaryList[KeywordType.Reforge]!!
             ), CardRarity.Common, 1,
@@ -135,7 +135,7 @@ class HammerOfReforgingCardPack {
             "대검", listOf(
                 KeywordType.Reforged.string,
                 "",
-                "<gray>바라보는 적과 그 양옆 적에게 <gold><bold>17</bold><gray>의 피해를 입힌다.",
+                "<gray>바라보는 적과 그 양옆 적에게 <gold><bold>15</bold><gray>의 피해를 입힌다.",
                 "",
                 dictionary.dictionaryList[KeywordType.Reforged]!!
             ), CardRarity.Common, 1,
@@ -154,7 +154,7 @@ class HammerOfReforgingCardPack {
                 player.world.playSound(player.location, Sound.ITEM_MACE_SMASH_GROUND, 1.0F, 0.5F)
 
                 targets.forEach {
-                    it.damage(17, usePlayerData)
+                    it.damage(15, usePlayerData)
                     player.world.spawnParticle(Particle.SWEEP_ATTACK, it.entity.location, 20, 0.1, 0.1, 0.1, 1.0)
                 }
 
@@ -213,8 +213,8 @@ class HammerOfReforgingCardPack {
             "망치", listOf(
                 KeywordType.Reforge.string,
                 "",
-                "<gray>바라보는 적에게 13의 피해를 입힌다.",
-                "<gold><bold>재련</bold><gray>하면 대신 23의 피해를 입히고 추가로 <yellow><bold>기절</bold><gray> 상태로 만든다.",
+                "<gray>바라보는 적에게 10의 피해를 입힌다.",
+                "<gold><bold>재련</bold><gray>하면 대신 15의 피해를 입히고 추가로 <yellow><bold>기절</bold><gray> 상태로 만든다.",
                 "",
                 dictionary.dictionaryList[KeywordType.Reforge]!!,
                 dictionary.dictionaryList[KeywordType.Stun]!!
@@ -231,7 +231,7 @@ class HammerOfReforgingCardPack {
 
                 player.world.playSound(player.location, Sound.ITEM_MACE_SMASH_GROUND_HEAVY, 1.0F, 1.5F)
                 player.world.spawnParticle(Particle.SWEEP_ATTACK, target.entity.location, 1, 0.0, 0.0, 0.0, 1.0)
-                target.damage(13, usePlayerData)
+                target.damage(10, usePlayerData)
                 return@Card true
             }
         )
@@ -241,7 +241,7 @@ class HammerOfReforgingCardPack {
             "망치", listOf(
                 KeywordType.Reforged.string,
                 "",
-                "<gray>바라보는 적에게 <gold><bold>23</bold><gray>의 피해를 입히고 <yellow><bold>기절</bold><gray> 상태로 만든다.",
+                "<gray>바라보는 적에게 <gold><bold>15</bold><gray>의 피해를 입히고 <yellow><bold>기절</bold><gray> 상태로 만든다.",
                 "",
                 dictionary.dictionaryList[KeywordType.Reforged]!!,
                 dictionary.dictionaryList[KeywordType.Stun]!!
@@ -258,7 +258,7 @@ class HammerOfReforgingCardPack {
 
                 player.world.playSound(player.location, Sound.ITEM_MACE_SMASH_GROUND_HEAVY, 1.0F, 0.5F)
                 player.world.spawnParticle(Particle.SWEEP_ATTACK, target.entity.location, 1, 0.0, 0.0, 0.0, 1.0)
-                target.damage(23, usePlayerData)
+                target.damage(15, usePlayerData)
                 target.addStun()
                 return@Card true
             }
@@ -271,7 +271,7 @@ class HammerOfReforgingCardPack {
                 KeywordType.Reforge.string,
                 "",
                 "<gray>모든 적에게 7의 피해를 입힌다.",
-                "<gold><bold>재련</bold><gray>하면 대신 12의 피해를 입히고 추가로 <dark_red><bold>출혈 </bold><gray>5를 부여한다.",
+                "<gold><bold>재련</bold><gray>하면 대신 12의 피해를 입히고 추가로 <dark_red><bold>출혈</bold><gray>을 3 부여한다.",
                 "",
                 dictionary.dictionaryList[KeywordType.Reforge]!!,
                 dictionary.dictionaryList[KeywordType.Bleeding]!!
@@ -294,7 +294,7 @@ class HammerOfReforgingCardPack {
             "장검", listOf(
                 KeywordType.Reforged.string,
                 "",
-                "<gray>모든 적에게 <gold><bold>12</bold><gray>의 피해를 입히고 <dark_red><bold>출혈 </bold><gray>5를 부여한다.",
+                "<gray>모든 적에게 <gold><bold>12</bold><gray>의 피해를 입히고 <dark_red><bold>출혈</bold><gray>을 3 부여한다.",
                 "",
                 dictionary.dictionaryList[KeywordType.Reforged]!!,
                 dictionary.dictionaryList[KeywordType.Bleeding]!!
@@ -307,7 +307,7 @@ class HammerOfReforgingCardPack {
 
                 targets.forEach {
                     it.damage(12, usePlayerData)
-                    it.increaseBleeding(5, usePlayerData)
+                    it.increaseBleeding(3, usePlayerData)
                     player.world.spawnParticle(Particle.SWEEP_ATTACK, it.entity.location, 1, 0.0, 0.0, 0.0, 1.0)
                     player.world.spawnParticle(Particle.CRIT, it.entity.location, 10, 0.0, 0.0, 0.0, 1.0)
                 }
@@ -322,7 +322,7 @@ class HammerOfReforgingCardPack {
                 KeywordType.Reforge.string,
                 "",
                 "<gray>바라보는 적에게 10의 피해를 입힌다.",
-                "<gray>이 카드가 <gold><bold>재련</bold><gray>되어있고, 대상의 체력이 최대체력의 20% 이하라면 추가로 40의 피해를 입힌다.",
+                "<gray>이 카드가 <gold><bold>재련</bold><gray>되어있고, 대상의 체력이 최대체력의 20% 이하라면 추가로 30의 피해를 입힌다.",
                 "",
                 dictionary.dictionaryList[KeywordType.Reforge]!!
             ), CardRarity.Uncommon, 2,
@@ -349,7 +349,7 @@ class HammerOfReforgingCardPack {
                 KeywordType.Reforged.string,
                 "",
                 "<gray>바라보는 적에게 10의 피해를 입힌다.",
-                "<gray>대상의 체력이 최대체력의 20% 이하라면 추가로 40의 피해를 입힌다.",
+                "<gray>대상의 체력이 최대체력의 20% 이하라면 추가로 30의 피해를 입힌다.",
                 "",
                 dictionary.dictionaryList[KeywordType.Reforged]!!
             ), CardRarity.Uncommon, 2,
@@ -367,7 +367,7 @@ class HammerOfReforgingCardPack {
                 player.world.spawnParticle(Particle.SWEEP_ATTACK, target.entity.location, 1, 0.0, 0.0, 0.0, 1.0)
                 target.damage(10, usePlayerData)
                 if (target.maxHealth / 5 >= target.health) {
-                    target.damage(40, usePlayerData)
+                    target.damage(30, usePlayerData)
                     player.world.playSound(player.location, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1.0F, 2.0F)
                     player.world.spawnParticle(Particle.END_ROD, target.entity.location, 50, 0.0, 0.0, 0.0, 0.4)
                 }
@@ -382,8 +382,8 @@ class HammerOfReforgingCardPack {
             "대도끼", listOf(
                 KeywordType.Reforge.string,
                 "",
-                "<gray>바라보는 적에게 20의 피해를 입힌다.",
-                "<gray>이 카드가 <gold><bold>재련</bold><gray>되어있고, 대상이 <dark_red><bold>출혈 </bold><gray>상태라면 추가로 10의 피해를 입힌다.",
+                "<gray>바라보는 적에게 15의 피해를 입힌다.",
+                "<gray>이 카드가 <gold><bold>재련</bold><gray>되어있고, 대상이 <dark_red><bold>출혈 </bold><gray>상태라면 추가로 7의 피해를 입힌다.",
                 "",
                 dictionary.dictionaryList[KeywordType.Reforge]!!,
                 dictionary.dictionaryList[KeywordType.Bleeding]!!
@@ -400,7 +400,7 @@ class HammerOfReforgingCardPack {
 
                 player.world.playSound(player.location, Sound.ITEM_MACE_SMASH_GROUND, 1.0F, 2.0F)
                 player.world.spawnParticle(Particle.SWEEP_ATTACK, target.entity.location, 1, 0.0, 0.0, 0.0, 1.0)
-                target.damage(20, usePlayerData)
+                target.damage(15, usePlayerData)
                 return@Card true
             }
         )
@@ -410,8 +410,8 @@ class HammerOfReforgingCardPack {
             "대도끼", listOf(
                 KeywordType.Reforged.string,
                 "",
-                "<gray>바라보는 적에게 20의 피해를 입힌다.",
-                "<gray>대상이 <dark_red><bold>출혈 </bold><gray>상태라면 추가로 10의 피해를 입힌다.",
+                "<gray>바라보는 적에게 15의 피해를 입힌다.",
+                "<gray>대상이 <dark_red><bold>출혈 </bold><gray>상태라면 추가로 7의 피해를 입힌다.",
                 "",
                 dictionary.dictionaryList[KeywordType.Reforged]!!,
                 dictionary.dictionaryList[KeywordType.Bleeding]!!
@@ -428,9 +428,9 @@ class HammerOfReforgingCardPack {
 
                 player.world.playSound(player.location, Sound.ITEM_MACE_SMASH_GROUND, 1.0F, 2.0F)
                 player.world.spawnParticle(Particle.SWEEP_ATTACK, target.entity.location, 1, 0.0, 0.0, 0.0, 1.0)
-                target.damage(20, usePlayerData)
+                target.damage(15, usePlayerData)
                 if (target.getBleeding() is AbnormalityStatus) {
-                    target.damage(10, usePlayerData)
+                    target.damage(7, usePlayerData)
                     player.world.playSound(player.location, Sound.ITEM_MACE_SMASH_GROUND, 1.0F, 2.0F)
                     player.world.spawnParticle(Particle.CRIT, target.entity.location, 30, 0.0, 0.0, 0.0, 1.0)
                 }
@@ -444,8 +444,8 @@ class HammerOfReforgingCardPack {
             "방패", listOf(
                 KeywordType.Reforge.string,
                 "",
-                "<gray>20의 피해를 막는 <aqua><bold>보호막</bold><gray>을 얻는다.",
-                "<gold><bold>재련</bold><gray>하면 대신 40의 피해를 막는다.",
+                "<gray>10의 피해를 막는 <aqua><bold>보호막</bold><gray>을 얻는다.",
+                "<gold><bold>재련</bold><gray>하면 대신 20의 피해를 막는다.",
                 "",
                 dictionary.dictionaryList[KeywordType.Reforge]!!,
                 dictionary.dictionaryList[KeywordType.Shield]!!
@@ -454,7 +454,7 @@ class HammerOfReforgingCardPack {
                 val player = usePlayerData.player
 
                 player.world.playSound(player.location, Sound.ITEM_SHIELD_BLOCK, 1.0F, 1.0F)
-                usePlayerData.addShield(20)
+                usePlayerData.addShield(10)
                 return@Card true
             }
         )
@@ -464,7 +464,7 @@ class HammerOfReforgingCardPack {
             "방패", listOf(
                 KeywordType.Reforged.string,
                 "",
-                "<gold><bold>40</bold><gray>의 피해를 막는 <aqua><bold>보호막</bold><gray>을 얻는다.",
+                "<gold><bold>20</bold><gray>의 피해를 막는 <aqua><bold>보호막</bold><gray>을 얻는다.",
                 "",
                 dictionary.dictionaryList[KeywordType.Reforged]!!,
                 dictionary.dictionaryList[KeywordType.Shield]!!
@@ -473,7 +473,7 @@ class HammerOfReforgingCardPack {
                 val player = usePlayerData.player
 
                 player.world.playSound(player.location, Sound.ITEM_SHIELD_BLOCK, 1.0F, 0.5F)
-                usePlayerData.addShield(40)
+                usePlayerData.addShield(20)
                 return@Card true
             }
         )
@@ -484,8 +484,8 @@ class HammerOfReforgingCardPack {
             "너클", listOf(
                 KeywordType.Reforge.string,
                 "",
-                "<gray>바라보는 적에게 10의 피해를 입힌다.",
-                "<gold><bold>재련</bold><gray>하면 대신 20의 피해를 입힌다.",
+                "<gray>바라보는 적에게 7의 피해를 입힌다.",
+                "<gold><bold>재련</bold><gray>하면 대신 10의 피해를 입힌다.",
                 "",
                 dictionary.dictionaryList[KeywordType.Reforge]!!
             ), CardRarity.Rare, 0,
@@ -501,7 +501,7 @@ class HammerOfReforgingCardPack {
 
                 player.world.playSound(player.location, Sound.ITEM_MACE_SMASH_AIR, 1.0F, 2.0F)
 
-                target.damage(10, usePlayerData)
+                target.damage(7, usePlayerData)
                 return@Card true
             }
         )
@@ -511,7 +511,7 @@ class HammerOfReforgingCardPack {
             "너클", listOf(
                 KeywordType.Reforged.string,
                 "",
-                "<gray>바라보는 적에게 <gold><bold>20</bold><gray>의 피해를 입힌다.",
+                "<gray>바라보는 적에게 <gold><bold>10</bold><gray>의 피해를 입힌다.",
                 "",
                 dictionary.dictionaryList[KeywordType.Reforged]!!
             ), CardRarity.Rare, 0,
@@ -527,7 +527,7 @@ class HammerOfReforgingCardPack {
 
                 player.world.playSound(player.location, Sound.ITEM_MACE_SMASH_AIR, 1.0F, 1.5F)
                 player.world.spawnParticle(Particle.CRIT, target.entity.location, 10, 0.0, 0.0, 0.0, 1.0)
-                target.damage(20, usePlayerData)
+                target.damage(10, usePlayerData)
                 return@Card true
             }
         )
@@ -542,8 +542,9 @@ class HammerOfReforgingCardPack {
                 "<gray>이 카드는 여러번 <gold><bold>재련</bold><gray>할 수 있다.",
                 "<gray>이 카드는 마나를 소모하여 <gold><bold>재련</bold><gray>할 수 없다. 대신, 다른 카드를 <gold><bold>재련</bold><gray>하면 이 카드 또한 <gold><bold>재련</bold><gray>한다.",
                 "",
-                "<gray>바라보는 적에게 20의 피해를 입힌다. 이 효과는 이 카드를 <gold><bold>재련</bold><gray>한 횟수만큼 발동한다.",
+                "<gray>바라보는 적에게 7의 피해를 입힌다. 이 효과는 이 카드를 <gold><bold>재련</bold><gray>한 횟수만큼 발동한다.",
                 "<gray>위 효과를 발동하는 도중 대상이 사망하면 무작위 적 대상에게 이어서 사용한다.",
+                "<gray>이 카드는 항상 <gold><bold>재련</bold><gray>되지 않은 것으로 간주한다."
                 "",
                 dictionary.dictionaryList[KeywordType.Reforge]!!
             ), CardRarity.Legend, 0,
@@ -565,7 +566,7 @@ class HammerOfReforgingCardPack {
                         return@repeat
                     }
 
-                    target.damage(20, usePlayerData)
+                    target.damage(7, usePlayerData)
                 }
                 return@Card true
             }
