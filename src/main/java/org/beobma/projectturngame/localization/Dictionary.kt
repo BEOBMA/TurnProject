@@ -47,7 +47,7 @@ class Dictionary {
         ), Pair(
             KeywordType.Time, "${KeywordType.Time.string}: 특정 카드의 효과로 소모된다."
         ), Pair(
-            KeywordType.Stun, "${KeywordType.Stun.string}: 턴 시작 시 강제로 턴이 종료된다. 이 효과가 발동한 후, 기절을 제거한다."
+            KeywordType.Stun, "${KeywordType.Stun.string}: 턴 시작 시 강제로 턴이 종료된다. 이 효과가 발동한 후, 기절을 제거한다. 이후 1턴간 다시 기절할 수 없다."
         ), Pair(
             KeywordType.Reforge, "${KeywordType.Reforge.string}: Q를 누르면 마나를 1 소모하고 같은 카드명을 가진 카드들을 이번 전투동안 재련된 상태로 만든다."
         ), Pair(
