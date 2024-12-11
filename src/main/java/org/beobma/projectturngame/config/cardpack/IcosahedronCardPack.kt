@@ -73,7 +73,7 @@ class IcosahedronCardPack {
         val gambling = Card(
             "도박수", listOf(
                 "<gray>20면체 주사위를 굴린다.",
-                "<gray>값이 10 이상이라면 덱에서 카드를 2장 뽑는다.",
+                "<gray>값이 10 이상이라면 덱에서 카드를 3장 뽑는다.",
                 "<gray>이 외의 경우에는 패에서 무작위 카드 1장을 버린다."
             ), CardRarity.Common, 1,
             { usePlayerData, _ ->
@@ -81,7 +81,7 @@ class IcosahedronCardPack {
                 val dice = usePlayerData.diceRoll(1, 20)
 
                 if (dice >= 10) {
-                    usePlayerData.drow(2)
+                    usePlayerData.drow(3)
                     player.world.playSound(player.location, Sound.ITEM_BOOK_PAGE_TURN, 1.0F, 1.5F)
                 }
                 else {
@@ -200,12 +200,12 @@ class IcosahedronCardPack {
         //region weightedDice Rare Initialization
         val weightedDice = Card(
             "가중치 주사위", listOf(
-                "<gray>이번 턴 동안 주사위를 굴리면 그 값에 1을 더한다."
+                "<gray>이번 턴 동안 주사위를 굴리면 그 값에 5를 더한다."
             ), CardRarity.Rare, 1,
             { usePlayerData, _ ->
                 val player = usePlayerData.player
-                usePlayerData.diceWeight += 1
-                usePlayerData.turnEndUnit.add { usePlayerData.diceWeight -= 1 }
+                usePlayerData.diceWeight += 5
+                usePlayerData.turnEndUnit.add { usePlayerData.diceWeight -= 5 }
 
                 player.world.playSound(player.location, Sound.BLOCK_BEACON_ACTIVATE, 1.0F, 2.0F)
                 return@Card true
