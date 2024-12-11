@@ -135,7 +135,7 @@ class SelectionAndFocusCardPack {
         val totalLoss = Card(
             "총체적 손실", listOf(
                 "<gray>패에서 '총체적 손실'을 제외한 무작위 카드 3장을 버리고 발동할 수 있다.",
-                "<gray>모든 적에게 10의 피해를 입힌다."
+                "<gray>모든 적에게 30의 피해를 입힌다."
             ), CardRarity.Uncommon, 1, { usePlayerData, _ ->
                 val player = usePlayerData.player
                 val target = usePlayerData.allEnemyMembers()
@@ -154,7 +154,7 @@ class SelectionAndFocusCardPack {
 
                 player.world.playSound(player.location, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1.0F, 0.5F)
                 target.forEach {
-                    it.damage(10, usePlayerData)
+                    it.damage(30, usePlayerData)
                     player.world.spawnParticle(Particle.SWEEP_ATTACK, it.entity.location, 1, 0.0, 0.0, 0.0, 1.0)
                 }
                 return@Card true
@@ -194,7 +194,7 @@ class SelectionAndFocusCardPack {
             "강제적 부담", listOf(
                 KeywordType.NotAvailable.string,
                 "",
-                "<gray>이 카드가 버려지면 모든 적은 3의 <white><bold>고정피해</bold><gray>를 입는다.",
+                "<gray>이 카드가 버려지면 모든 적은 5의 <white><bold>고정피해</bold><gray>를 입는다.",
                 "",
                 dictionary.dictionaryList[KeywordType.NotAvailable]!!,
                 dictionary.dictionaryList[KeywordType.TrueDamage]!!,
@@ -204,7 +204,7 @@ class SelectionAndFocusCardPack {
                 val enemys = usePlayerData.allEnemyMembers()
 
                 enemys.forEach {
-                    it.damage(3, usePlayerData, DamageType.True)
+                    it.damage(5, usePlayerData, DamageType.True)
                     player.world.playSound(player.location, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1.0F, 0.5F)
                     player.world.spawnParticle(Particle.END_ROD, it.entity.location, 30, 0.0, 0.0, 0.0, 0.2)
                 }
@@ -217,7 +217,7 @@ class SelectionAndFocusCardPack {
             "복지 혜택", listOf(
                 KeywordType.NotAvailable.string,
                 "",
-                "<gray>이 카드가 버려지면 모든 아군은 체력을 3 회복한다.",
+                "<gray>이 카드가 버려지면 모든 아군은 체력을 5 회복한다.",
                 "",
                 dictionary.dictionaryList[KeywordType.NotAvailable]!!
             ), CardRarity.Rare, 0, null, null,
@@ -228,7 +228,7 @@ class SelectionAndFocusCardPack {
                 targets.forEach {
                     player.world.playSound(player.location, Sound.BLOCK_BEACON_ACTIVATE, 1.0F, 2.0F)
                     player.world.spawnParticle(Particle.HEART, it.player.location, 5, 0.1, 0.1, 0.1, 0.0)
-                    it.heal(3, usePlayerData)
+                    it.heal(5, usePlayerData)
                 }
             }
         )
@@ -239,7 +239,7 @@ class SelectionAndFocusCardPack {
             "안전 보장", listOf(
                 KeywordType.NotAvailable.string,
                 "",
-                "<gray>이 카드가 버려지면 모든 아군은 3의 피해를 막는 <aqua><bold>보호막</bold><gray>을 얻는다.",
+                "<gray>이 카드가 버려지면 모든 아군은 5의 피해를 막는 <aqua><bold>보호막</bold><gray>을 얻는다.",
                 "",
                 dictionary.dictionaryList[KeywordType.NotAvailable]!!,
                 dictionary.dictionaryList[KeywordType.Shield]!!,
@@ -250,7 +250,7 @@ class SelectionAndFocusCardPack {
                 player.world.playSound(player.location, Sound.ITEM_SHIELD_BLOCK, 1.0F, 1.0F)
                 targets.forEach {
                     spawnSphereParticles(it.player, Particle.END_ROD, 2.0, 300)
-                    it.addShield(3)
+                    it.addShield(5)
                 }
             }
         )
