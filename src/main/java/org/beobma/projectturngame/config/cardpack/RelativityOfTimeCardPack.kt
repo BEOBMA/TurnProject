@@ -51,7 +51,7 @@ class RelativityOfTimeCardPack {
             "시간 저장", listOf(
                 KeywordType.Continue.string,
                 "",
-                "<gray>전투 종료 시까지 어느 대상이든 턴을 종료할 때마다 자신은 <gold><bold>시간 </bold><gray>1을 얻는다.",
+                "<gray>전투 종료 시까지 어느 대상이든 턴을 종료할 때마다 자신은 <gold><bold>시간</bold><gray>을 10 얻는다.",
                 "",
                 dictionary.dictionaryList[KeywordType.Continue]!!,
                 dictionary.dictionaryList[KeywordType.Time]!!
@@ -63,7 +63,7 @@ class RelativityOfTimeCardPack {
                 player.world.playSound(player.location, Sound.BLOCK_BEACON_POWER_SELECT, 1.0F, 2.0F)
                 player.world.spawnParticle(Particle.END_ROD, player.location, 10, 0.0, 0.0, 0.0, 0.3)
                 game.continueEffects.add(ContinueEffect(usePlayerData, EffectTime.TurnEnd, {
-                    usePlayerData.increaseTime(1, usePlayerData)
+                    usePlayerData.increaseTime(10, usePlayerData)
                 }))
                 return@Card true
             }
@@ -73,7 +73,7 @@ class RelativityOfTimeCardPack {
         //region resourceAcceleration Common Initialization
         val resourceAcceleration = Card(
             "자원 가속", listOf(
-                "<gold><bold>시간 </bold><gray>2를 소모하고 발동할 수 있다.",
+                "<gold><bold>시간</bold><gray>을 5 소모하고 발동할 수 있다.",
                 "<gray>덱에서 카드를 1장 뽑고 <blue><bold>마나 </bold><gray>1을 회복한다.",
                 "",
                 dictionary.dictionaryList[KeywordType.Time]!!
@@ -82,7 +82,7 @@ class RelativityOfTimeCardPack {
                 val player = usePlayerData.player
                 val time = usePlayerData.getTime()
 
-                if (time !is AbnormalityStatus || time.power < 2) {
+                if (time !is AbnormalityStatus || time.power < 5) {
                     player.sendMessage(cardUseFailText())
                     player.playCardUsingFailSound()
                     return@Card false
@@ -92,7 +92,7 @@ class RelativityOfTimeCardPack {
                 player.world.playSound(player.location, Sound.BLOCK_RESPAWN_ANCHOR_CHARGE, 1.0F, 2.0F)
                 player.world.spawnParticle(Particle.WAX_OFF, player.location, 10, 0.5, 0.5, 0.5, 1.0)
 
-                usePlayerData.decreaseTime(2, usePlayerData)
+                usePlayerData.decreaseTime(5, usePlayerData)
                 usePlayerData.drow(1)
                 usePlayerData.addMana(1)
 
@@ -141,7 +141,7 @@ class RelativityOfTimeCardPack {
         //region temporarySuspension Uncommon Initialization
         val temporarySuspension = Card(
             "일시적 중단", listOf(
-                "<gold><bold>시간 </bold><gray>5를 얻는다. 이후 자신의 턴을 종료한다.",
+                "<gold><bold>시간</bold><gray>을 50 얻는다. 이후 자신의 턴을 종료한다.",
                 "",
                 dictionary.dictionaryList[KeywordType.Time]!!
             ), CardRarity.Uncommon, 0,
@@ -150,7 +150,7 @@ class RelativityOfTimeCardPack {
 
                 player.world.playSound(player.location, Sound.BLOCK_RESPAWN_ANCHOR_DEPLETE, 1.0F, 2.0F)
                 player.world.spawnParticle(Particle.WAX_OFF, player.location, 10, 0.5, 0.5, 0.5, 1.0)
-                usePlayerData.increaseTime(5, usePlayerData)
+                usePlayerData.increaseTime(50, usePlayerData)
                 usePlayerData.turnEnd()
                 return@Card true
             }
@@ -160,7 +160,7 @@ class RelativityOfTimeCardPack {
         //region accumulatedMoments Uncommon Initialization
         val accumulatedMoments = Card(
             "축적된 순간", listOf(
-                "<gray>바라보는 적에게 자신의 <gold><bold>(시간 수치 x 2)</bold><gray> 만큼의 피해를 입힌다.",
+                "<gray>바라보는 적에게 자신의 <gold><bold>(시간 수치)</bold><gray> 만큼의 피해를 입힌다.",
                 "<gray>이후 자신의 <gold><bold>시간 </bold><gray>수치를 절반으로 만든다.",
                 "",
                 dictionary.dictionaryList[KeywordType.Time]!!
@@ -184,7 +184,7 @@ class RelativityOfTimeCardPack {
 
                 player.world.playSound(player.location, Sound.BLOCK_RESPAWN_ANCHOR_SET_SPAWN, 1.0F, 1.0F)
                 player.world.spawnParticle(Particle.END_ROD, target.entity.location, 30, 0.0, 0.0, 0.0, 0.5)
-                target.damage(time.power * 2, usePlayerData, DamageType.Normal)
+                target.damage(time.power, usePlayerData, DamageType.Normal)
 
                 usePlayerData.decreaseTime(time.power / 2, usePlayerData)
                 return@Card true
@@ -195,7 +195,7 @@ class RelativityOfTimeCardPack {
         //region timeTheft Uncommon Initialization
         val timeTheft = Card(
             "시간 절도", listOf(
-                "<gray>바라보는 적의 속도 만큼 <gold><bold>시간</bold><gray>을 얻는다.",
+                "<gray>바라보는 적의 (속도 * 10) 만큼 <gold><bold>시간</bold><gray>을 얻는다.",
                 "<gray>이후 대상의 속도를 0으로 만든다.",
                 "",
                 dictionary.dictionaryList[KeywordType.Time]!!
@@ -213,7 +213,7 @@ class RelativityOfTimeCardPack {
 
                 player.world.playSound(player.location, Sound.BLOCK_RESPAWN_ANCHOR_SET_SPAWN, 1.0F, 2.0F)
                 player.world.spawnParticle(Particle.WAX_OFF, target.entity.location, 10, 0.5, 0.5, 0.5, 1.0)
-                usePlayerData.increaseTime(targetSpeed, usePlayerData)
+                usePlayerData.increaseTime(targetSpeed * 10, usePlayerData)
                 target.speed = 0
 
                 return@Card true
@@ -225,7 +225,7 @@ class RelativityOfTimeCardPack {
         //region extensionOfTime Rare Initialization
         val extensionOfTime = Card(
             "시간의 연장선", listOf(
-                "<gold><bold>시간 </bold><gray>10을 소모하고 발동할 수 있다.",
+                "<gold><bold>시간 </bold><gray>25를 소모하고 발동할 수 있다.",
                 "<gray>이번 라운드의 턴 순서 마지막에 추가 턴을 얻는다.",
                 "",
                 dictionary.dictionaryList[KeywordType.Time]!!
@@ -235,7 +235,7 @@ class RelativityOfTimeCardPack {
                 val time = usePlayerData.getTime()
                 val game = Info.game ?: return@Card false
 
-                if (time !is AbnormalityStatus || time.power < 10) {
+                if (time !is AbnormalityStatus || time.power < 25) {
                     player.sendMessage(cardUseFailText())
                     player.playCardUsingFailSound()
                     return@Card false
@@ -243,7 +243,7 @@ class RelativityOfTimeCardPack {
 
                 player.world.playSound(player.location, Sound.BLOCK_RESPAWN_ANCHOR_CHARGE, 1.0F, 0.5F)
                 player.world.spawnParticle(Particle.WAX_OFF, player.location, 50, 0.0, 0.0, 0.0, 1.0)
-                usePlayerData.decreaseTime(10, usePlayerData)
+                usePlayerData.decreaseTime(25, usePlayerData)
                 game.gameTurnOrder.add(usePlayerData)
                 return@Card true
             }
@@ -253,7 +253,7 @@ class RelativityOfTimeCardPack {
         //region timeLifeIntersection Rare Initialization
         val timeLifeIntersection = Card(
             "시간 생명 교차", listOf(
-                "<gray>자신의 체력을 최대 10까지 소모하고 소모한 체력 만큼 <gold><bold>시간</bold><gray>을 얻는다.",
+                "<gray>자신의 체력을 최대 10까지 소모하고 소모한 (체력 * 5) 만큼 <gold><bold>시간</bold><gray>을 얻는다.",
                 "<gray>이 효과로는 체력이 1 미만으로 내려가지 않으며, 이 경우 체력을 10 소모한 것으로 간주한다.",
                 "",
                 dictionary.dictionaryList[KeywordType.Time]!!
@@ -262,7 +262,7 @@ class RelativityOfTimeCardPack {
                 val player = usePlayerData.player
                 if (usePlayerData.health - 10 < 1) {
                     usePlayerData.setHealth(1)
-                    usePlayerData.increaseTime(10, usePlayerData)
+                    usePlayerData.increaseTime(50, usePlayerData)
                     return@Card true
                 }
 
@@ -270,7 +270,7 @@ class RelativityOfTimeCardPack {
                 player.world.spawnParticle(Particle.DAMAGE_INDICATOR, player.location, 10, 0.5, 0.5, 0.5, 1.0)
 
                 usePlayerData.addHealth(-10)
-                usePlayerData.increaseTime(10, usePlayerData)
+                usePlayerData.increaseTime(50, usePlayerData)
                 return@Card true
             }
         )
@@ -280,7 +280,7 @@ class RelativityOfTimeCardPack {
         val lifeTimeIntersection = Card(
             "생명 시간 교차", listOf(
                 "<gold><bold>시간 </bold><gray>수치만큼 체력을 회복하고 수치를 절반으로 만든다.",
-                "<gray>만약, 자신의 체력이 1이었다면 <gold><bold>시간 </bold><gray> 수치를 소모하지 않는다.",
+                "<gray>만약, 자신의 체력이 1이었다면 <gold><bold>시간 </bold><gray>수치를 소모하지 않는다.",
                 "",
                 dictionary.dictionaryList[KeywordType.Time]!!
             ), CardRarity.Rare, 1,
