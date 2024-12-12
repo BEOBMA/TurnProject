@@ -111,8 +111,9 @@ object InventoryManager : InventoryHandler {
             inventory.setItem(26, nextPage)
         }
 
-        this.scoreboardTags.add("inventory_StartCardPack")
+        this.scoreboardTags.remove("inventory_StartCardPack")
         this.openInventory(inventory)
+        this.scoreboardTags.add("inventory_StartCardPack")
     }
 
     override fun Player.openDeckInfoInventory(page: Int) {
