@@ -64,7 +64,7 @@ object MaxHealthManager: MaxHealthHandler {
             return
         }
 
-        this.player.getAttribute(Attribute.GENERIC_MAX_HEALTH)!!.baseValue += int
+        this.player.getAttribute(Attribute.MAX_HEALTH)!!.baseValue += int
         this.maxHealth += int
     }
 
@@ -73,7 +73,7 @@ object MaxHealthManager: MaxHealthHandler {
             death()
             return
         }
-        this.player.getAttribute(Attribute.GENERIC_MAX_HEALTH)!!.baseValue = int.toDouble()
+        this.player.getAttribute(Attribute.MAX_HEALTH)!!.baseValue = int.toDouble()
         this.maxHealth = int
     }
 }

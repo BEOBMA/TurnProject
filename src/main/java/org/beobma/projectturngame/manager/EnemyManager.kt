@@ -49,7 +49,7 @@ object EnemyManager : EnemyHandler {
 
     override fun Enemy.setMaxHealth(int: Int) {
         this.maxHealth = int
-        this@setMaxHealth.entity.getAttribute(Attribute.GENERIC_MAX_HEALTH)!!.baseValue = int.toDouble()
+        this@setMaxHealth.entity.getAttribute(Attribute.MAX_HEALTH)!!.baseValue = int.toDouble()
         entity.apply {
             this.customName(Component.text("${this.health}",TextColorType.DarkRed.textColor).decorate(TextDecoration.BOLD))
             this.isCustomNameVisible = true
