@@ -15,4 +15,4 @@
 
 1.21.3 버전에서만 동작하며, 별도의 맵 파일이 동봉되어 있습니다.
 
-[최신 릴리스](https://github.com/BEOBMA/TurnProject/releases/latest)
+[최신 릴리즈](https://github.com/BEOBMA/TurnProject/releases/latest)
