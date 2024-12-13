@@ -47,7 +47,7 @@ object BattleManager : Battlehandler {
             GameDifficulty.Hard -> 1.25
         }
 
-        val healthWeight = sqrt(game.tileStep.toDouble()) * difficultyWeight
+        val healthWeight = sqrt(game.tileStep.toDouble() * difficultyWeight)
 
         fun spawnEntity(entityType: EntityType): LivingEntity {
             val entity = Bukkit.getWorld("world")!!

@@ -6,6 +6,7 @@ import org.beobma.projectturngame.ProjectTurnGame
 import org.beobma.projectturngame.entity.enemy.Enemy
 import org.beobma.projectturngame.entity.player.Player
 import org.beobma.projectturngame.event.EntityDamageEvent
+import org.beobma.projectturngame.event.EntityDeathEvent
 import org.beobma.projectturngame.info.Info
 import org.beobma.projectturngame.manager.BattleManager.playerLocationRetake
 import org.beobma.projectturngame.manager.GameManager.gameOver
@@ -29,7 +30,7 @@ interface PlayerHandler {
     fun Player.setMaxMana(int: Int)
     fun Player.addMaxMana(int: Int)
 
-    fun Player.setMana(int: Int)
+    fun Player.setMana(int: Int, ignoreMaxValue: Boolean = false)
     fun Player.addMana(int: Int)
 
     fun Player.addShield(int: Int)
@@ -81,15 +82,17 @@ object PlayerManager : PlayerHandler {
         this.applyPlayerInfo()
     }
 
-    override fun Player.setMana(int: Int) {
+    override fun Player.setMana(int: Int, ignoreMaxValue: Boolean) {
         this.mana = int
 
         if (this.mana < 0) {
             this.mana = 0
         }
 
-        if (this.mana > this.maxMana) {
-            this.mana = this.maxMana
+        if (!ignoreMaxValue) {
+            if (this.mana > this.maxMana) {
+                this.mana = this.maxMana
+            }
         }
 
         this.applyPlayerInfo()
@@ -156,6 +159,11 @@ object PlayerManager : PlayerHandler {
 
         // 초과 피해
         if (this.health - finalDamage <= 0) {
+            val event = EntityDeathEvent(damageType, this, attacker)
+            ProjectTurnGame.instance.server.pluginManager.callEvent(event)
+            if (event.isCancelled) {
+                return
+            }
             this.death()
             return
         }

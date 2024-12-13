@@ -12,6 +12,7 @@ import org.beobma.projectturngame.config.EventConfig.Companion.eventList
 import org.beobma.projectturngame.entity.Entity
 import org.beobma.projectturngame.entity.enemy.Enemy
 import org.beobma.projectturngame.entity.player.Player
+import org.beobma.projectturngame.event.EntityTurnEndEvent
 import org.beobma.projectturngame.event.EntityTurnStartEvent
 import org.beobma.projectturngame.event.GameBattleStartEvent
 import org.beobma.projectturngame.game.Game
@@ -342,7 +343,7 @@ object GameManager : GameHandler {
                                 return
                             }
 
-                            broadcast(MiniMessage.miniMessage().deserialize("<gray>${this@turnStart.name}이(가) ${it.actionName}을 발동합니다."))
+                            broadcast(MiniMessage.miniMessage().deserialize("<gray>${this@turnStart.name}이(가) ${it.actionName}을(를) 발동합니다."))
                             object : BukkitRunnable() {
                                 override fun run() {
                                     it.action.invoke(this@turnStart)
@@ -365,6 +366,8 @@ object GameManager : GameHandler {
     override fun Entity.turnEnd() {
         ProjectTurnGame.instance.logger.info("${this.name}의 턴 종료.")
         val game = Info.game ?: return
+        val event = EntityTurnEndEvent(this)
+        ProjectTurnGame.instance.server.pluginManager.callEvent(event)
 
         if (this is Player) {
             this.player.run {
@@ -400,7 +403,7 @@ object GameManager : GameHandler {
             playerData.setHealth(40)
             playerData.setMaxMana(3)
             playerData.setMana(3)
-            playerData.deck.addAll(playerData.cardPack.cardList)
+            playerData.deck.addAll(playerData.cardPack.startCardList)
         }
 
         game.gameSector.addAll(GameField.entries)
@@ -480,6 +483,11 @@ object GameManager : GameHandler {
     }
 
     private fun Player.battleEndReset() {
+        val game = Info.game ?: return
+
+        val continueEffects = game.continueEffects.filter { it.endTime == ResetType.BattleEnd }
+        game.continueEffects.removeAll(continueEffects)
+
         ProjectTurnGame.instance.logger.info("Resetting player ${this.player.name} for battle end.")
         this.setMana(this.maxMana)
         this.abnormalityStatus.removeAll(this.abnormalityStatus.filter { it.resetType == ResetType.BattleEnd })

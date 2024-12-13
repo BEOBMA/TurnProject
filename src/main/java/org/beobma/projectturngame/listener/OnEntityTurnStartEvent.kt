@@ -5,10 +5,12 @@ import org.beobma.projectturngame.entity.Entity
 import org.beobma.projectturngame.entity.enemy.Enemy
 import org.beobma.projectturngame.entity.player.Player
 import org.beobma.projectturngame.event.EntityTurnStartEvent
+import org.beobma.projectturngame.info.Info
 import org.beobma.projectturngame.manager.EnemyManager.damage
 import org.beobma.projectturngame.manager.PlayerManager.damage
 import org.beobma.projectturngame.text.KeywordType
 import org.beobma.projectturngame.util.DamageType
+import org.beobma.projectturngame.util.EffectTime
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 
@@ -17,9 +19,15 @@ class OnEntityTurnStartEvent : Listener {
     @EventHandler
     fun onEntityTurnStartEvent(event: EntityTurnStartEvent) {
         val entity = event.entity
+        val game = Info.game ?: return
+        val continueEffects = game.continueEffects.filter { it.effectTime == EffectTime.TurnStart }
 
         burnHandler(entity)
         protectHandler(entity)
+
+        continueEffects.forEach {
+            it.effect.normalEffect.invoke(entity)
+        }
     }
 
     private fun burnHandler(entity: Entity) {

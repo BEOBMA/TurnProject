@@ -1,5 +1,6 @@
 package org.beobma.projectturngame.config.cardpack
 
+import org.beobma.projectturngame.ProjectTurnGame
 import org.beobma.projectturngame.abnormalityStatus.AbnormalityStatus
 import org.beobma.projectturngame.card.Card
 import org.beobma.projectturngame.card.CardPack
@@ -12,8 +13,11 @@ import org.beobma.projectturngame.entity.enemy.Enemy
 import org.beobma.projectturngame.localization.Dictionary
 import org.beobma.projectturngame.manager.BleedingManager.getBleeding
 import org.beobma.projectturngame.manager.BleedingManager.increaseBleeding
+import org.beobma.projectturngame.manager.CardManager.drow
 import org.beobma.projectturngame.manager.CustomStackManager.getStack
 import org.beobma.projectturngame.manager.EnemyManager.damage
+import org.beobma.projectturngame.manager.ParticleAnimationManager.isPlay
+import org.beobma.projectturngame.manager.PlayerManager.addMana
 import org.beobma.projectturngame.manager.PlayerManager.addShield
 import org.beobma.projectturngame.manager.ProtectManager.increaseProtect
 import org.beobma.projectturngame.manager.SelectionFactordManager.allEnemyMembers
@@ -24,9 +28,9 @@ import org.beobma.projectturngame.manager.SoundManager.playCardUsingFailSound
 import org.beobma.projectturngame.manager.StunManager.addStun
 import org.beobma.projectturngame.manager.TextManager.targetingFailText
 import org.beobma.projectturngame.text.KeywordType
-import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.Sound
+import org.bukkit.scheduler.BukkitRunnable
 
 class HammerOfReforgingCardPack {
     private val dictionary = Dictionary()
@@ -41,6 +45,100 @@ class HammerOfReforgingCardPack {
                 "<gray>마나를 추가로 소모하여 카드를 재련하고 추가 효과를 얻을 수 있다."
             ), mutableListOf(), mutableListOf(), CardPackType.Limitation
         )
+
+
+        //region attack Common Initialization
+        val attack = Card(
+            "공격", listOf(
+                "<gray>바라보는 적에게 7의 피해를 입힌다."
+            ), CardRarity.Common, 1, { usePlayerData, _ ->
+                val player = usePlayerData.player
+                val target = usePlayerData.focusOn()
+
+                if (target !is Enemy) {
+                    player.sendMessage(targetingFailText())
+                    player.playCardUsingFailSound()
+                    return@Card false
+                }
+
+                target.damage(7, usePlayerData)
+                player.world.playSound(player.location, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1.0F, 1.0F)
+                player.world.spawnParticle(Particle.SWEEP_ATTACK, target.entity.location, 1, 0.0, 0.0, 0.0, 1.0)
+                return@Card true
+            }
+        )
+        //endregion
+
+        //region defense Common Initialization
+        val defense = Card(
+            "수비", listOf(
+                "<gray>10의 피해를 막는 ${KeywordType.Shield.string}을 얻는다.",
+                "",
+                dictionary.dictionaryList[KeywordType.Shield]!!
+            ), CardRarity.Common, 1, { usePlayerData, _ ->
+                val player = usePlayerData.player
+
+                usePlayerData.addShield(10)
+                player.world.playSound(player.location, Sound.ITEM_SHIELD_BLOCK, 1.0F, 1.0F)
+                return@Card true
+            }
+        )
+        //endregion
+
+        //region rest Common Initialization
+        val rest = Card(
+            "휴식", listOf(
+                "${KeywordType.Mana.string}를 1 회복한다."
+            ), CardRarity.Uncommon, 0, { usePlayerData, _ ->
+                val player = usePlayerData.player
+
+                usePlayerData.addMana(1)
+
+                player.world.playSound(player.location, Sound.BLOCK_RESPAWN_ANCHOR_CHARGE, 1.0F, 2.0F)
+                player.world.spawnParticle(Particle.WAX_OFF, player.location, 10, 0.5, 0.5, 0.5, 1.0)
+                return@Card true
+            }
+        )
+        //endregion
+
+        //region drow Common Initialization
+        val drow = Card(
+            "뽑기", listOf(
+                "<gray>덱에서 카드를 1장 뽑는다.",
+            ), CardRarity.Uncommon, 0, { usePlayerData, _ ->
+                val player = usePlayerData.player
+
+                usePlayerData.drow(1)
+
+                player.world.playSound(player.location, Sound.ITEM_BOOK_PAGE_TURN, 1.0F, 1.5F)
+                return@Card true
+            }
+        )
+        //endregion
+
+        //region powerAttack Common Initialization
+        val powerAttack = Card(
+            "강공", listOf(
+                "<gray>바라보는 적에게 20의 피해를 입힌다."
+            ), CardRarity.Uncommon, 2, { usePlayerData, _ ->
+                val player = usePlayerData.player
+                val target = usePlayerData.focusOn()
+
+                if (target !is Enemy) {
+                    player.sendMessage(targetingFailText())
+                    player.playCardUsingFailSound()
+                    return@Card false
+                }
+
+                target.damage(20, usePlayerData)
+
+                player.world.playSound(player.location, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1.0F, 0.5F)
+                player.world.spawnParticle(Particle.SWEEP_ATTACK, target.entity.location, 1, 0.0, 0.0, 0.0, 1.0)
+                return@Card true
+            }
+        )
+        //endregion
+
 
         //region materialReproduction Common Initialization
         val materialReproduction = Card(
@@ -544,7 +642,7 @@ class HammerOfReforgingCardPack {
                 "",
                 "<gray>바라보는 적에게 7의 피해를 입힌다. 이 효과는 이 카드를 <gold><bold>재련</bold><gray>한 횟수만큼 발동한다.",
                 "<gray>위 효과를 발동하는 도중 대상이 사망하면 무작위 적 대상에게 이어서 사용한다.",
-                "<gray>이 카드는 항상 <gold><bold>재련</bold><gray>되지 않은 것으로 간주한다."
+                "<gray>이 카드는 효과를 발동할 때를 제외하고 항상 <gold><bold>재련</bold><gray>되지 않은 것으로 간주한다.",
                 "",
                 dictionary.dictionaryList[KeywordType.Reforge]!!
             ), CardRarity.Legend, 0,
@@ -557,17 +655,40 @@ class HammerOfReforgingCardPack {
                     player.playCardUsingFailSound()
                     return@Card false
                 }
-                repeat(usePlayerData.getStack("ReforgeStack").score) {
-                    if (target.isDead) {
-                        val allEnemy = usePlayerData.allEnemyMembers()
 
-                        if (allEnemy.isEmpty()) return@Card true
-                        allEnemy.random().damage(20, usePlayerData)
-                        return@repeat
+                player.world.playSound(player.location, Sound.ITEM_MACE_SMASH_AIR, 1.0F, 1.5F)
+                player.world.spawnParticle(Particle.CRIT, target.entity.location, 10, 0.0, 0.0, 0.0, 1.0)
+                target.damage(7, usePlayerData)
+
+                isPlay = true
+                var count = 0
+                object : BukkitRunnable() {
+                    override fun run() {
+                        if (count >= usePlayerData.getStack("ReforgeStack").score) {
+                            isPlay = false
+                            cancel()
+                            return
+                        }
+
+                        if (target.isDead) {
+                            val allEnemy = usePlayerData.allEnemyMembers()
+
+                            if (allEnemy.isEmpty()) {
+                                isPlay = false
+                                cancel()
+                                return
+                            }
+                            player.world.playSound(player.location, Sound.ITEM_MACE_SMASH_AIR, 1.0F, 1.5F)
+                            player.world.spawnParticle(Particle.CRIT, target.entity.location, 10, 0.0, 0.0, 0.0, 1.0)
+                            allEnemy.random().damage(7, usePlayerData)
+                        }
+
+                        player.world.playSound(player.location, Sound.ITEM_MACE_SMASH_AIR, 1.0F, 1.5F)
+                        player.world.spawnParticle(Particle.CRIT, target.entity.location, 10, 0.0, 0.0, 0.0, 1.0)
+                        target.damage(7, usePlayerData)
+                        count++
                     }
-
-                    target.damage(7, usePlayerData)
-                }
+                }.runTaskTimer(ProjectTurnGame.instance, 5L, 5L)
                 return@Card true
             }
         )
@@ -603,7 +724,25 @@ class HammerOfReforgingCardPack {
                 knuckles,
                 knuckles,
                 knuckles,
+                finalBlow,
+                finalBlow,
                 finalBlow
+            )
+        )
+        cardPack.startCardList.addAll(
+            listOf(
+                attack,
+                attack,
+                attack,
+                defense,
+                defense,
+                defense,
+                rest,
+                rest,
+                drow,
+                drow,
+                powerAttack,
+                powerAttack
             )
         )
 
@@ -621,6 +760,7 @@ class HammerOfReforgingCardPack {
         reforgeCardPair[shield] = shieldReforged
         reforgeCardPair[knuckles] = knucklesReforged
         cardList.addAll(cardPack.cardList)
+        cardList.addAll(cardPack.startCardList)
         cardList.addAll(listOf(materialReproductionReforged,bayonetReforged, bayonetProtectionRefirged, hammerReforged,
             longSwordReforged, daggerReforged, bigAxReforged, shieldReforged, knucklesReforged))
     }

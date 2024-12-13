@@ -9,7 +9,7 @@ interface ParticleAnimationHandler{
 }
 
 object ParticleAnimationManager : ParticleAnimationHandler {
-    private val projectTurnGame = ProjectTurnGame.instance
+    internal val projectTurnGame = ProjectTurnGame.instance
     var isPlay = false
 
     override fun ParticleAnimation.play() {

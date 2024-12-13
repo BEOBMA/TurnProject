@@ -19,7 +19,6 @@ class OnPlayerInteractEvent : Listener {
     @EventHandler
     fun onPlayerInteract(event: PlayerInteractEvent) {
         val player = event.player
-        val item = event.item ?: return
         val game = Info.game ?: return
         val playerData = game.playerDatas.find { it.player == player } ?: return
 
@@ -30,7 +29,8 @@ class OnPlayerInteractEvent : Listener {
             event.isCancelled = true
             return
         }
-        val card = playerData.hand.find { it == item.toCard() } ?: return
+
+        val card = playerData.hand.getOrNull(player.inventory.heldItemSlot) ?: return
 
         if (card.cost > playerData.mana) {
             player.sendMessage(manaFailText())

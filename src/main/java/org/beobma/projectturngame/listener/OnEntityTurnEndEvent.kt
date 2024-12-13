@@ -23,7 +23,7 @@ class OnEntityTurnEndEvent : Listener {
             entity.setStack("ReforgeStack", 0)
         }
         continueEffects.forEach {
-            it.effect.invoke(entity)
+            it.effect.normalEffect.invoke(entity)
         }
         weaknessHandler(entity)
     }

@@ -8,6 +8,7 @@ import org.beobma.projectturngame.entity.enemy.Enemy
 import org.beobma.projectturngame.entity.enemy.EnemyAction
 import org.beobma.projectturngame.entity.player.Player
 import org.beobma.projectturngame.event.EntityDamageEvent
+import org.beobma.projectturngame.event.EntityDeathEvent
 import org.beobma.projectturngame.info.Info
 import org.beobma.projectturngame.manager.BattleManager.enemyLocationRetake
 import org.beobma.projectturngame.manager.GameManager.battleStop
@@ -127,6 +128,11 @@ object EnemyManager : EnemyHandler {
 
         // 초과 피해
         if (this.health - finalDamage <= 0) {
+            val event = EntityDeathEvent(damageType, this, attacker)
+            ProjectTurnGame.instance.server.pluginManager.callEvent(event)
+            if (event.isCancelled) {
+                return
+            }
             this.death()
             return
         }

@@ -102,11 +102,7 @@ object BurnManager : BurnHandler {
     override fun Entity.getBurn(): AbnormalityStatus? {
         val abnormalityStatus = this.abnormalityStatus.find { it.keywordType == KeywordType.Burn}
 
-        return if (abnormalityStatus !is AbnormalityStatus) {
-            return null
-        } else {
-            abnormalityStatus
-        }
+        return abnormalityStatus
     }
 
     override fun Entity.setBurn(int: Int, caster: Entity) {
@@ -158,11 +154,7 @@ object WeaknessManager : WeaknessHandler {
     override fun Entity.getWeakness(): AbnormalityStatus? {
         val abnormalityStatus = this.abnormalityStatus.find { it.keywordType == KeywordType.Weakness}
 
-        return if (abnormalityStatus !is AbnormalityStatus) {
-            return null
-        } else {
-            abnormalityStatus
-        }
+        return abnormalityStatus
     }
 
     override fun Entity.setWeakness(int: Int, caster: Entity) {
@@ -214,11 +206,7 @@ object BlindnessManager : BlindnessHandler {
     override fun Entity.getBlindness(): AbnormalityStatus? {
         val abnormalityStatus = this.abnormalityStatus.find { it.keywordType == KeywordType.Blindness}
 
-        return if (abnormalityStatus !is AbnormalityStatus) {
-            return null
-        } else {
-            abnormalityStatus
-        }
+        return abnormalityStatus
     }
 
     override fun Entity.setBlindness(int: Int, caster: Entity) {
@@ -270,11 +258,7 @@ object TimeManager : TimeHandler {
     override fun Entity.getTime(): AbnormalityStatus? {
         val abnormalityStatus = this.abnormalityStatus.find { it.keywordType == KeywordType.Time}
 
-        return if (abnormalityStatus !is AbnormalityStatus) {
-            return null
-        } else {
-            abnormalityStatus
-        }
+        return abnormalityStatus
     }
 
     override fun Entity.setTime(int: Int, caster: Entity) {
@@ -316,7 +300,7 @@ object StunManager : StunHandler {
             this.player.scoreboardTags.add("Stun")
         }
         if (this is Enemy) {
-           if (player.scoreboardTags.contains("dontStun")) return
+           if (entity.scoreboardTags.contains("dontStun")) return
             this.entity.scoreboardTags.add("Stun")
         }
     }
@@ -363,11 +347,7 @@ object ProtectManager : ProtectHandler {
     override fun Entity.getProtect(): AbnormalityStatus? {
         val abnormalityStatus = this.abnormalityStatus.find { it.keywordType == KeywordType.Protect}
 
-        return if (abnormalityStatus !is AbnormalityStatus) {
-            return null
-        } else {
-            abnormalityStatus
-        }
+        return abnormalityStatus
     }
 
     override fun Entity.setProtect(int: Int, caster: Entity) {
@@ -395,6 +375,113 @@ object ProtectManager : ProtectHandler {
         }
     }
 }
+
+
+interface BleedingHandler {
+    fun Entity.increaseBleeding(int: Int, caster: Entity)
+    fun Entity.getBleeding(): AbnormalityStatus?
+    fun Entity.setBleeding(int: Int, caster: Entity)
+    fun Entity.decreaseBleeding(int: Int, caster: Entity)
+}
+object BleedingManager : BleedingHandler {
+    override fun Entity.increaseBleeding(int: Int, caster: Entity) {
+        val bleeding = this.getBleeding()
+
+        if (bleeding is AbnormalityStatus) {
+            bleeding.caster.add(caster)
+            bleeding.power += int
+        }
+        else {
+            this.abnormalityStatus.add(AbnormalityStatus(KeywordType.Bleeding, mutableListOf(caster), int))
+        }
+
+    }
+
+    override fun Entity.getBleeding(): AbnormalityStatus? {
+        val abnormalityStatus = this.abnormalityStatus.find { it.keywordType == KeywordType.Bleeding}
+
+        return abnormalityStatus
+    }
+
+    override fun Entity.setBleeding(int: Int, caster: Entity) {
+        val bleeding = this.getBleeding()
+
+        if (bleeding is AbnormalityStatus) {
+            bleeding.caster.add(caster)
+            bleeding.power = int
+        }
+        else {
+            this.abnormalityStatus.add(AbnormalityStatus(KeywordType.Bleeding, mutableListOf(caster), int))
+        }
+    }
+
+    override fun Entity.decreaseBleeding(int: Int, caster: Entity) {
+        val bleeding = this.getBleeding()
+
+        if (bleeding is AbnormalityStatus) {
+            bleeding.caster.add(caster)
+
+            if (bleeding.power - int <= 0) {
+                this.abnormalityStatus.remove(bleeding)
+            }
+            bleeding.power -= int
+        }
+    }
+}
+
+
+interface DeathResistanceHandler {
+    fun Entity.increaseDeathResistance(int: Int, caster: Entity)
+    fun Entity.getDeathResistance(): AbnormalityStatus?
+    fun Entity.setDeathResistance(int: Int, caster: Entity)
+    fun Entity.decreaseDeathResistance(int: Int, caster: Entity)
+}
+object DeathResistanceManager : DeathResistanceHandler {
+    override fun Entity.increaseDeathResistance(int: Int, caster: Entity) {
+        val deathResistance = this.getDeathResistance()
+
+        if (deathResistance is AbnormalityStatus) {
+            deathResistance.caster.add(caster)
+            deathResistance.power += int
+        }
+        else {
+            this.abnormalityStatus.add(AbnormalityStatus(KeywordType.DeathResistance, mutableListOf(caster), int))
+        }
+
+    }
+
+    override fun Entity.getDeathResistance(): AbnormalityStatus? {
+        val abnormalityStatus = this.abnormalityStatus.find { it.keywordType == KeywordType.DeathResistance}
+
+        return abnormalityStatus
+    }
+
+    override fun Entity.setDeathResistance(int: Int, caster: Entity) {
+        val deathResistance = this.getDeathResistance()
+
+        if (deathResistance is AbnormalityStatus) {
+            deathResistance.caster.add(caster)
+            deathResistance.power = int
+        }
+        else {
+            this.abnormalityStatus.add(AbnormalityStatus(KeywordType.DeathResistance, mutableListOf(caster), int))
+        }
+    }
+
+    override fun Entity.decreaseDeathResistance(int: Int, caster: Entity) {
+        val deathResistance = this.getDeathResistance()
+
+        if (deathResistance is AbnormalityStatus) {
+            deathResistance.caster.add(caster)
+
+            if (deathResistance.power - int <= 0) {
+                this.abnormalityStatus.remove(deathResistance)
+            }
+            deathResistance.power -= int
+        }
+    }
+}
+
 
 
 interface CustomStackHandler {
@@ -429,62 +516,5 @@ object CustomStackManager : CustomStackHandler {
         val stack = this.getStack(stackName)
 
         stack.score -= int
-    }
-}
-
-
-interface BleedingHandler {
-    fun Entity.increaseBleeding(int: Int, caster: Entity)
-    fun Entity.getBleeding(): AbnormalityStatus?
-    fun Entity.setBleeding(int: Int, caster: Entity)
-    fun Entity.decreaseBleeding(int: Int, caster: Entity)
-}
-object BleedingManager : BleedingHandler {
-    override fun Entity.increaseBleeding(int: Int, caster: Entity) {
-        val bleeding = this.getBleeding()
-
-        if (bleeding is AbnormalityStatus) {
-            bleeding.caster.add(caster)
-            bleeding.power += int
-        }
-        else {
-            this.abnormalityStatus.add(AbnormalityStatus(KeywordType.Bleeding, mutableListOf(caster), int))
-        }
-
-    }
-
-    override fun Entity.getBleeding(): AbnormalityStatus? {
-        val abnormalityStatus = this.abnormalityStatus.find { it.keywordType == KeywordType.Bleeding}
-
-        return if (abnormalityStatus !is AbnormalityStatus) {
-            return null
-        } else {
-            abnormalityStatus
-        }
-    }
-
-    override fun Entity.setBleeding(int: Int, caster: Entity) {
-        val bleeding = this.getBleeding()
-
-        if (bleeding is AbnormalityStatus) {
-            bleeding.caster.add(caster)
-            bleeding.power = int
-        }
-        else {
-            this.abnormalityStatus.add(AbnormalityStatus(KeywordType.Bleeding, mutableListOf(caster), int))
-        }
-    }
-
-    override fun Entity.decreaseBleeding(int: Int, caster: Entity) {
-        val bleeding = this.getBleeding()
-
-        if (bleeding is AbnormalityStatus) {
-            bleeding.caster.add(caster)
-
-            if (bleeding.power - int <= 0) {
-                this.abnormalityStatus.remove(bleeding)
-            }
-            bleeding.power -= int
-        }
     }
 }

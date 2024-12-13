@@ -7,7 +7,11 @@ import org.beobma.projectturngame.card.CardPackType
 import org.beobma.projectturngame.card.CardRarity
 import org.beobma.projectturngame.config.CardConfig.Companion.cardList
 import org.beobma.projectturngame.config.CardConfig.Companion.cardPackList
+import org.beobma.projectturngame.continueeffect.ContinueEffect
+import org.beobma.projectturngame.continueeffect.ContinueEffectHandler
+import org.beobma.projectturngame.entity.Entity
 import org.beobma.projectturngame.entity.enemy.Enemy
+import org.beobma.projectturngame.info.Info
 import org.beobma.projectturngame.localization.Dictionary
 import org.beobma.projectturngame.manager.BlindnessManager.increaseBlindness
 import org.beobma.projectturngame.manager.BurnManager.getBurn
@@ -25,6 +29,7 @@ import org.beobma.projectturngame.manager.TextManager.cardUseFailText
 import org.beobma.projectturngame.manager.TextManager.targetingFailText
 import org.beobma.projectturngame.manager.WeaknessManager.increaseWeakness
 import org.beobma.projectturngame.text.KeywordType
+import org.beobma.projectturngame.util.EffectTime
 import org.bukkit.Particle
 import org.bukkit.Sound
 
@@ -41,6 +46,75 @@ class MasterOfAlchemyCardPack {
                 "<gray>각기 다른 카드를 조합하여 새로운 카드를 만든다."
             ), mutableListOf(), mutableListOf(), CardPackType.Limitation
         )
+
+
+        //region attack Common Initialization
+        val attack = Card(
+            "공격", listOf(
+                "<gray>바라보는 적에게 7의 피해를 입힌다."
+            ), CardRarity.Common, 1, { usePlayerData, _ ->
+                val player = usePlayerData.player
+                val target = usePlayerData.focusOn()
+
+                if (target !is Enemy) {
+                    player.sendMessage(targetingFailText())
+                    player.playCardUsingFailSound()
+                    return@Card false
+                }
+
+                target.damage(7, usePlayerData)
+                player.world.playSound(player.location, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1.0F, 1.0F)
+                player.world.spawnParticle(Particle.SWEEP_ATTACK, target.entity.location, 1, 0.0, 0.0, 0.0, 1.0)
+                return@Card true
+            }
+        )
+        //endregion
+
+        //region defense Common Initialization
+        val defense = Card(
+            "수비", listOf(
+                "<gray>10의 피해를 막는 ${KeywordType.Shield.string}을 얻는다.",
+                "",
+                dictionary.dictionaryList[KeywordType.Shield]!!
+            ), CardRarity.Common, 1, { usePlayerData, _ ->
+                val player = usePlayerData.player
+
+                usePlayerData.addShield(10)
+                player.world.playSound(player.location, Sound.ITEM_SHIELD_BLOCK, 1.0F, 1.0F)
+                return@Card true
+            }
+        )
+        //endregion
+
+        //region rest Common Initialization
+        val rest = Card(
+            "휴식", listOf(
+                "${KeywordType.Mana.string}를 1 회복한다."
+            ), CardRarity.Uncommon, 0, { usePlayerData, _ ->
+                val player = usePlayerData.player
+
+                usePlayerData.addMana(1)
+                player.world.playSound(player.location, Sound.BLOCK_RESPAWN_ANCHOR_CHARGE, 1.0F, 2.0F)
+                player.world.spawnParticle(Particle.WAX_OFF, player.location, 10, 0.5, 0.5, 0.5, 1.0)
+                return@Card true
+            }
+        )
+        //endregion
+
+        //region drow Common Initialization
+        val drow = Card(
+            "뽑기", listOf(
+                "<gray>덱에서 카드를 1장 뽑는다."
+            ), CardRarity.Uncommon, 0, { usePlayerData, _ ->
+                val player = usePlayerData.player
+
+                usePlayerData.drow(1)
+
+                player.world.playSound(player.location, Sound.ITEM_BOOK_PAGE_TURN, 1.0F, 1.5F)
+                return@Card true
+            }
+        )
+        //endregion
 
         //region alchemy ingredients Initialization
         val water = Card(
@@ -602,7 +676,7 @@ class MasterOfAlchemyCardPack {
         //region substitutionDuctility Legend Initialization
         val substitutionDuctility = Card(
             "치환 연성", listOf(
-                "<gold><bold>연금술 재료 더미</bold><gray>의 카드들 중, 무작위 카드 2장을 <gold><bold>연성</bold><gray>한 것으로 간주하고 연성한 카드를 패에 넣는다.",
+                "<gold><bold>연금술 재료 더미</bold><gray>의 카드들 중, 무작위 카드 2장을 <gold><bold>연성</bold><gray>한 것으로 간주하고 <gold><bold>연성</bold><gray>한 카드를 패에 넣는다.",
                 "",
                 dictionary.dictionaryList[KeywordType.AlchemYingredientsPile]!!,
                 dictionary.dictionaryList[KeywordType.Ductility]!!
@@ -649,6 +723,53 @@ class MasterOfAlchemyCardPack {
         )
         //endregion
 
+        //region continuousDelivery Legend Initialization
+        val continuousDelivery = Card(
+            "지속 배달", listOf(
+                KeywordType.Continue.string,
+                "",
+                "<gray>전투 종료 시까지 매 턴을 시작할 때 '연금술의 대가' 카드팩에 존재하는 <gold><bold>연금술 재료</bold><gray> 카드들 중, 무작위 카드를 생성하고 패에 넣는다.",
+                "",
+                dictionary.dictionaryList[KeywordType.Continue]!!,
+                dictionary.dictionaryList[KeywordType.AlchemYingredients]!!
+            ), CardRarity.Legend, 2,
+            { usePlayerData, _ ->
+                val player = usePlayerData.player
+                val game = Info.game ?: return@Card false
+                val cardList = listOf(water, fire, dirt, air)
+
+                player.world.playSound(player.location, Sound.BLOCK_BEACON_POWER_SELECT, 1.0F, 2.0F)
+                player.world.spawnParticle(Particle.END_ROD, player.location, 10, 0.0, 0.0, 0.0, 0.3)
+                game.continueEffects.add(ContinueEffect(usePlayerData, EffectTime.TurnStart, { entity: Entity ->
+                    usePlayerData.addCard(cardList.random())
+                    player.world.playSound(player.location, Sound.ITEM_BOOK_PAGE_TURN, 1.0F, 1.5F)
+                } as ContinueEffectHandler
+                ))
+
+                return@Card true
+            }
+        )
+        //endregion
+
+        //region ultimateDuctility Legend Initialization
+        val ultimateDuctility = Card(
+            "궁극적 연성", listOf(
+                "<gray>'연금술의 대가' 카드팩에 존재하는 <gold><bold>연성</bold><gray>을 통해 생성되는 카드들 중, 무작위 카드를 3장 생성하고 패에 넣는다.",
+                "",
+                dictionary.dictionaryList[KeywordType.Ductility]!!
+            ), CardRarity.Legend, 3,
+            { usePlayerData, _ ->
+                val player = usePlayerData.player
+                val cardList = listOf(river, sun, earth, wind, steam, mud, fog, lava, lightning, dust)
+
+                usePlayerData.addCard(cardList.random())
+                player.world.playSound(player.location, Sound.ITEM_BOOK_PAGE_TURN, 1.0F, 1.5F)
+
+                return@Card true
+            }
+        )
+        //endregion
+
         cardPack.cardList.addAll(
             listOf(
                 lesserConjugation,
@@ -672,7 +793,9 @@ class MasterOfAlchemyCardPack {
                 urgentDelivery,
                 urgentDelivery,
                 urgentDelivery,
-                substitutionDuctility
+                substitutionDuctility,
+                continuousDelivery,
+                ultimateDuctility
             )
         )
 
@@ -680,7 +803,28 @@ class MasterOfAlchemyCardPack {
             cardPack
         )
 
+        cardPack.startCardList.addAll(
+            listOf(
+                lesserConjugation,
+                lesserConjugation,
+                lesserConjugation,
+                kilnOfCreation,
+                kilnOfCreation,
+                kilnOfCreation,
+                attack,
+                attack,
+                attack,
+                defense,
+                defense,
+                defense,
+                rest,
+                rest,
+                drow,
+                drow
+            )
+        )
         cardList.addAll(cardPack.cardList)
+        cardList.addAll(cardPack.startCardList)
         cardList.addAll(listOf(water, fire, air, dirt, river, sun, earth, wind, steam, mud, fog, lava, lightning, dust))
     }
 }

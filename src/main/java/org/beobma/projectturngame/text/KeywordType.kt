@@ -25,5 +25,6 @@ enum class  KeywordType(val string: String, val keywordName: String) {
     Reforge("<gold><bold>재련</bold><gray>", "재련"),
     Reforged("<gold><bold>재련됨</bold><gray>", "재련됨"),
     Protect("<blue><bold>보호</bold><gray>", "보호"),
-    Bleeding("<dark_red><bold>출혈</bold><gray>", "출혈")
+    Bleeding("<dark_red><bold>출혈</bold><gray>", "출혈"),
+    DeathResistance("<dark_red><bold>죽음 저항</bold><gray>", "죽음 저항")
 }

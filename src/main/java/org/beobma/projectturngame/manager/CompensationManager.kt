@@ -17,14 +17,14 @@ interface CompensationHandler {
 object CompensationManager : CompensationHandler {
     override fun Player.normalReward() {
         val cardPacks = this.cardPack
-        val cardList = cardPacks.cardList.filter { it.rarity != CardRarity.Legend }
+        val cardList = cardPacks.cardList.filter { it.rarity != CardRarity.Legend && !cardPacks.startCardList.contains(it) }
 
         player.openCardCompensationInventory(cardList)
     }
 
     override fun Player.eliteReward() {
         val cardPacks = this.cardPack
-        val cardList = cardPacks.cardList.filter { it.rarity == CardRarity.Legend }
+        val cardList = cardPacks.cardList.filter { it.rarity == CardRarity.Legend && !cardPacks.startCardList.contains(it) }
 
         player.openCardCompensationInventory(cardList)
     }

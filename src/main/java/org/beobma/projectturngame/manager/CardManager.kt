@@ -3,11 +3,15 @@ package org.beobma.projectturngame.manager
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
+import org.beobma.projectturngame.ProjectTurnGame
 import org.beobma.projectturngame.card.Card
 import org.beobma.projectturngame.card.CardRarity
 import org.beobma.projectturngame.config.CardConfig.Companion.cardList
 import org.beobma.projectturngame.entity.player.Player
+import org.beobma.projectturngame.event.EntityCardThrowEvent
+import org.beobma.projectturngame.event.EntityTurnStartEvent
 import org.beobma.projectturngame.info.Info
+import org.beobma.projectturngame.manager.GameManager.turnEnd
 import org.beobma.projectturngame.manager.PlayerManager.addMana
 import org.beobma.projectturngame.manager.PlayerManager.graveyardReset
 import org.beobma.projectturngame.manager.TextManager.cardNotAvailableText
@@ -23,7 +27,7 @@ import org.bukkit.inventory.ItemStack
 interface CardHandler {
     fun Player.use(card: Card)
     fun Player.drow(int: Int)
-    fun Player.cardThrow(card: Card)
+    fun Player.cardThrow(card: Card, cardPosition: CardPosition = Hand)
     fun Player.addCard(card: Card, cardPosition: CardPosition = Hand)
     fun Player.addDeckCard(card: Card)
     fun Player.clearHand()
@@ -130,15 +134,38 @@ object CardManager : CardHandler {
         }
     }
 
-    override fun Player.cardThrow(card: Card) {
+    override fun Player.cardThrow(card: Card, cardPosition: CardPosition) {
         // 고정 효과가 적용된 경우
         if (card.description.contains(KeywordType.Fix.string)) {
             return
         }
 
+        val event = EntityCardThrowEvent(this, card, cardPosition)
+        ProjectTurnGame.instance.server.pluginManager.callEvent(event)
+        if (event.isCancelled) {
+            return
+        }
+
+        player.sendMessage(MiniMessage.miniMessage().deserialize("<gray>${card.name} 카드를 버렸습니다."))
         card.cardThrowEffect?.invoke(this, card)
-        this.hand.remove(card)
-        this.graveyard.add(card)
+
+        when (cardPosition) {
+            Hand -> {
+                this.hand.remove(card)
+                this.graveyard.add(card)
+            }
+            Deck -> {
+                this.deck.remove(card)
+                this.graveyard.add(card)
+            }
+            Graveyard -> {
+                this.graveyard.remove(card)
+                this.banish.add(card)
+            }
+            Banish -> {
+                this.banish.remove(card)
+            }
+        }
         applyHotbar()
     }
 
@@ -239,7 +266,7 @@ object CardManager : CardHandler {
     }
 
     override fun ItemStack.toCard(): Card {
-        val card = cardList.find { it.toItem().displayName() == this.displayName() && it.toItem().lore() == this.lore() }
+        val card = cardList.find { it.toItem() == this }
 
         return card
             ?: Card(

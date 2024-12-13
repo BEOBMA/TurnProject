@@ -8,19 +8,25 @@ import org.beobma.projectturngame.card.CardRarity
 import org.beobma.projectturngame.config.CardConfig.Companion.cardList
 import org.beobma.projectturngame.config.CardConfig.Companion.cardPackList
 import org.beobma.projectturngame.continueeffect.ContinueEffect
+import org.beobma.projectturngame.continueeffect.ContinueEffectHandler
+import org.beobma.projectturngame.entity.Entity
 import org.beobma.projectturngame.entity.enemy.Enemy
 import org.beobma.projectturngame.info.Info
 import org.beobma.projectturngame.localization.Dictionary
 import org.beobma.projectturngame.manager.CardManager.drow
+import org.beobma.projectturngame.manager.DeathResistanceManager.increaseDeathResistance
 import org.beobma.projectturngame.manager.EnemyManager.damage
 import org.beobma.projectturngame.manager.GameManager.turnEnd
 import org.beobma.projectturngame.manager.HealthManager.addHealth
 import org.beobma.projectturngame.manager.HealthManager.setHealth
 import org.beobma.projectturngame.manager.PlayerManager.addMana
+import org.beobma.projectturngame.manager.PlayerManager.addShield
 import org.beobma.projectturngame.manager.PlayerManager.heal
+import org.beobma.projectturngame.manager.SelectionFactordManager.allEnemyMembers
 import org.beobma.projectturngame.manager.SelectionFactordManager.allTeamMembers
 import org.beobma.projectturngame.manager.SelectionFactordManager.focusOn
 import org.beobma.projectturngame.manager.SoundManager.playCardUsingFailSound
+import org.beobma.projectturngame.manager.StunManager.addStun
 import org.beobma.projectturngame.manager.TextManager.cardUseFailText
 import org.beobma.projectturngame.manager.TextManager.targetingFailText
 import org.beobma.projectturngame.manager.TimeManager.decreaseTime
@@ -46,6 +52,136 @@ class RelativityOfTimeCardPack {
             ), mutableListOf(), mutableListOf(), CardPackType.Limitation
         )
 
+
+        //region attack Common Initialization
+        val attack = Card(
+            "공격", listOf(
+                "<gray>바라보는 적에게 7의 피해를 입히고 ${KeywordType.Time.string}을 5 얻는다.",
+                "",
+                dictionary.dictionaryList[KeywordType.Time]!!
+            ), CardRarity.Common, 1, { usePlayerData, _ ->
+                val player = usePlayerData.player
+                val target = usePlayerData.focusOn()
+
+                if (target !is Enemy) {
+                    player.sendMessage(targetingFailText())
+                    player.playCardUsingFailSound()
+                    return@Card false
+                }
+
+                target.damage(7, usePlayerData)
+                usePlayerData.increaseTime(5, usePlayerData)
+                player.world.playSound(player.location, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1.0F, 1.0F)
+                player.world.spawnParticle(Particle.SWEEP_ATTACK, target.entity.location, 1, 0.0, 0.0, 0.0, 1.0)
+                return@Card true
+            }
+        )
+        //endregion
+
+        //region defense Common Initialization
+        val defense = Card(
+            "수비", listOf(
+                "<gray>10의 피해를 막는 ${KeywordType.Shield.string}을 얻고 ${KeywordType.Time.string}을 5 얻는다.",
+                "",
+                dictionary.dictionaryList[KeywordType.Shield]!!,
+                dictionary.dictionaryList[KeywordType.Time]!!
+            ), CardRarity.Common, 1, { usePlayerData, _ ->
+                val player = usePlayerData.player
+
+                usePlayerData.addShield(10)
+                usePlayerData.increaseTime(5, usePlayerData)
+                player.world.playSound(player.location, Sound.ITEM_SHIELD_BLOCK, 1.0F, 1.0F)
+                return@Card true
+            }
+        )
+        //endregion
+
+        //region rest Common Initialization
+        val rest = Card(
+            "휴식", listOf(
+                "${KeywordType.Mana.string}를 1 회복한다.",
+                "${KeywordType.Time.string}이 5 이상이면 5 만큼 소모하여 ${KeywordType.Mana.string}를 추가로 1 회복한다.",
+                "",
+                dictionary.dictionaryList[KeywordType.Time]!!
+            ), CardRarity.Uncommon, 0, { usePlayerData, _ ->
+                val player = usePlayerData.player
+                val time = usePlayerData.getTime()
+
+                usePlayerData.addMana(1)
+
+                if (time is AbnormalityStatus && time.power >= 5) {
+                    usePlayerData.addMana(1)
+                    usePlayerData.decreaseTime(5, usePlayerData)
+                }
+                player.world.playSound(player.location, Sound.BLOCK_RESPAWN_ANCHOR_CHARGE, 1.0F, 2.0F)
+                player.world.spawnParticle(Particle.WAX_OFF, player.location, 10, 0.5, 0.5, 0.5, 1.0)
+                return@Card true
+            }
+        )
+        //endregion
+
+        //region drow Common Initialization
+        val drow = Card(
+            "뽑기", listOf(
+                "<gray>덱에서 카드를 1장 뽑는다.",
+                "${KeywordType.Time.string}이 5 이상이면 5 만큼 소모하여 추가로 1장 더 뽑는다.",
+                "",
+                dictionary.dictionaryList[KeywordType.Time]!!
+            ), CardRarity.Uncommon, 0, { usePlayerData, _ ->
+                val player = usePlayerData.player
+                val time = usePlayerData.getTime()
+
+                usePlayerData.drow(1)
+
+                if (time is AbnormalityStatus && time.power >= 5) {
+                    usePlayerData.drow(1)
+                    usePlayerData.decreaseTime(5, usePlayerData)
+                }
+
+                player.world.playSound(player.location, Sound.ITEM_BOOK_PAGE_TURN, 1.0F, 1.5F)
+                return@Card true
+            }
+        )
+        //endregion
+
+        //region powerAttack Common Initialization
+        val powerAttack = Card(
+            "강공", listOf(
+                "<gray>바라보는 적에게 10의 피해를 입힌다.",
+                "${KeywordType.Time.string}이 5 이상이면 5 만큼 소모하여 추가로 10의 피해를 입힌다.",
+                "",
+                dictionary.dictionaryList[KeywordType.Time]!!
+            ), CardRarity.Uncommon, 2, { usePlayerData, _ ->
+                val player = usePlayerData.player
+                val target = usePlayerData.focusOn()
+                val time = usePlayerData.getTime()
+
+                if (cardList.isEmpty()) {
+                    player.sendMessage(cardUseFailText())
+                    return@Card false
+                }
+
+                if (target !is Enemy) {
+                    player.sendMessage(targetingFailText())
+                    player.playCardUsingFailSound()
+                    return@Card false
+                }
+
+                target.damage(10, usePlayerData)
+
+                if (time is AbnormalityStatus && time.power >= 5) {
+                    target.damage(10, usePlayerData)
+                    usePlayerData.decreaseTime(5, usePlayerData)
+                }
+
+                player.world.playSound(player.location, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1.0F, 0.5F)
+                player.world.spawnParticle(Particle.SWEEP_ATTACK, target.entity.location, 1, 0.0, 0.0, 0.0, 1.0)
+                return@Card true
+            }
+        )
+        //endregion
+
+
         //region saveTime Common Initialization
         val saveTime = Card(
             "시간 저장", listOf(
@@ -62,9 +198,10 @@ class RelativityOfTimeCardPack {
 
                 player.world.playSound(player.location, Sound.BLOCK_BEACON_POWER_SELECT, 1.0F, 2.0F)
                 player.world.spawnParticle(Particle.END_ROD, player.location, 10, 0.0, 0.0, 0.0, 0.3)
-                game.continueEffects.add(ContinueEffect(usePlayerData, EffectTime.TurnEnd, {
+                game.continueEffects.add(ContinueEffect(usePlayerData, EffectTime.TurnEnd, { entity: Entity ->
                     usePlayerData.increaseTime(10, usePlayerData)
-                }))
+                } as ContinueEffectHandler
+                ))
                 return@Card true
             }
         )
@@ -336,8 +473,85 @@ class RelativityOfTimeCardPack {
         )
         //endregion
 
+        //region timeStop Legend Initialization
+        val timeStop = Card(
+            "시간 정지", listOf(
+                "${KeywordType.Time.string} 50을 소모하고 발동할 수 있다.",
+                "<gray>모든 적을 ${KeywordType.Stun.string} 상태로 만든다.",
+                "",
+                dictionary.dictionaryList[KeywordType.Time]!!,
+                dictionary.dictionaryList[KeywordType.Stun]!!
+            ), CardRarity.Legend, 1,
+            { usePlayerData, _ ->
+                val player = usePlayerData.player
+                val targets = usePlayerData.allEnemyMembers()
+                val time = usePlayerData.getTime()
 
+                if (time !is AbnormalityStatus || time.power < 50) {
+                    player.sendMessage(cardUseFailText())
+                    player.playCardUsingFailSound()
+                    return@Card false
+                }
 
+                player.world.playSound(player.location, Sound.BLOCK_RESPAWN_ANCHOR_DEPLETE, 1.0F, 0.5F)
+
+                targets.forEach {
+                    it.addStun()
+                    player.world.spawnParticle(Particle.END_ROD, it.entity.location, 50, 0.0, 0.0, 0.0, 0.4)
+                }
+                usePlayerData.decreaseTime(50, usePlayerData)
+                return@Card true
+            }
+        )
+        //endregion
+
+        //region preservationOfLife Legend Initialization
+        val preservationOfLife = Card(
+            "생명 보존", listOf(
+                "${KeywordType.Time.string} 50을 소모하고 발동할 수 있다.",
+                "<gray>모든 아군에게 ${KeywordType.DeathResistance.string} 3회를 부여한다.",
+                "",
+                dictionary.dictionaryList[KeywordType.Time]!!,
+                dictionary.dictionaryList[KeywordType.DeathResistance]!!
+            ), CardRarity.Legend, 1,
+            { usePlayerData, _ ->
+                val player = usePlayerData.player
+                val playerTeam = usePlayerData.allTeamMembers(true, false)
+                val time = usePlayerData.getTime()
+
+                if (time !is AbnormalityStatus || time.power < 50) {
+                    player.sendMessage(cardUseFailText())
+                    player.playCardUsingFailSound()
+                    return@Card false
+                }
+
+                player.world.playSound(player.location, Sound.BLOCK_RESPAWN_ANCHOR_DEPLETE, 1.0F, 0.5F)
+
+                playerTeam.forEach {
+                    it.increaseDeathResistance(3, usePlayerData)
+                }
+                usePlayerData.decreaseTime(50, usePlayerData)
+                return@Card true
+            }
+        )
+        //endregion
+
+        cardPack.startCardList.addAll(
+            listOf(
+                attack,
+                attack,
+                attack,
+                defense,
+                defense,
+                defense,
+                rest,
+                rest,
+                drow,
+                drow,
+                powerAttack,
+                powerAttack
+            )
+        )
 
         cardPack.cardList.addAll(
             listOf(
@@ -368,7 +582,9 @@ class RelativityOfTimeCardPack {
                 lifeTimeIntersection,
                 lifeTimeIntersection,
                 lifeTimeIntersection,
-                parallelTime
+                parallelTime,
+                timeStop,
+                preservationOfLife
             )
         )
 
@@ -377,5 +593,6 @@ class RelativityOfTimeCardPack {
         )
 
         cardList.addAll(cardPack.cardList)
+        cardList.addAll(cardPack.startCardList)
     }
 }

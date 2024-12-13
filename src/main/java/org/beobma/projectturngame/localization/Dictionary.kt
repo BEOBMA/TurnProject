@@ -47,7 +47,7 @@ class Dictionary {
         ), Pair(
             KeywordType.Time, "${KeywordType.Time.string}: 특정 카드의 효과로 소모된다."
         ), Pair(
-            KeywordType.Stun, "${KeywordType.Stun.string}: 턴 시작 시 강제로 턴이 종료된다. 이 효과가 발동한 후, 기절을 제거한다. 이후 1턴간 다시 기절할 수 없다."
+            KeywordType.Stun, "${KeywordType.Stun.string}: 턴 시작 시 강제로 턴이 종료된다. 이 효과가 발동한 후, 기절을 제거한다. 이후 1턴간 기절에 저항한다."
         ), Pair(
             KeywordType.Reforge, "${KeywordType.Reforge.string}: Q를 누르면 마나를 1 소모하고 같은 카드명을 가진 카드들을 이번 전투동안 재련된 상태로 만든다."
         ), Pair(
@@ -56,6 +56,8 @@ class Dictionary {
             KeywordType.Protect, "${KeywordType.Protect.string}: 피격 시 받는 피해가 수치만큼 감소한다. 턴 시작 시 보호를 제거한다."
         ), Pair(
             KeywordType.Bleeding, "${KeywordType.Bleeding.string}: 행동 시 수치만큼 피해를 입고 수치를 절반으로 만든다."
+        ), Pair(
+            KeywordType.DeathResistance, "${KeywordType.DeathResistance.string}: 이 효과가 적용중인 동안 죽지 않는다. 죽음에 저항할 때마다 횟수가 감소하며 0이 되면 효과는 제거된다."
         )
     )
 }
