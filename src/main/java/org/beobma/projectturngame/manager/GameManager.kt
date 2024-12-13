@@ -29,6 +29,7 @@ import org.beobma.projectturngame.manager.CardManager.drow
 import org.beobma.projectturngame.manager.CompensationManager.eliteReward
 import org.beobma.projectturngame.manager.CompensationManager.normalReward
 import org.beobma.projectturngame.manager.CompensationManager.relicsReward
+import org.beobma.projectturngame.manager.CustomStackManager.setStack
 import org.beobma.projectturngame.manager.EnemyManager.damage
 import org.beobma.projectturngame.manager.HealthManager.setHealth
 import org.beobma.projectturngame.manager.InventoryManager.openEventInventory
@@ -495,6 +496,7 @@ object GameManager : GameHandler {
         this.turnEndUnit.forEach {
             it.invoke()
         }
+        setStack("ReforgeStack", 0)
         this.turnEndUnit.clear()
         this.abnormalityStatus.clear()
         this.deck.addAll(this.hand)

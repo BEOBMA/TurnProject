@@ -51,7 +51,6 @@ processResources {
 
 shadowJar{
     archivesBaseName = 'ProjectTurnGame'
-    destinationDirectory = file("C:\\Users\\user\\Desktop\\서버\\마인크래프트\\ProjectTurn\\plugins")
     manifest {
         attributes 'Main-Class': 'org.beobma.projectturngame.ProjectTurnGame'
     }

@@ -171,6 +171,7 @@ object PlayerManager : PlayerHandler {
         // 일반 피해
         this.health -= finalDamage
         this.player.damage(0.1, attacker?.entity)
+        this.player.noDamageTicks = 0
         this.player.health = this.health.toDouble()
     }
 

@@ -140,6 +140,7 @@ object EnemyManager : EnemyHandler {
         // 일반 피해
         this.health -= finalDamage
         this.entity.damage(finalDamage.toDouble(), attacker?.player)
+        this.entity.noDamageTicks = 0
         entity.apply {
             this.customName(Component.text("${this.health}",TextColorType.DarkRed.textColor).decorate(TextDecoration.BOLD))
             this.isCustomNameVisible = true
