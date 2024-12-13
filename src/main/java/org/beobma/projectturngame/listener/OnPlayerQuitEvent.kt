@@ -1,5 +1,6 @@
 package org.beobma.projectturngame.listener
 
+import org.beobma.projectturngame.config.CardConfig
 import org.beobma.projectturngame.info.Info
 import org.beobma.projectturngame.manager.GameManager.stop
 import org.bukkit.Bukkit
@@ -20,20 +21,15 @@ class OnPlayerQuitEvent : Listener {
             if (game.players.size <= 1) {
                 game.stop()
             } else {
-                val playerData = game.playerDatas.find { it.player == player }
-                val tags = player.scoreboardTags.toList()
-
-                game.players.remove(player)
-                game.playerDatas.remove(playerData)
                 player.isGlowing = false
-                player.inventory.clear()
                 player.gameMode = GameMode.ADVENTURE
-
+                val tags = player.scoreboardTags.toList()
                 tags.forEach { tag ->
                     player.removeScoreboardTag(tag)
                 }
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "scoreboard players reset ${player.name}")
                 player.teleport(Location(player.world, 0.5, -60.0, 0.5))
+                player.inventory.clear()
             }
         }
     }

@@ -104,6 +104,7 @@ object GameManager : GameHandler {
         }
 
         Info.game = null
+        CardConfig()
         players.forEach { player ->
             player.isGlowing = false
             player.gameMode = GameMode.ADVENTURE
@@ -111,7 +112,6 @@ object GameManager : GameHandler {
             tags.forEach { tag ->
                 player.removeScoreboardTag(tag)
             }
-            CardConfig()
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "scoreboard players reset @a")
             player.teleport(Location(player.world, 0.5, -60.0, 0.5))
             player.inventory.clear()
