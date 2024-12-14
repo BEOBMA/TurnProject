@@ -437,20 +437,28 @@ class SelectionAndFocusCardPack {
 
                 player.world.playSound(player.location, Sound.BLOCK_BEACON_POWER_SELECT, 1.0F, 2.0F)
                 player.world.spawnParticle(Particle.END_ROD, player.location, 10, 0.0, 0.0, 0.0, 0.3)
-                game.continueEffects.add(
-                    ContinueEffect(
-                        usePlayerData,
-                        EffectTime.CardThrow,
-                        { player: Entity, card: Card, event: EntityCardThrowEvent ->
+                val handler = object : ContinueEffectHandler {
+                    override val normalEffect: (Entity) -> Unit = { _ -> }
+                    override val cardThrowEffect: (Entity, Card, EntityCardThrowEvent) -> Unit = { player, card, event ->
+                        if (player == usePlayerData) {
                             val targets = usePlayerData.allEnemyMembers()
 
                             targets.forEach {
                                 it.damage(5, usePlayerData, DamageType.True)
-                                usePlayerData.player.world.spawnParticle(Particle.END_ROD, it.entity.location, 10, 0.0, 0.0, 0.0, 0.3)
+                                usePlayerData.player.world.spawnParticle(
+                                    Particle.END_ROD,
+                                    it.entity.location,
+                                    10,
+                                    0.0,
+                                    0.0,
+                                    0.0,
+                                    0.3
+                                )
                             }
-                        } as ContinueEffectHandler
-                    )
-                )
+                        }
+                    }
+                }
+                game.continueEffects.add(ContinueEffect(usePlayerData, EffectTime.CardThrow, handler))
                 return@Card true
             }
         )
@@ -472,18 +480,21 @@ class SelectionAndFocusCardPack {
 
                 player.world.playSound(player.location, Sound.BLOCK_BEACON_POWER_SELECT, 1.0F, 2.0F)
                 player.world.spawnParticle(Particle.END_ROD, player.location, 10, 0.0, 0.0, 0.0, 0.3)
-                game.continueEffects.add(
-                    ContinueEffect(usePlayerData, EffectTime.CardThrow, { player: Entity, card: Card, event: EntityCardThrowEvent ->
-                        event.isCancelled = true
-                        usePlayerData.hand.remove(card)
-                        usePlayerData.applyHotbar()
-                        usePlayerData.cardBanish(card)
+                val handler = object : ContinueEffectHandler {
+                    override val normalEffect: (Entity) -> Unit = { _ -> }
+                    override val cardThrowEffect: (Entity, Card, EntityCardThrowEvent) -> Unit = { player, card, event ->
+                        if (player == usePlayerData) {
+                            event.isCancelled = true
+                            usePlayerData.hand.remove(card)
+                            usePlayerData.applyHotbar()
+                            usePlayerData.cardBanish(card)
 
-                        card.cardThrowEffect?.invoke(usePlayerData, card)
-                        card.cardThrowEffect?.invoke(usePlayerData, card)
-                    } as ContinueEffectHandler
-                    )
-                )
+                            card.cardThrowEffect?.invoke(usePlayerData, card)
+                            card.cardThrowEffect?.invoke(usePlayerData, card)
+                        }
+                    }
+                }
+                game.continueEffects.add(ContinueEffect(usePlayerData, EffectTime.CardThrow, handler))
                 return@Card true
             }
         )

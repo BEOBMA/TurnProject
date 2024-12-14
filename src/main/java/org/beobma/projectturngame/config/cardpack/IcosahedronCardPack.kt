@@ -10,6 +10,7 @@ import org.beobma.projectturngame.continueeffect.ContinueEffect
 import org.beobma.projectturngame.continueeffect.ContinueEffectHandler
 import org.beobma.projectturngame.entity.Entity
 import org.beobma.projectturngame.entity.enemy.Enemy
+import org.beobma.projectturngame.event.EntityCardThrowEvent
 import org.beobma.projectturngame.info.Info
 import org.beobma.projectturngame.localization.Dictionary
 import org.beobma.projectturngame.manager.CardManager.addCard
@@ -393,7 +394,7 @@ class IcosahedronCardPack {
             "빅 블라인드", listOf(
                 KeywordType.Continue.string,
                 "",
-                "<gray>전투 종료 시까지 매 턴을 시작할 때 20면체 주사위를 굴린다.",
+                "<gray>전투 종료 시까지 매 턴을 시작하기 직전 20면체 주사위를 굴린다.",
                 "<gray>나온 값이 15를 초과할 경우 최대치와 관계 없이 ${KeywordType.Mana.string}를 10으로 만든다.",
                 "<gray>이외의 경우에는 ${KeywordType.Mana.string}를 0으로 만든다.",
                 "",
@@ -405,17 +406,22 @@ class IcosahedronCardPack {
 
                 player.world.playSound(player.location, Sound.BLOCK_BEACON_POWER_SELECT, 1.0F, 2.0F)
                 player.world.spawnParticle(Particle.END_ROD, player.location, 10, 0.0, 0.0, 0.0, 0.3)
-                game.continueEffects.add(ContinueEffect(usePlayerData, EffectTime.TurnStart, { entity: Entity ->
-                    val dice = usePlayerData.diceRoll(1, 20)
+                val handler = object : ContinueEffectHandler {
+                    override val normalEffect: (Entity) -> Unit = { entity: Entity ->
+                        if (entity == usePlayerData) {
+                            val dice = usePlayerData.diceRoll(1, 20)
 
-                    if (dice > 15) {
-                        usePlayerData.setMana(10, true)
+                            if (dice > 15) {
+                                usePlayerData.setMana(10, true)
+                            } else {
+                                usePlayerData.setMana(0)
+                            }
+                        }
                     }
-                    else {
-                        usePlayerData.setMana(0, true)
-                    }
-                } as ContinueEffectHandler
-                ))
+                    override val cardThrowEffect: (Entity, Card, EntityCardThrowEvent) -> Unit = { _, _, _ -> }
+                }
+                game.continueEffects.add(ContinueEffect(usePlayerData, EffectTime.TurnStart, handler))
+
                 return@Card true
             }
         )

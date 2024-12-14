@@ -11,6 +11,7 @@ import org.beobma.projectturngame.continueeffect.ContinueEffect
 import org.beobma.projectturngame.continueeffect.ContinueEffectHandler
 import org.beobma.projectturngame.entity.Entity
 import org.beobma.projectturngame.entity.enemy.Enemy
+import org.beobma.projectturngame.event.EntityCardThrowEvent
 import org.beobma.projectturngame.info.Info
 import org.beobma.projectturngame.localization.Dictionary
 import org.beobma.projectturngame.manager.BlindnessManager.increaseBlindness
@@ -740,11 +741,17 @@ class MasterOfAlchemyCardPack {
 
                 player.world.playSound(player.location, Sound.BLOCK_BEACON_POWER_SELECT, 1.0F, 2.0F)
                 player.world.spawnParticle(Particle.END_ROD, player.location, 10, 0.0, 0.0, 0.0, 0.3)
-                game.continueEffects.add(ContinueEffect(usePlayerData, EffectTime.TurnStart, { entity: Entity ->
-                    usePlayerData.addCard(cardList.random())
-                    player.world.playSound(player.location, Sound.ITEM_BOOK_PAGE_TURN, 1.0F, 1.5F)
-                } as ContinueEffectHandler
-                ))
+                val handler = object : ContinueEffectHandler {
+                    override val normalEffect: (Entity) -> Unit = { entity: Entity ->
+                        if (entity == usePlayerData) {
+                            usePlayerData.addCard(cardList.random())
+                            player.world.playSound(player.location, Sound.ITEM_BOOK_PAGE_TURN, 1.0F, 1.5F)
+                        }
+                    }
+                    override val cardThrowEffect: (Entity, Card, EntityCardThrowEvent) -> Unit = { _, _, _ -> }
+                }
+                game.continueEffects.add(ContinueEffect(usePlayerData, EffectTime.TurnStart, handler))
+
 
                 return@Card true
             }

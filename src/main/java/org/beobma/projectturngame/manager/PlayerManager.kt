@@ -31,7 +31,7 @@ interface PlayerHandler {
     fun Player.addMaxMana(int: Int)
 
     fun Player.setMana(int: Int, ignoreMaxValue: Boolean = false)
-    fun Player.addMana(int: Int)
+    fun Player.addMana(int: Int, ignoreMaxValue: Boolean = false)
 
     fun Player.addShield(int: Int)
 
@@ -83,30 +83,24 @@ object PlayerManager : PlayerHandler {
     }
 
     override fun Player.setMana(int: Int, ignoreMaxValue: Boolean) {
+        if (!ignoreMaxValue && int > maxMana) return
+
         this.mana = int
 
         if (this.mana < 0) {
             this.mana = 0
         }
 
-        if (!ignoreMaxValue) {
-            if (this.mana > this.maxMana) {
-                this.mana = this.maxMana
-            }
-        }
-
         this.applyPlayerInfo()
     }
 
-    override fun Player.addMana(int: Int) {
+    override fun Player.addMana(int: Int, ignoreMaxValue: Boolean) {
+        if (!ignoreMaxValue && mana + int > maxMana) return
+
         this.mana += int
 
         if (this.mana < 0) {
             this.mana = 0
-        }
-
-        if (this.mana > this.maxMana) {
-            this.mana = this.maxMana
         }
 
         this.applyPlayerInfo()
@@ -145,6 +139,7 @@ object PlayerManager : PlayerHandler {
             if (finalDamage >= this.shield) {
                 finalDamage -= this.shield
                 this.shield = 0
+                player.world.playSound(player.location, Sound.ITEM_SHIELD_BREAK, 1.0F, 1.0F)
             }
             // 최종 피해가 보호막 수치보다 미만일 경우
             else {

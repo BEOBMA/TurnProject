@@ -11,8 +11,10 @@ import org.beobma.projectturngame.continueeffect.ContinueEffect
 import org.beobma.projectturngame.continueeffect.ContinueEffectHandler
 import org.beobma.projectturngame.entity.Entity
 import org.beobma.projectturngame.entity.enemy.Enemy
+import org.beobma.projectturngame.event.EntityCardThrowEvent
 import org.beobma.projectturngame.info.Info
 import org.beobma.projectturngame.localization.Dictionary
+import org.beobma.projectturngame.manager.CardManager.addCard
 import org.beobma.projectturngame.manager.CardManager.drow
 import org.beobma.projectturngame.manager.DeathResistanceManager.increaseDeathResistance
 import org.beobma.projectturngame.manager.EnemyManager.damage
@@ -198,10 +200,13 @@ class RelativityOfTimeCardPack {
 
                 player.world.playSound(player.location, Sound.BLOCK_BEACON_POWER_SELECT, 1.0F, 2.0F)
                 player.world.spawnParticle(Particle.END_ROD, player.location, 10, 0.0, 0.0, 0.0, 0.3)
-                game.continueEffects.add(ContinueEffect(usePlayerData, EffectTime.TurnEnd, { entity: Entity ->
-                    usePlayerData.increaseTime(10, usePlayerData)
-                } as ContinueEffectHandler
-                ))
+                val handler = object : ContinueEffectHandler {
+                    override val normalEffect: (Entity) -> Unit = { entity: Entity ->
+                        usePlayerData.increaseTime(10, usePlayerData)
+                    }
+                    override val cardThrowEffect: (Entity, Card, EntityCardThrowEvent) -> Unit = { _, _, _ -> }
+                }
+                game.continueEffects.add(ContinueEffect(usePlayerData, EffectTime.TurnEnd, handler))
                 return@Card true
             }
         )
