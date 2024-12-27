@@ -432,7 +432,6 @@ object InventoryManager : InventoryHandler {
                     inventory.setItem(i, eventManager.run { event.options[i].toItem() })
                 }
             }
-            // 이벤트 선택지가 늘어날 경우 추가해야함.
         }
         return inventory
     }
