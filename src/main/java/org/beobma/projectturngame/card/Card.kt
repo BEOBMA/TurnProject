@@ -11,5 +11,6 @@ data class Card(
     val cardUseEffect: ((Player, Card) -> Boolean)? = null,
     val postCardUseEffect: ((Player, Card) -> Unit)? = null,
     val cardThrowEffect: ((Player, Card) -> Unit)? = null,
-    val nextTurnEffect: ((Player, Card) -> Unit)? = null
+    val nextTurnEffect: ((Player, Card) -> Unit)? = null,
+    val id: Int = 0
 )
