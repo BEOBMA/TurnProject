@@ -276,6 +276,10 @@ object CardManager : CardHandler {
             )
     }
 
+    private fun addCustomNBT() {
+        // TODO()
+    }
+
     override fun Player.applyHotbar() {
         this.player.inventory.clear()
         for (i in this.hand.indices) {
