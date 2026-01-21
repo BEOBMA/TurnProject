@@ -25,5 +25,6 @@ class Game(
     var drowCardInt: Int = 0,
     val turnEndUnit: MutableList<() -> Unit> = mutableListOf(),
     val battleEndUnit: MutableList<() -> Unit> = mutableListOf(),
+    val sectorEndUnit: MutableList<() -> Unit> = mutableListOf(),
     val continueEffects: MutableList<ContinueEffect> = mutableListOf()
 )

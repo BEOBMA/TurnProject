@@ -21,6 +21,7 @@ class Player(
     var emerald: Int = 0,
     val turnStartUnit: MutableList<() -> Unit> = mutableListOf(),
     val turnEndUnit: MutableList<() -> Unit> = mutableListOf(),
+    val cardUseEndUnit: MutableList<() -> Unit> = mutableListOf(),
     var diceWeight: Int = 0,
     val alchemYingredientsPile: MutableList<Card> = mutableListOf()
 

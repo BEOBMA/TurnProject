@@ -73,6 +73,10 @@ object CardManager : CardHandler {
 
         card.postCardUseEffect?.invoke(this@use, card)
         applyHotbar()
+        this@use.cardUseEndUnit.forEach {
+            it.invoke()
+        }
+        this@use.cardUseEndUnit.clear()
     }
 
     private fun Player.useCardProcessing(card: Card) {
