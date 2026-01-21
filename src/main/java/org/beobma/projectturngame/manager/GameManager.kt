@@ -253,6 +253,10 @@ object GameManager : GameHandler {
 
     override fun Game.nextSector() {
         ProjectTurnGame.instance.logger.info("다음 지역으로 이동합니다.")
+        this.sectorEndUnit.forEach {
+            it.invoke()
+        }
+        this.sectorEndUnit.clear()
         this.clear()
 
 //        this.stop()

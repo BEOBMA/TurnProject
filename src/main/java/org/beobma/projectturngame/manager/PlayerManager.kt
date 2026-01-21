@@ -239,9 +239,9 @@ object PlayerManager : PlayerHandler {
             None -> return
             TurnEnd -> game.turnEndUnit.add { this.player.scoreboardTags.remove(tag) }
             BattleEnd -> game.battleEndUnit.add { this.player.scoreboardTags.remove(tag) }
-            CardUseEnd -> TODO()
-            SectorEnd -> TODO()
-            TurnStart -> TODO()
+            CardUseEnd -> this.cardUseEndUnit.add { this.player.scoreboardTags.remove(tag) }
+            SectorEnd -> game.sectorEndUnit.add { this.player.scoreboardTags.remove(tag) }
+            TurnStart -> this.turnStartUnit.add { this.player.scoreboardTags.remove(tag) }
         }
     }
 
